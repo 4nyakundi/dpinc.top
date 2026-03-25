@@ -1,10 +1,28 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Globe, Server, Cpu, Code2, Database } from "lucide-react";
 
 export default function Hero() {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+    const smoothX = useSpring(mouseX, { damping: 50, stiffness: 400 });
+    const smoothY = useSpring(mouseY, { damping: 50, stiffness: 400 });
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            const { innerWidth, innerHeight } = window;
+            const x = (e.clientX / innerWidth - 0.5) * 200;
+            const y = (e.clientY / innerHeight - 0.5) * 200;
+            mouseX.set(x);
+            mouseY.set(y);
+        };
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, [mouseX, mouseY]);
+
     return (
         <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-zinc-50 dark:bg-black transition-colors duration-300">
             {/* Techie Grid Background */}
@@ -12,10 +30,8 @@ export default function Hero() {
 
             {/* Glowing Orb */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: [0.4, 0.6, 0.4], scale: [1, 1.1, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"
+                style={{ x: smoothX, y: smoothY, translateX: "-50%", translateY: "-50%" }}
+                className="absolute top-1/2 left-1/2 w-[800px] h-[800px] bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"
             />
 
             {/* Animated Data Lines (Vertical) */}
