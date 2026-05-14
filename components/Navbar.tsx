@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import Logo from "@/components/Logo";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -27,8 +28,8 @@ export default function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300">
             <div className="max-w-7xl mx-auto bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl flex items-center justify-between px-6 py-3 transition-colors duration-300 shadow-sm dark:shadow-none">
                 {/* Logo */}
-                <Link href="/" className="text-2xl font-bold tracking-tighter text-black dark:text-white">
-                    DATA<span className="text-cyan-600 dark:text-cyan-400">PORT</span>
+                <Link href="/" className="flex items-center gap-2">
+                    <Logo />
                 </Link>
 
                 {/* Desktop Links */}

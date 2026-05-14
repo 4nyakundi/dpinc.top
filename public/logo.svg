@@ -1,0 +1,11 @@
+<svg width="240" height="80" viewBox="0 0 240 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="80" rx="20" fill="#050505"/>
+  <path d="M24 21H44C49.5228 21 54 25.4772 54 31V49C54 54.5228 49.5228 59 44 59H24V45H38.5V35H24V21Z" fill="#A6FF00"/>
+  <path d="M68 21H84C89.5228 21 94 25.4772 94 31V49C94 54.5228 89.5228 59 84 59H68V45H82.5V35H68V21Z" fill="#A6FF00"/>
+  <path d="M82 21H112C118.627 21 124 26.373 124 33V47C124 53.6274 118.627 59 112 59H82V45H110V33H82V21Z" fill="#A6FF00"/>
+  <text x="42" y="48" fill="#050505" font-family="Inter, sans-serif" font-size="32" font-weight="700">D</text>
+  <rect x="128" y="18" width="98" height="44" rx="10" fill="white"/>
+  <text x="138" y="44" fill="#050505" font-family="Inter, sans-serif" font-size="26" font-weight="700">Data</text>
+  <text x="138" y="66" fill="#8FC900" font-family="Inter, sans-serif" font-size="26" font-weight="700">Port</text>
+  <text x="226" y="62" fill="#050505" font-family="Inter, sans-serif" font-size="10" font-weight="700">INC</text>
+</svg>

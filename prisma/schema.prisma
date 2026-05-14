@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Quote {
+  id        String     @id @default(cuid())
+  invoiceNo String     @unique
+  billedTo  String
+  phone     String?
+  email     String?
+  location  String?
+  lineItems LineItem[]
+  labourFee Float
+  subtotal  Float
+  tax       Float      @default(0)
+  total     Float
+  status    String     @default("draft") // draft, sent, accepted, paid, rejected
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  pdfUrl    String?
+}
+
+model LineItem {
+  id       String @id @default(cuid())
+  quoteId  String
+  quote    Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  service  String // service/item name (free text)
+  quantity Int
+  unitPrice Float
+  total    Float  // calculated: quantity * unitPrice
+
+  @@index([quoteId])
+}
+
+model Admin {
+  id       String @id @default(cuid())
+  username String @unique
+  password String // hashed password
+}
