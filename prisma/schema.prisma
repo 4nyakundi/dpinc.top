@@ -6,42 +6,95 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Quote {
-  id        String     @id @default(cuid())
-  invoiceNo String     @unique
-  billedTo  String
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
   phone     String?
-  email     String?
-  location  String?
-  lineItems LineItem[]
-  labourFee Float
-  subtotal  Float
-  tax       Float      @default(0)
-  total     Float
-  status    String     @default("draft") // draft, sent, accepted, paid, rejected
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  pdfUrl    String?
+  company   String?
+  source    String?  @default("web")
+  status    String   @default("new")
+  notes     String?
+  quotes    Quote[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model LineItem {
-  id       String @id @default(cuid())
-  quoteId  String
-  quote    Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  service  String // service/item name (free text)
-  quantity Int
-  unitPrice Float
-  total    Float  // calculated: quantity * unitPrice
+model CatalogItem {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  price       Float
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  lineItems   QuoteLineItem[]
+}
+
+model Quote {
+  id            String           @id @default(cuid())
+  leadId        String?
+  lead          Lead?            @relation(fields: [leadId], references: [id])
+  invoiceNo     String?          @unique
+  status        String           @default("draft")
+  issueDate     DateTime         @default(now())
+  dueDate       DateTime?
+  subtotal      Float
+  tax           Float            @default(0)
+  labourFee     Float            @default(0)
+  total         Float
+  notes         String?
+  recurring     Boolean          @default(false)
+  recurrence    String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  lineItems     QuoteLineItem[]
+  invoice       Invoice?
+}
+
+model QuoteLineItem {
+  id            String      @id @default(cuid())
+  quoteId       String
+  catalogItemId String?
+  quote         Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  catalogItem   CatalogItem? @relation(fields: [catalogItemId], references: [id])
+  name          String
+  quantity      Int
+  unitPrice     Float
+  total         Float
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([quoteId])
+  @@index([catalogItemId])
+}
+
+model Invoice {
+  id                    String   @id @default(cuid())
+  quoteId               String?  @unique
+  quote                 Quote?   @relation(fields: [quoteId], references: [id])
+  invoiceNo             String   @unique
+  issuedAt              DateTime @default(now())
+  dueAt                 DateTime?
+  subtotal              Float
+  tax                   Float    @default(0)
+  labourFee             Float    @default(0)
+  total                 Float
+  status                String   @default("unpaid")
+  generatedAutomatically Boolean @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Admin {
-  id       String @id @default(cuid())
-  username String @unique
-  password String // hashed password
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

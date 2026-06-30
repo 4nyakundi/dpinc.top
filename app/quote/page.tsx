@@ -5,8 +5,26 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Printer, LogOut } from "lucide-react";
 
+interface CatalogItem {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+}
+
+interface Lead {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  source?: string;
+  status: string;
+}
+
 interface LineItem {
   id: string;
+  catalogItemId?: string;
   service: string;
   quantity: number;
   unitPrice: number;
@@ -18,21 +36,131 @@ export default function QuoteGenerator() {
   const [billedTo, setBilledTo] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
+  const [customerLocation, setCustomerLocation] = useState("");
+  const [company, setCompany] = useState("");
+  const [source, setSource] = useState("web");
+  const [selectedLeadId, setSelectedLeadId] = useState("");
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
+  const [selectedCatalogItemId, setSelectedCatalogItemId] = useState("");
+  const [savedQuotes, setSavedQuotes] = useState<any[]>([]);
+  const [savedInvoices, setSavedInvoices] = useState<any[]>([]);
+  const [token, setToken] = useState("");
+  const [recordsLoading, setRecordsLoading] = useState(false);
   const [labourFee, setLabourFee] = useState(0);
+  const [tax, setTax] = useState(0);
   const [newService, setNewService] = useState("");
   const [newQuantity, setNewQuantity] = useState(1);
   const [newUnitPrice, setNewUnitPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [invoiceNo, setInvoiceNo] = useState("");
 
+  const loadCatalogItems = async () => {
+    try {
+      const catalogRes = await fetch("/api/catalog");
+      if (catalogRes.ok) {
+        const catalogData = await catalogRes.json();
+        setCatalogItems(catalogData.items || []);
+      }
+    } catch (error) {
+      console.error("Failed to load catalog items", error);
+    }
+  };
+
+  const loadLeads = async (token: string) => {
+    try {
+      const leadRes = await fetch("/api/leads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (leadRes.ok) {
+        const leadData = await leadRes.json();
+        setLeads(leadData.leads || []);
+      }
+    } catch (error) {
+      console.error("Failed to load leads", error);
+    }
+  };
+
+  const loadSavedQuotes = async (token: string) => {
+    setRecordsLoading(true);
+    try {
+      const quotesRes = await fetch("/api/quotes", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (quotesRes.ok) {
+        const quotesData = await quotesRes.json();
+        setSavedQuotes(quotesData.quotes || []);
+      }
+    } catch (error) {
+      console.error("Failed to load saved quotes", error);
+    } finally {
+      setRecordsLoading(false);
+    }
+  };
+
+  const loadSavedInvoices = async (token: string) => {
+    try {
+      const invoiceRes = await fetch("/api/invoices", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (invoiceRes.ok) {
+        const invoiceData = await invoiceRes.json();
+        setSavedInvoices(invoiceData.invoices || []);
+      }
+    } catch (error) {
+      console.error("Failed to load saved invoices", error);
+    }
+  };
+
+  const handleLeadSelection = (leadId: string) => {
+    setSelectedLeadId(leadId);
+    if (!leadId) {
+      setBilledTo("");
+      setEmail("");
+      setPhone("");
+      setCompany("");
+      setSource("web");
+      return;
+    }
+
+    const lead = leads.find((item) => item.id === leadId);
+    if (lead) {
+      setBilledTo(lead.name || "");
+      setEmail(lead.email || "");
+      setPhone(lead.phone || "");
+      setCompany(lead.company || "");
+      setSource(lead.source || "web");
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
       router.push("/admin/login");
+      return;
     }
+
+    setToken(token);
+    loadCatalogItems();
+    loadLeads(token);
+    loadSavedQuotes(token);
+    loadSavedInvoices(token);
   }, [router]);
+
+  const handleCatalogSelect = (catalogId: string) => {
+    setSelectedCatalogItemId(catalogId);
+    const item = catalogItems.find((catalog) => catalog.id === catalogId);
+    if (item) {
+      setNewService(item.name);
+      setNewUnitPrice(item.price);
+      setNewQuantity(1);
+    }
+  };
 
   const addLineItem = () => {
     if (!newService.trim() || newQuantity <= 0 || newUnitPrice <= 0) {
@@ -42,12 +170,14 @@ export default function QuoteGenerator() {
 
     const item: LineItem = {
       id: crypto.randomUUID(),
+      catalogItemId: selectedCatalogItemId || undefined,
       service: newService,
       quantity: newQuantity,
       unitPrice: newUnitPrice,
     };
 
     setLineItems([...lineItems, item]);
+    setSelectedCatalogItemId("");
     setNewService("");
     setNewQuantity(1);
     setNewUnitPrice(0);
@@ -63,7 +193,7 @@ export default function QuoteGenerator() {
     [lineItems]
   );
 
-  const total = useMemo(() => subtotal + labourFee, [subtotal, labourFee]);
+  const total = useMemo(() => subtotal + labourFee + tax, [subtotal, labourFee, tax]);
 
   const formatCurrency = (value: number) =>
     `Ksh ${value.toLocaleString("en-KE", {
@@ -78,45 +208,134 @@ export default function QuoteGenerator() {
       year: "numeric",
     }).format(date);
 
-  const printInvoice = () => {
-    if (!invoiceRef.current) return;
-    const printWindow = window.open("", "_blank", "width=900,height=700");
-    if (!printWindow) return;
+  const buildInvoiceHtml = () => {
+    const invoiceId = invoiceNo || "#00000";
+    const formattedDate = formatDate(new Date());
+    const itemsHtml = lineItems.length
+      ? lineItems
+          .map(
+            (item) =>
+              `<tr>
+                <td>${item.service}</td>
+                <td class="text-right">${item.quantity}</td>
+                <td class="text-right">${formatCurrency(item.unitPrice)}</td>
+                <td class="text-right">${formatCurrency(item.quantity * item.unitPrice)}</td>
+              </tr>`
+          )
+          .join("")
+      : `<tr><td colspan="4" class="empty-row">Add items to see them appear here.</td></tr>`;
 
-    const content = invoiceRef.current.innerHTML;
-    printWindow.document.write(`
+    return `
       <html>
         <head>
-          <title>Invoice ${invoiceNo || "PREVIEW"}</title>
+          <meta charset="utf-8" />
+          <title>Invoice ${invoiceId}</title>
           <style>
-            body { font-family: Inter, sans-serif; margin: 0; padding: 24px; background: #fff; color: #121212; }
-            .invoice-wrapper { width: 100%; max-width: 820px; margin: 0 auto; }
-            .brand-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-            .brand-text { font-weight: 700; font-size: 28px; letter-spacing: -0.02em; }
-            .brand-text span { color: #8fc900; }
-            .invoice-details, .customer-details, .footer-note { margin-top: 24px; }
-            .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 10px; }
-            .row { display: flex; justify-content: space-between; gap: 8px; }
-            .text-muted { color: #6b7280; }
-            .table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-            .table th, .table td { border-bottom: 1px solid #e5e7eb; padding: 12px 8px; text-align: left; }
-            .table th { text-transform: uppercase; font-size: 11px; letter-spacing: 0.12em; color: #6b7280; }
-            .table td { font-size: 13px; }
-            .table .amount { text-align: right; }
-            .totals { margin-top: 24px; width: 100%; max-width: 420px; margin-left: auto; }
-            .totals .row { justify-content: space-between; padding: 8px 0; }
-            .totals .label { color: #6b7280; }
-            .totals .total-value { font-size: 18px; font-weight: 700; }
-            .signature { margin-top: 48px; display: flex; justify-content: space-between; align-items: center; }
-            .signature-line { border-top: 1px solid #d1d5db; width: 260px; }
-            .payment-info { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            body { margin: 32px; font-family: Inter, system-ui, sans-serif; color: #111827; }
+            .invoice { max-width: 680px; margin: 0 auto; }
+            .logo { display: block; width: 130px; margin-bottom: 16px; }
+            .business-name { font-size: 24px; font-weight: 700; margin: 0; }
+            .business-subtitle { margin: 4px 0 24px; color: #4b5563; }
+            .section { margin-bottom: 24px; }
+            .section-title { margin: 0 0 8px; color: #374151; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; }
+            .text-sm { font-size: 14px; line-height: 1.7; }
+            .text-right { text-align: right; }
+            .table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+            .table th, .table td { padding: 8px 4px; }
+            .table th { text-align: left; color: #374151; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+            .table td { font-size: 14px; border-bottom: 1px solid #e5e7eb; }
+            .totals { width: 100%; margin-top: 16px; }
+            .totals-row { display: flex; justify-content: space-between; padding: 4px 0; }
+            .totals-row.total { font-size: 16px; font-weight: 700; margin-top: 12px; }
+            .empty-row { color: #6b7280; padding: 16px 0; text-align: center; }
+            .footer-note { margin-top: 32px; font-size: 14px; line-height: 1.8; }
+            .prepared-by { margin-top: 20px; text-align: right; font-size: 14px; }
+            @media print { body { margin: 16px; } }
           </style>
         </head>
         <body>
-          <div class="invoice-wrapper">${content}</div>
+          <div class="invoice">
+            <img src="/logo.svg" alt="DataPort Logo" class="logo" />
+            <p class="business-name">DataPort INC</p>
+            <p class="business-subtitle">Excel Enterprise Limited</p>
+
+            <div class="section text-sm">
+              <p><strong>Invoice No.</strong> ${invoiceId}</p>
+              <p><strong>Date</strong> ${formattedDate}</p>
+            </div>
+
+            <div class="section text-sm">
+              <p class="section-title">Billed To</p>
+              <p>${billedTo || "Client Name"}</p>
+              <p>${phone || "Phone number"}</p>
+              <p>${email || "Email address"}</p>
+              <p>${customerLocation || "Location"}</p>
+            </div>
+
+            <div class="section text-sm">
+              <p class="section-title">Payment Info</p>
+              <p>MPESA (Mobile)</p>
+              <p>Account Name: Emmanuel Nyakundi</p>
+              <p>Phone No.: 0790 964 002</p>
+              <p>Standard Chartered Bank</p>
+              <p>Account No.: 0100499055400</p>
+            </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-right">Quantity</th>
+                  <th class="text-right">Unit Price</th>
+                  <th class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+
+            <div class="totals">
+              <div class="totals-row">
+                <span>Subtotal</span>
+                <span>${formatCurrency(subtotal)}</span>
+              </div>
+              <div class="totals-row">
+                <span>Labour Fee</span>
+                <span>${formatCurrency(labourFee)}</span>
+              </div>
+              <div class="totals-row">
+                <span>Tax</span>
+                <span>${formatCurrency(tax)}</span>
+              </div>
+              <div class="totals-row total">
+                <span>Total</span>
+                <span>${formatCurrency(total)}</span>
+              </div>
+            </div>
+
+            <div class="footer-note">
+              <p>Thank you!</p>
+              <p>We appreciate your business. Please make payment using the details above.</p>
+            </div>
+
+            <div class="prepared-by">
+              <p>Prepared by</p>
+              <p>Nyakundi, E.</p>
+              <p>Dev Ops Engineer</p>
+            </div>
+          </div>
         </body>
       </html>
-    `);
+    `;
+  };
+
+  const printInvoice = () => {
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) return;
+
+    const html = buildInvoiceHtml();
+    printWindow.document.write(html);
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => {
@@ -126,25 +345,38 @@ export default function QuoteGenerator() {
   };
 
   const saveQuote = async () => {
-    if (!billedTo.trim() || lineItems.length === 0 || labourFee <= 0) {
-      alert("Please fill: Billed To, add line items, and set labour fee");
+    if (!billedTo.trim() || lineItems.length === 0) {
+      alert("Please fill the client details and add at least one item before saving the quote.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await fetch("/api/quotes/create", {
+      const res = await fetch("/api/quotes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          billedTo,
-          phone,
-          email,
-          location,
+          leadId: selectedLeadId || undefined,
+          lead: selectedLeadId
+            ? undefined
+            : {
+                name: billedTo,
+                email,
+                phone,
+                company,
+                source,
+                location: customerLocation,
+              },
           lineItems,
           labourFee,
-          token: localStorage.getItem("adminToken"),
+          tax,
+          notes: "Auto-generated quote",
+          recurring: false,
+          invoiceOnSave: false,
         }),
       });
 
@@ -156,9 +388,14 @@ export default function QuoteGenerator() {
         return;
       }
 
-      setInvoiceNo(data.invoiceNo);
-      alert(`Quote saved! Invoice #${data.invoiceNo}`);
+      setInvoiceNo(data.quote?.invoiceNo || "");
+      if (token) {
+        await loadSavedQuotes(token);
+        await loadSavedInvoices(token);
+      }
+      alert(`Quote saved! ${data.quote?.invoiceNo || "Quote created"}`);
     } catch (error) {
+      console.error("Error saving quote", error);
       alert("Error saving quote");
     }
 
@@ -209,13 +446,41 @@ export default function QuoteGenerator() {
             <div className="glass p-6 rounded-3xl border border-white/10">
               <h2 className="text-xl font-semibold text-white mb-4">Client Details</h2>
               <div className="grid gap-4">
+                <select
+                  value={selectedLeadId}
+                  onChange={(e) => handleLeadSelection(e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                >
+                  <option value="">Select existing lead or create new</option>
+                  {leads.map((lead) => (
+                    <option key={lead.id} value={lead.id}>
+                      {lead.name} — {lead.company || "Lead"}
+                    </option>
+                  ))}
+                </select>
                 <input
                   type="text"
-                  placeholder="Customer Name / Company"
+                  placeholder="Customer Name"
                   value={billedTo}
                   onChange={(e) => setBilledTo(e.target.value)}
                   className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
                 />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Company"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Source (web/referral)"
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <input
                     type="tel"
@@ -235,8 +500,8 @@ export default function QuoteGenerator() {
                 <input
                   type="text"
                   placeholder="Location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  value={customerLocation}
+                  onChange={(e) => setCustomerLocation(e.target.value)}
                   className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
                 />
               </div>
@@ -245,6 +510,23 @@ export default function QuoteGenerator() {
             <div className="glass p-6 rounded-3xl border border-white/10">
               <h2 className="text-xl font-semibold text-white mb-4">Add Item</h2>
               <div className="grid gap-4">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Fixed price service
+                  </label>
+                  <select
+                    value={selectedCatalogItemId}
+                    onChange={(e) => handleCatalogSelect(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value="">Select a catalog item</option>
+                    {catalogItems.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name} — {formatCurrency(item.price)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <input
                   type="text"
                   placeholder="Item / Service"
@@ -310,18 +592,29 @@ export default function QuoteGenerator() {
             </div>
 
             <div className="glass p-6 rounded-3xl border border-white/10 bg-slate-950/40">
-              <h2 className="text-xl font-semibold text-white mb-4">Labour Fee</h2>
-              <input
-                type="number"
-                placeholder="Labour fee amount"
-                min={0}
-                step="0.01"
-                value={labourFee}
-                onChange={(e) => setLabourFee(parseFloat(e.target.value) || 0)}
-                className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
-              />
+              <h2 className="text-xl font-semibold text-white mb-4">Pricing</h2>
+              <div className="grid gap-4">
+                <input
+                  type="number"
+                  placeholder="Labour fee amount"
+                  min={0}
+                  step="0.01"
+                  value={labourFee}
+                  onChange={(e) => setLabourFee(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                />
+                <input
+                  type="number"
+                  placeholder="Tax amount"
+                  min={0}
+                  step="0.01"
+                  value={tax}
+                  onChange={(e) => setTax(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+                />
+              </div>
               <p className="text-gray-400 text-sm mt-3">
-                Required for every quote and included in the final total.
+                Labour and tax are included in the final quote total.
               </p>
             </div>
 
@@ -354,7 +647,7 @@ export default function QuoteGenerator() {
                   <p className="text-white font-medium">{billedTo || "Customer name"}</p>
                   <p>{phone || "Phone"}</p>
                   <p>{email || "Email"}</p>
-                  <p>{location || "Location"}</p>
+                  <p>{customerLocation || "Location"}</p>
                 </div>
                 <div className="pt-4 border-t border-white/10">
                   <div className="flex justify-between text-sm text-gray-400">
@@ -364,6 +657,10 @@ export default function QuoteGenerator() {
                   <div className="flex justify-between text-sm text-gray-400 mt-2">
                     <span>Labour</span>
                     <span>{formatCurrency(labourFee)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-400 mt-2">
+                    <span>Tax</span>
+                    <span>{formatCurrency(tax)}</span>
                   </div>
                   <div className="flex justify-between text-white text-lg font-bold mt-3">
                     <span>Total</span>
@@ -393,6 +690,33 @@ export default function QuoteGenerator() {
                 </div>
               </div>
             </div>
+
+            <div className="glass p-6 rounded-3xl border border-white/10">
+              <h2 className="text-xl font-semibold text-white mb-4">Saved Quote Records</h2>
+              {recordsLoading ? (
+                <p className="text-gray-400">Loading saved quotes...</p>
+              ) : savedQuotes.length === 0 ? (
+                <p className="text-gray-400">No saved quotes yet. Save a quote to view it here.</p>
+              ) : (
+                <div className="space-y-3">
+                  {savedQuotes.map((quote) => (
+                    <div key={quote.id} className="bg-black/30 p-4 rounded-2xl border border-white/10">
+                      <div className="flex justify-between gap-4">
+                        <div>
+                          <p className="text-white font-semibold">{quote.invoiceNo}</p>
+                          <p className="text-sm text-gray-400">{new Date(quote.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-semibold">{formatCurrency(quote.total)}</p>
+                          <p className="text-sm text-gray-400">{quote.status}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-2">{quote.billedTo}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -419,7 +743,7 @@ export default function QuoteGenerator() {
                 <p className="font-semibold text-slate-900">{billedTo || "Client Name"}</p>
                 <p className="text-sm text-slate-600">{phone || "Phone number"}</p>
                 <p className="text-sm text-slate-600">{email || "Email address"}</p>
-                <p className="text-sm text-slate-600">{location || "Client address"}</p>
+                <p className="text-sm text-slate-600">{customerLocation || "Client address"}</p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-2">Payment Info</p>

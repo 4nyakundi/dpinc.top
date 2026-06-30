@@ -56,11 +56,11 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-purple-400 shrink-0" />
-                <span className="text-gray-400 text-sm">123 Innovation Drive, Tech District, City 10010</span>
+                <span className="text-gray-400 text-sm">Mombasa Mall, Along Jomo Kenyatta Road, Mombasa</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-cyan-400 shrink-0" />
-                <span className="text-gray-400 text-sm">0790964002</span>
+                <span className="text-gray-400 text-sm">0790964002 // 0724659389</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-cyan-400 shrink-0" />

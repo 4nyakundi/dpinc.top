@@ -33,7 +33,7 @@ export default function LoginPage() {
 
       // Store token in localStorage
       localStorage.setItem("adminToken", data.token);
-      router.push("/quote");
+      router.push("/admin/dashboard");
     } catch (err) {
       setError("An error occurred. Please try again.");
       setLoading(false);
@@ -76,7 +76,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                placeholder="root"
+                placeholder="admin@dpinc.top"
                 disabled={loading}
               />
             </div>

@@ -1,36 +1,37 @@
 import bcryptjs from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { prisma } from "@/lib/prismadb";
 
-// Hardcoded credentials
-const ADMIN_USERNAME = "root";
-const ADMIN_PASSWORD = "c@#365";
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || "your-secret-key";
 
 export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
 
-    // Simple validation
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+    if (!username || !password) {
+      return NextResponse.json({ error: "Missing credentials" }, { status: 400 });
     }
 
-    // Create JWT token
+    const admin = await prisma.admin.findUnique({ where: { username } });
+    if (!admin) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const validPassword = await bcryptjs.compare(password, admin.password);
+    if (!validPassword) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
     const token = jwt.sign(
-      { username, role: "admin" },
+      { sub: admin.id, username: admin.username, role: admin.role },
       JWT_SECRET,
       { expiresIn: "24h" }
     );
 
     return NextResponse.json({ token, message: "Login successful" });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Login failed" },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }

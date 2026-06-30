@@ -37,7 +37,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-xl font-bold text-white mb-2">Our Headquarters</h4>
-                    <p className="text-gray-400">123 Innovation Drive<br/>Tech District, City 10010<br/>United States</p>
+                    <p className="text-gray-400">Mombasa Mall<br/>Along Jomo Kenyatta Road, Mombasa</p>
                   </div>
                 </div>
 
@@ -47,7 +47,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-xl font-bold text-white mb-2">Phone</h4>
-                    <p className="text-gray-400">0790964002<br/>Mon-Fri, 9am - 6pm EST</p>
+                    <p className="text-gray-400">0790964002 / 0724659389<br/>Mon-Sat, 8am - 6pm EAT</p>
                   </div>
                 </div>
 
