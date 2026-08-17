@@ -127,7 +127,7 @@ export default function AdminDashboard() {
 
   const fetchQuotes = async (authToken: string) => {
     const res = await fetch("/api/quotes", {
-      headers: { Authorization: `Bearer ${authToken}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     if (res.ok) {
       const data = await res.json();
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
 
   const fetchInvoices = async (authToken: string) => {
     const res = await fetch("/api/invoices", {
-      headers: { Authorization: `Bearer ${authToken}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     if (res.ok) {
       const data = await res.json();
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
 
   const fetchSubscribers = async (authToken: string) => {
     const res = await fetch("/api/subscribers", {
-      headers: { Authorization: `Bearer ${authToken}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     if (res.ok) {
       const data = await res.json();
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/quotes/${quoteId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         await loadAllData(token);
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/invoices/${invoiceId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         await loadAllData(token);
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch("/api/subscribers/generate-proformas", {
         method: "POST",
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
