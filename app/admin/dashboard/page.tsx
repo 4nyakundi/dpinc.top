@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/quotes/${quoteId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       if (res.ok) {
         await loadAllData(token);
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/invoices/${invoiceId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       if (res.ok) {
         await loadAllData(token);
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch("/api/subscribers/generate-proformas", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${authToken}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -1038,3 +1038,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+
