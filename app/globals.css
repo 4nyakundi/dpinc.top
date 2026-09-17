@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  /* Deep Charcoal/Black */
-  --foreground: #ededed;
+  --background: #071208;
+  --foreground: #FBF5DD;
 
-  /* Brand Colors */
-  --color-neon-cyan: #0ff;
-  --color-electric-purple: #b026ff;
-  --color-deep-charcoal: #0a0a0a;
+  /* Brand 4-Color Palette */
+  --color-cream: #FBF5DD;
+  --color-gold: #E7E1B1;
+  --color-green: #306D29;
+  --color-pine: #0D530E;
+
+  --color-neon-cyan: #306D29;
+  --color-electric-purple: #E7E1B1;
+  --color-deep-charcoal: #071208;
 
   /* Fonts */
   --font-inter: var(--font-inter);
@@ -19,8 +23,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-cyan-glow: var(--color-neon-cyan);
-  --color-purple-glow: var(--color-electric-purple);
+  --color-cream: #FBF5DD;
+  --color-gold: #E7E1B1;
+  --color-green: #306D29;
+  --color-pine: #0D530E;
+
+  --color-cyan-glow: var(--color-green);
+  --color-purple-glow: var(--color-gold);
   --color-charcoal: var(--color-deep-charcoal);
 
   --font-sans: var(--font-inter), sans-serif;
