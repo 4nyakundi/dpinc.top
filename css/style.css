@@ -5,42 +5,49 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* --- CSS Variables & Theme Engine (Palette: #FBF5DD, #E7E1B1, #306D29, #0D530E) --- */
+/* --- CSS Variables & Theme Engine (Palette: #FBF5DD, #E7E1B1, #306D29, #0D530E + Rich Diversity Tokens) --- */
 :root {
-  --bg-primary: #071208;
-  --bg-secondary: #0c1c0e;
-  --bg-card: rgba(13, 83, 14, 0.18);
-  --bg-card-hover: rgba(48, 109, 41, 0.28);
-  --border-color: rgba(231, 225, 177, 0.14);
-  --border-hover: rgba(48, 109, 41, 0.7);
+  --bg-primary: #061007;
+  --bg-secondary: #0a1b0d;
+  --bg-card: rgba(13, 83, 14, 0.2);
+  --bg-card-hover: rgba(48, 109, 41, 0.32);
+  --border-color: rgba(231, 225, 177, 0.16);
+  --border-hover: rgba(72, 229, 134, 0.7);
   --text-primary: #FBF5DD;
   --text-secondary: #E7E1B1;
-  --text-muted: #8FA382;
+  --text-muted: #8EA483;
   
   /* Brand Palette Accents */
   --primary: #306D29;
-  --primary-glow: rgba(48, 109, 41, 0.35);
+  --primary-glow: rgba(48, 109, 41, 0.45);
   --accent-deep: #0D530E;
-  --accent-deep-glow: rgba(13, 83, 14, 0.45);
+  --accent-deep-glow: rgba(13, 83, 14, 0.55);
   --accent-gold: #E7E1B1;
-  --accent-gold-glow: rgba(231, 225, 177, 0.25);
+  --accent-gold-glow: rgba(231, 225, 177, 0.35);
   --accent-cream: #FBF5DD;
-  --accent-cream-glow: rgba(251, 245, 221, 0.2);
+  --accent-cream-glow: rgba(251, 245, 221, 0.25);
 
-  /* Color mapping aliases */
-  --lime: #306D29;
-  --lime-glow: rgba(48, 109, 41, 0.35);
+  /* Rich Color Diversity & Futuristic Neon Micro-Accents */
+  --neon-mint: #48E586;
+  --neon-mint-glow: rgba(72, 229, 134, 0.45);
+  --amber-gold: #F6CF63;
+  --amber-gold-glow: rgba(246, 207, 99, 0.4);
+  --cyber-teal: #2DD4BF;
+  --cyber-teal-glow: rgba(45, 212, 191, 0.35);
+  
+  --lime: #48E586;
+  --lime-glow: rgba(72, 229, 134, 0.4);
   --cyan: #306D29;
-  --cyan-glow: rgba(48, 109, 41, 0.35);
+  --cyan-glow: rgba(48, 109, 41, 0.4);
   --purple: #E7E1B1;
-  --purple-glow: rgba(231, 225, 177, 0.25);
-  --pink: #0D530E;
-  --pink-glow: rgba(13, 83, 14, 0.45);
+  --purple-glow: rgba(231, 225, 177, 0.3);
+  --pink: #F6CF63;
+  --pink-glow: rgba(246, 207, 99, 0.4);
   --emerald: #306D29;
   
-  --glass-nav: rgba(7, 18, 8, 0.88);
+  --glass-nav: rgba(6, 16, 7, 0.88);
   --grid-line: rgba(231, 225, 177, 0.05);
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 12px 35px -10px rgba(0, 0, 0, 0.75);
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -54,34 +61,72 @@
 
 [data-theme="light"] {
   --bg-primary: #FBF5DD;
-  --bg-secondary: #F4EECD;
-  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-secondary: #F3ECCD;
+  --bg-card: rgba(255, 255, 255, 0.88);
   --bg-card-hover: #ffffff;
-  --border-color: rgba(13, 83, 14, 0.15);
-  --border-hover: rgba(48, 109, 41, 0.6);
+  --border-color: rgba(13, 83, 14, 0.16);
+  --border-hover: rgba(48, 109, 41, 0.7);
   --text-primary: #0D530E;
   --text-secondary: #275220;
   --text-muted: #566D52;
   --primary: #0D530E;
-  --primary-glow: rgba(13, 83, 14, 0.2);
+  --primary-glow: rgba(13, 83, 14, 0.25);
   --accent-deep: #0D530E;
   --accent-deep-glow: rgba(13, 83, 14, 0.25);
   --accent-gold: #E7E1B1;
   --accent-gold-glow: rgba(231, 225, 177, 0.35);
   --accent-cream: #FBF5DD;
   --accent-cream-glow: rgba(251, 245, 221, 0.25);
+  --neon-mint: #2E9E55;
+  --neon-mint-glow: rgba(46, 158, 85, 0.25);
+  --amber-gold: #D49A1F;
+  --amber-gold-glow: rgba(212, 154, 31, 0.25);
+  --cyber-teal: #0D9488;
+  --cyber-teal-glow: rgba(13, 148, 136, 0.25);
   --lime: #0D530E;
   --lime-glow: rgba(13, 83, 14, 0.2);
   --cyan: #0D530E;
   --cyan-glow: rgba(13, 83, 14, 0.2);
   --purple: #306D29;
   --purple-glow: rgba(48, 109, 41, 0.2);
-  --pink: #306D29;
-  --pink-glow: rgba(48, 109, 41, 0.2);
+  --pink: #D49A1F;
+  --pink-glow: rgba(212, 154, 31, 0.2);
   --emerald: #306D29;
-  --glass-nav: rgba(251, 245, 221, 0.92);
+  --glass-nav: rgba(251, 245, 221, 0.94);
   --grid-line: rgba(13, 83, 14, 0.06);
-  --shadow-card: 0 10px 30px -10px rgba(13, 83, 14, 0.1);
+  --shadow-card: 0 10px 30px -10px rgba(13, 83, 14, 0.12);
+}
+
+/* --- Scroll Progress Bar (GSAP / ScrollTrigger Synced) --- */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, #0D530E 0%, #306D29 30%, #48E586 60%, #E7E1B1 85%, #F6CF63 100%);
+  z-index: 10000;
+  width: 0%;
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(72, 229, 134, 0.7);
+  transition: width 0.08s ease-out;
+}
+
+/* --- GSAP Animation Hook Classes --- */
+.gsap-reveal {
+  opacity: 0;
+  transform: translateY(35px);
+  will-change: transform, opacity;
+}
+
+.gsap-fade {
+  opacity: 0;
+  will-change: opacity;
+}
+
+.gsap-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  will-change: transform, opacity;
 }
 
 /* --- Commercial Proposal & Contract Packages --- */
