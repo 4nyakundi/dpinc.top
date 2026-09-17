@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initStatusIndicator();
   initGsapAnimations();
   initCardTilt();
-  initMagneticButtons();
 });
 
 /* --- Lenis Smooth Scrolling Engine --- */
@@ -300,41 +299,6 @@ function initCardTilt() {
   });
 }
 
-/* --- Magnetic Button Hover Physics --- */
-function initMagneticButtons() {
-  if (window.innerWidth < 1024) return; // Disable on touch devices
-
-  const buttons = document.querySelectorAll(".btn-primary, .btn-secondary, .theme-toggle-btn");
-
-  buttons.forEach((btn) => {
-    btn.addEventListener("mousemove", (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      if (typeof gsap !== "undefined") {
-        gsap.to(btn, {
-          x: x * 0.25,
-          y: y * 0.25,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      }
-    });
-
-    btn.addEventListener("mouseleave", () => {
-      if (typeof gsap !== "undefined") {
-        gsap.to(btn, {
-          x: 0,
-          y: 0,
-          duration: 0.5,
-          ease: "elastic.out(1.1, 0.4)",
-        });
-      }
-    });
-  });
-}
-
 /* --- Theme Management (Dark / Light) --- */
 function initTheme() {
   const savedTheme = localStorage.getItem("dp_theme") || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
@@ -342,7 +306,8 @@ function initTheme() {
 
   const toggleBtns = document.querySelectorAll(".theme-toggle-btn");
   toggleBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
       const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
       const newTheme = currentTheme === "dark" ? "light" : "dark";
       setTheme(newTheme);
@@ -354,9 +319,9 @@ function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("dp_theme", theme);
 
-  const iconContainers = document.querySelectorAll(".theme-icon");
-  iconContainers.forEach(icon => {
-    icon.setAttribute("data-lucide", theme === "dark" ? "sun" : "moon");
+  const toggleBtns = document.querySelectorAll(".theme-toggle-btn");
+  toggleBtns.forEach(btn => {
+    btn.innerHTML = `<i data-lucide="${theme === 'dark' ? 'sun' : 'moon'}" class="theme-icon" style="width:18px; height:18px;"></i>`;
   });
 
   if (window.lucide) {

@@ -720,6 +720,10 @@ img, svg {
   cursor: pointer;
   transition: all var(--transition-normal);
   border: 1px solid transparent;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+  user-select: none;
 }
 
 .btn-primary {
