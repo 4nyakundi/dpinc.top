@@ -190,6 +190,50 @@ img, svg {
   opacity: 0.6;
 }
 
+/* --- Sticky Holographic 3D Globe --- */
+.sticky-globe-wrapper {
+  position: fixed;
+  top: 50%;
+  right: -5%;
+  transform: translateY(-50%);
+  width: min(700px, 85vw);
+  height: min(700px, 85vw);
+  pointer-events: auto;
+  z-index: 1;
+  opacity: 0.85;
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+#hero-globe-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+#hero-globe-canvas:active {
+  cursor: grabbing;
+}
+
+@media (max-width: 1024px) {
+  .sticky-globe-wrapper {
+    top: 55%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    width: min(550px, 92vw);
+    height: min(550px, 92vw);
+    opacity: 0.45;
+    pointer-events: none; /* Let clicks pass through on mobile */
+  }
+}
+
+@media (max-width: 640px) {
+  .sticky-globe-wrapper {
+    width: 380px;
+    height: 380px;
+    opacity: 0.35;
+  }
+}
+
 .orb-cyan {
   width: 500px;
   height: 500px;

@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import Globe from "@/components/Globe";
 import ClientLogos from "@/components/ClientLogos";
 import Stats from "@/components/Stats";
 import About from "@/components/About";
@@ -9,7 +10,8 @@ import CallToAction from "@/components/CallToAction";
 
 export default function Home() {
   return (
-    <div className="bg-black min-h-screen text-white w-full">
+    <div className="bg-black min-h-screen text-white w-full relative">
+      <Globe />
       <Hero />
       <ClientLogos />
       <Stats />
