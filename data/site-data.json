@@ -1,0 +1,187 @@
+{
+  "company": {
+    "name": "Data Port Limited",
+    "brand": "DataPort INC",
+    "tagline": "High-End ICT Infrastructure & Creative Media Services",
+    "yearEstablished": 2022,
+    "systemVersion": "v2.4.0",
+    "about": "Data Port Limited offers innovative technical solutions and services for advancement of human race. We pride ourself in giving exceptional solutions and services in software integrated. Established in 2022, Data Port has built a reputation for delivering exceptional high quality and cost-effective ICT solutions to different clients in all sectors included.",
+    "executiveSummary": "Data Port Limited is a full-service technology partner dedicated to modernizing businesses through integrated ICT solutions and creative digital media. Unlike traditional IT firms, we blend hard infrastructure (Networks, CCTV) with creative development (Apps, Video Graphics), ensuring your business is not just running, but growing.",
+    "mission": "To provide direct, high-impact technical and creative services that drive efficiency and visibility for our clients."
+  },
+  "contact": {
+    "phone": "0790964002",
+    "phoneSecondary": "0724659389",
+    "email": "support@dpinc.top",
+    "gmail": "dpinc.top@gmail.com",
+    "website": "dpinc.top",
+    "location": "Mombasa Mall Along Jomo Kenyatta Avenue, Mombasa, Kenya",
+    "hours": "8:30 AM - 4:30 PM",
+    "remoteHours": "Remote Support available until 9:00 PM",
+    "socials": {
+      "linkedin": "https://linkedin.com/in/emmanuel-nyakundi",
+      "github": "https://github.com/4nyakundi"
+    },
+    "payment": {
+      "mpesaName": "Emmanuel Nyakundi",
+      "mpesaNumber": "0790 964 002",
+      "bank": "Standard Chartered Bank",
+      "accountNumber": "0100499055400"
+    }
+  },
+  "stats": [
+    { "value": "99.9%", "label": "Uptime Guarantee" },
+    { "value": "50+", "label": "Enterprise Clients" },
+    { "value": "200+", "label": "Projects Delivered" },
+    { "value": "24/7", "label": "Technical Monitoring" }
+  ],
+  "clients": [
+    { "name": "TechCorp", "category": "Enterprise Tech" },
+    { "name": "GlobalMedia", "category": "Broadcast Media" },
+    { "name": "StudioX", "category": "Creative Studio" },
+    { "name": "Nexus Logistics", "category": "Supply Chain" },
+    { "name": "Apex Solutions", "category": "Financial Services" },
+    { "name": "Wave Form", "category": "Telecom" }
+  ],
+  "pillars": [
+    {
+      "id": "infrastructure",
+      "name": "Infrastructure & Security",
+      "badge": "Core Physical Layer",
+      "color": "cyan",
+      "description": "The foundation of any modern enterprise is its hardware and connectivity. We design fault-tolerant, high-speed networks and pair them with uncompromising physical security systems.",
+      "services": [
+        {
+          "title": "Network Design & Maintenance",
+          "desc": "Secure WiFi, firewall implementation, and structured cabling for reliable, low-latency connectivity across your enterprise."
+        },
+        {
+          "title": "Surveillance Systems (CCTV)",
+          "desc": "Installation of high-definition remote-view cameras, motion intelligence, and secure storage to protect your physical premises."
+        },
+        {
+          "title": "Disaster Recovery & Backup",
+          "desc": "Automated local and cloud backup solutions designed to mitigate critical data loss and guarantee instant business continuity."
+        }
+      ]
+    },
+    {
+      "id": "software",
+      "name": "Software & DevOps",
+      "badge": "Digital Systems",
+      "color": "purple",
+      "description": "Automation and scalable architectures are the engines of modern growth. We build bespoke applications specifically designed around your unique business processes.",
+      "services": [
+        {
+          "title": "Custom Application Development",
+          "desc": "Tailored software solutions to automate specific business workflows, reduce administrative overhead, and integrate legacy systems."
+        },
+        {
+          "title": "DevOps & Cloud Integration",
+          "desc": "Continuous integration and delivery (CI/CD) pipelines to keep your software infrastructure resilient, auto-scalable, and secure."
+        },
+        {
+          "title": "Advanced Web Development",
+          "desc": "Dynamic, responsive, ultra-fast web platforms with SSL encryption, database integration, and intuitive administrative control."
+        }
+      ]
+    },
+    {
+      "id": "creative",
+      "name": "Creative & Marketing",
+      "badge": "Brand & Visibility",
+      "color": "pink",
+      "description": "Having robust infrastructure and flawless software is only half the battle. Our creative media division produces striking visuals that engage targets and define brands.",
+      "services": [
+        {
+          "title": "Video Motion Graphics",
+          "desc": "High-retention advertisement videos and 3D visual graphics engineered for social media campaigns, billboards, and digital displays."
+        },
+        {
+          "title": "Digital Branding & Strategy",
+          "desc": "Comprehensive visual identities, typography guidelines, and interactive digital branding assets that captivate your target demographic."
+        }
+      ]
+    }
+  ],
+  "portfolio": [
+    {
+      "id": "enterprise-infra",
+      "title": "Enterprise Headquarters Build-Out",
+      "category": "infrastructure",
+      "categoryLabel": "Infrastructure & Security",
+      "tags": ["Structured Cabling", "Secure WiFi", "HD CCTV", "Disaster Recovery"],
+      "description": "Complete technological fit-out for a 3-story corporate office. Engineered fault-tolerant WiFi across 50,000 sq ft, 40 remote-view CCTV cameras, and automated redundant backup servers."
+    },
+    {
+      "id": "supply-chain-portal",
+      "title": "Global Supply Chain Management Portal",
+      "category": "software",
+      "categoryLabel": "Software & DevOps",
+      "tags": ["Custom Web App", "CI/CD Pipeline", "Data Automation", "REST APIs"],
+      "description": "Bespoke logistics web application allowing a freight carrier to automate dispatch, track international shipments in real-time, and generate automated proforma invoices."
+    },
+    {
+      "id": "retail-launch",
+      "title": "Neo-Retail Brand Launch",
+      "category": "creative",
+      "categoryLabel": "Creative & Marketing",
+      "tags": ["Motion Graphics", "Digital Branding", "Social Ad Campaign"],
+      "description": "High-energy motion graphics advertising campaign for an e-commerce startup. Deliverables included 15-second high-retention video segments driving a 300% increase in initial user acquisition."
+    },
+    {
+      "id": "campus-system",
+      "title": "University Learning & Analytics System",
+      "category": "software",
+      "categoryLabel": "Integrated Solutions",
+      "tags": ["Web Development", "Server Array", "SSL Security"],
+      "description": "A hybrid project encompassing on-prem server rack installation and custom web portal development secured with strict SSL standards."
+    },
+    {
+      "id": "project-alpha",
+      "title": "Project Alpha Cloud Migration",
+      "category": "infrastructure",
+      "categoryLabel": "Cloud Infrastructure",
+      "tags": ["Cloud Servers", "Zero Downtime", "Data Migration"],
+      "description": "Full-scale server migration and cloud architecture re-engineering for a high-volume financial institution."
+    },
+    {
+      "id": "data-core",
+      "title": "Data Core Enterprise Data Center",
+      "category": "infrastructure",
+      "categoryLabel": "Enterprise Network",
+      "tags": ["High Bandwidth", "Firewall Array", "99.99% Uptime"],
+      "description": "Secure, high-bandwidth data center setup with redundant power feeds, active cooling sensors, and hardware firewalls."
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "DATA PORT completely transformed our IT infrastructure. Their team's expertise in handling our cloud migration was flawless, resulting in zero downtime.",
+      "author": "Sarah Jenkins",
+      "role": "CTO, TechCorp"
+    },
+    {
+      "quote": "The level of creativity they bring to digital media is unmatched. They built high-impact motion graphics that skyrocketed our engagement by 300%.",
+      "author": "David Chen",
+      "role": "Marketing Director, StudioX"
+    },
+    {
+      "quote": "Reliable, secure, and blazing fast. The enterprise network they deployed for our headquarters exceeded all our expectations.",
+      "author": "Elena Rodriguez",
+      "role": "Operations Manager, Nexus"
+    }
+  ],
+  "catalog": [
+    { "id": "net-01", "name": "Structured Network Cabling & Patching (Per Point)", "price": 3500 },
+    { "id": "net-02", "name": "Enterprise WiFi Access Point Setup & Config", "price": 12500 },
+    { "id": "sec-01", "name": "HD CCTV 4-Channel Remote Surveillance Kit", "price": 48000 },
+    { "id": "sec-02", "name": "HD CCTV 8-Channel Industrial Surveillance Kit", "price": 85000 },
+    { "id": "dev-01", "name": "Custom Business Web Portal Development", "price": 75000 },
+    { "id": "dev-02", "name": "Mobile-Responsive Corporate Website", "price": 45000 },
+    { "id": "dev-03", "name": "CI/CD & Cloud Server DevOps Setup", "price": 35000 },
+    { "id": "cre-01", "name": "15-Second High-Retention Motion Graphics Video", "price": 25000 },
+    { "id": "cre-02", "name": "Complete Digital Brand Identity Package", "price": 40000 },
+    { "id": "bak-01", "name": "Automated Cloud Disaster Recovery Backup Solution", "price": 28000 },
+    { "id": "mnt-01", "name": "Monthly SLA ICT Infrastructure Maintenance", "price": 20000 }
+  ]
+}

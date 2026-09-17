@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DATA PORT Limited - High-End ICT Infrastructure & Creative Media</title>
+  <meta name="description" content="Data Port Limited is a full-service technology partner dedicated to modernizing businesses through integrated ICT solutions, CCTV, networks, DevOps, and creative digital media.">
+  <link rel="icon" href="public/logo.svg" type="image/svg+xml">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Techie Background Elements -->
+  <div class="tech-grid-bg"></div>
+  <div class="glowing-orb orb-cyan" style="top: -100px; left: 50%; transform: translateX(-50%);"></div>
+  <div class="glowing-orb orb-purple" style="top: 40%; right: -150px;"></div>
+  <div class="glowing-orb orb-pink" style="bottom: 10%; left: -100px;"></div>
+
+  <!-- Animated Data Scanlines -->
+  <div class="scanline-container">
+    <div class="scanline scanline-1"></div>
+    <div class="scanline scanline-2"></div>
+    <div class="scanline scanline-3"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="brand-logo">
+        <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
+          <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="url(#logo_grad)" stroke-width="12" stroke-linejoin="round"/>
+          <circle cx="54" cy="60" r="14" fill="#06b6d4"/>
+          <defs>
+            <linearGradient id="logo_grad" x1="24" y1="24" x2="96" y2="96" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#06b6d4"/>
+              <stop offset="1" stop-color="#a855f7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="services.html" class="nav-link">Services</a>
+        <a href="portfolio.html" class="nav-link">Portfolio</a>
+        <a href="quote.html" class="nav-link">Quote Generator</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" aria-label="Toggle Color Theme">
+          <i data-lucide="sun" class="theme-icon" style="width:18px; height:18px;"></i>
+        </button>
+        <button class="mobile-menu-btn" aria-label="Open Mobile Menu">
+          <i data-lucide="menu" style="width:24px; height:24px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-nav">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="portfolio.html" class="nav-link">Portfolio</a>
+      <a href="quote.html" class="nav-link">Quote Generator</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <!-- Floating Badges -->
+      <div class="floating-chip chip-1">
+        <i data-lucide="server" class="text-cyan" style="width:24px; height:24px;"></i>
+        <div style="text-align:left;">
+          <div style="font-weight:700; font-size:0.875rem;">Enterprise Cloud</div>
+          <div class="text-muted" style="font-size:0.75rem;">Fault-Tolerant Array</div>
+        </div>
+      </div>
+
+      <div class="floating-chip chip-2">
+        <i data-lucide="shield-check" class="text-purple" style="width:24px; height:24px;"></i>
+        <div style="text-align:left;">
+          <div style="font-weight:700; font-size:0.875rem;">CCTV & Security</div>
+          <div class="text-muted" style="font-size:0.75rem;">HD Remote Live View</div>
+        </div>
+      </div>
+
+      <div class="floating-chip chip-3">
+        <i data-lucide="code-2" class="text-pink" style="width:24px; height:24px;"></i>
+        <div style="text-align:left;">
+          <div style="font-weight:700; font-size:0.875rem;">Custom DevOps</div>
+          <div class="text-muted" style="font-size:0.75rem;">Automated CI/CD</div>
+        </div>
+      </div>
+
+      <div class="floating-chip chip-4">
+        <i data-lucide="video" class="text-lime" style="width:24px; height:24px;"></i>
+        <div style="text-align:left;">
+          <div style="font-weight:700; font-size:0.875rem;">Motion Graphics</div>
+          <div class="text-muted" style="font-size:0.75rem;">High-Retention Media</div>
+        </div>
+      </div>
+
+      <div class="container" style="position:relative; z-index:2;">
+        <div class="badge mb-6" style="margin-bottom:1.5rem;">
+          <span class="pulse-dot"></span>
+          <span>System Online • DataPort v2.4.0</span>
+        </div>
+
+        <h1 class="hero-title">
+          DATA <span class="text-gradient">PORT</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          High-End <strong class="text-cyan" style="font-weight:600;">ICT Infrastructure</strong> & <strong class="text-purple" style="font-weight:600;">Creative Media</strong> Services. Building the scalable technological backbone for modern enterprises.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="quote.html" class="btn btn-primary btn-lg">
+            Generate Quote <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+          </a>
+          <a href="services.html" class="btn btn-secondary btn-lg">
+            Explore Services <i data-lucide="layers" style="width:18px; height:18px;"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Client Logos -->
+    <section class="section" style="padding-top:2rem; padding-bottom:3rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+      <div class="container text-center">
+        <p class="text-muted" style="font-size:0.75rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:2rem;">
+          Trusted by Innovative Businesses & Partners
+        </p>
+        <div class="clients-grid">
+          <div class="client-item"><i data-lucide="building-2"></i> TechCorp</div>
+          <div class="client-item"><i data-lucide="briefcase"></i> GlobalMedia</div>
+          <div class="client-item"><i data-lucide="film"></i> StudioX</div>
+          <div class="client-item"><i data-lucide="network"></i> Nexus Logistics</div>
+          <div class="client-item"><i data-lucide="cpu"></i> Apex Solutions</div>
+          <div class="client-item"><i data-lucide="radio"></i> Wave Form</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Grid -->
+    <section class="section" style="padding-top:3rem; padding-bottom:3rem;">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value text-gradient">99.9%</div>
+            <div class="stat-label">Uptime Guarantee</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value text-gradient">50+</div>
+            <div class="stat-label">Enterprise Clients</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value text-gradient">200+</div>
+            <div class="stat-label">Projects Delivered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value text-gradient">24/7</div>
+            <div class="stat-label">Technical Monitoring</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who We Are & Executive Summary -->
+    <section class="section" id="about">
+      <div class="container">
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+          <div style="height:2px; width:40px; background:var(--cyan);"></div>
+          <span class="font-mono text-cyan" style="font-size:0.875rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:600;">Who We Are</span>
+        </div>
+
+        <h2 class="section-title">
+          Engineering the Future of <span class="text-gradient">Intelligent Business</span>
+        </h2>
+
+        <p class="section-subtitle" style="margin-bottom:3rem;">
+          Data Port Limited offers innovative technical solutions and services for the advancement of the human race. Established in 2022, Data Port has built a reputation for delivering exceptional high quality and cost-effective ICT solutions to diverse clients across all sectors.
+        </p>
+
+        <!-- Executive Summary Glass Card -->
+        <div class="glass-panel" style="padding: 2.5rem; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:0; right:0; width:150px; height:150px; background:var(--purple-glow); border-bottom-left-radius:100%; pointer-events-none;"></div>
+          
+          <h3 class="text-purple font-display" style="font-size:1.75rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+            <span>#</span> Executive Summary
+          </h3>
+
+          <p style="font-size:1.0625rem; color:var(--text-secondary); line-height:1.8; margin-bottom:2rem; border-left: 3px solid var(--purple); padding-left:1.25rem;">
+            Data Port Limited is a full-service technology partner dedicated to modernizing businesses through integrated ICT solutions and creative digital media. Unlike traditional IT firms, we blend hard infrastructure (Networks, CCTV) with creative development (Apps, Video Graphics), ensuring your business is not just running, but growing.
+          </p>
+
+          <div style="background:var(--bg-secondary); padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+            <h4 class="text-cyan font-mono" style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+              <i data-lucide="target" style="width:18px; height:18px;"></i> Our Mission
+            </h4>
+            <p style="color:var(--text-secondary); font-size:0.95rem; line-height:1.6;">
+              To provide direct, high-impact technical and creative services that drive efficiency and visibility for our clients.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Solutions Pillars -->
+    <section class="section" style="background:var(--bg-secondary);">
+      <div class="container">
+        <div class="text-center" style="margin-bottom:3.5rem;">
+          <div class="badge" style="margin-bottom:1rem;">
+            <i data-lucide="layers" class="text-purple" style="width:14px; height:14px;"></i>
+            <span>Three Core Pillars</span>
+          </div>
+          <h2 class="section-title">
+            Our <span class="text-gradient">Solutions</span>
+          </h2>
+          <p class="section-subtitle" style="margin:0 auto;">
+            We streamline our services into three core pillars to cover all your operational needs across physical infrastructure and digital growth.
+          </p>
+        </div>
+
+        <div class="pillars-grid">
+          <!-- Pillar 1: Infrastructure -->
+          <div class="glass-panel pillar-card cyan">
+            <div class="pillar-icon-box">
+              <i data-lucide="network" style="width:28px; height:28px;"></i>
+            </div>
+            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--cyan); border-color:var(--cyan-glow);">Core Hardware</div>
+            <h3 class="pillar-title">Infrastructure & Security</h3>
+            <p class="pillar-desc">
+              Fault-tolerant networks, high-speed WiFi, and remote surveillance that keep enterprise operations secure and constantly online.
+            </p>
+            <div class="service-list">
+              <div class="service-item">
+                <i data-lucide="wifi" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Network Design & Maintenance</strong>
+                  <p>Secure WiFi, firewall setup, and structured cabling.</p>
+                </div>
+              </div>
+              <div class="service-item">
+                <i data-lucide="video" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Surveillance Systems (CCTV)</strong>
+                  <p>HD remote-view cameras and secure storage.</p>
+                </div>
+              </div>
+              <div class="service-item">
+                <i data-lucide="database" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Disaster Recovery</strong>
+                  <p>Automated cloud and local data backups.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 2: Software & DevOps -->
+          <div class="glass-panel pillar-card purple">
+            <div class="pillar-icon-box">
+              <i data-lucide="code" style="width:28px; height:28px;"></i>
+            </div>
+            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--purple); border-color:var(--purple-glow);">Software Systems</div>
+            <h3 class="pillar-title">Software & DevOps</h3>
+            <p class="pillar-desc">
+              Bespoke applications and continuous deployment pipelines engineered to automate operations and scale with business growth.
+            </p>
+            <div class="service-list">
+              <div class="service-item">
+                <i data-lucide="cpu" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Custom App Development</strong>
+                  <p>Tailored portals automating internal workflows.</p>
+                </div>
+              </div>
+              <div class="service-item">
+                <i data-lucide="refresh-cw" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>DevOps & CI/CD Pipelines</strong>
+                  <p>Automated testing, build, and scalable cloud deployments.</p>
+                </div>
+              </div>
+              <div class="service-item">
+                <i data-lucide="globe" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Advanced Web Development</strong>
+                  <p>High-performance, mobile-responsive web platforms.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Creative & Marketing -->
+          <div class="glass-panel pillar-card pink">
+            <div class="pillar-icon-box">
+              <i data-lucide="play-square" style="width:28px; height:28px;"></i>
+            </div>
+            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--pink); border-color:var(--pink-glow);">Media & Branding</div>
+            <h3 class="pillar-title">Creative & Marketing</h3>
+            <p class="pillar-desc">
+              Eye-catching visual media, high-retention video animations, and digital identity strategies designed to engage modern audiences.
+            </p>
+            <div class="service-list">
+              <div class="service-item">
+                <i data-lucide="film" class="text-pink service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Video Motion Graphics</strong>
+                  <p>High-retention social ads & digital billboard videos.</p>
+                </div>
+              </div>
+              <div class="service-item">
+                <i data-lucide="palette" class="text-pink service-item-icon" style="width:18px; height:18px;"></i>
+                <div class="service-item-text">
+                  <strong>Digital Branding Strategy</strong>
+                  <p>Complete visual identity and engaging brand assets.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:3.5rem;">
+          <a href="services.html" class="btn btn-secondary">
+            View Complete Technical Breakdown <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Portfolio -->
+    <section class="section" id="portfolio">
+      <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:3rem; flex-wrap:wrap; gap:1.5rem;">
+          <div>
+            <div class="badge" style="margin-bottom:0.75rem;">Proven Results</div>
+            <h2 class="section-title">
+              Featured <span class="text-gradient">Work</span>
+            </h2>
+            <p class="section-subtitle">
+              Explore recent deployments showcasing our integrated infrastructure and creative engineering.
+            </p>
+          </div>
+          <a href="portfolio.html" class="btn btn-secondary">
+            View All Projects <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+          </a>
+        </div>
+
+        <div class="portfolio-grid">
+          <!-- Project 1 -->
+          <div class="glass-panel project-card">
+            <span class="project-category">Infrastructure & Security</span>
+            <h3 class="project-title">Enterprise Headquarters Build-Out</h3>
+            <p class="project-desc">
+              Complete technological fit-out for a 3-story corporate office. Engineered fault-tolerant WiFi across 50,000 sq ft, installed 40 HD CCTV cameras, and automated cloud backup.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Structured Cabling</span>
+              <span class="tag">#Secure WiFi</span>
+              <span class="tag">#HD CCTV</span>
+              <span class="tag">#Disaster Recovery</span>
+            </div>
+            <a href="contact.html" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Inquire Similar <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 2 -->
+          <div class="glass-panel project-card">
+            <span class="project-category" style="color:var(--purple);">Software & DevOps</span>
+            <h3 class="project-title">Global Supply Chain Management Portal</h3>
+            <p class="project-desc">
+              Bespoke logistics web application allowing a freight carrier to automate dispatch, track international shipments in real-time, and manage invoice lifecycles.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Custom Web App</span>
+              <span class="tag">#CI/CD Pipeline</span>
+              <span class="tag">#Data Automation</span>
+            </div>
+            <a href="contact.html" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Inquire Similar <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" style="background:var(--bg-secondary);">
+      <div class="container">
+        <div class="text-center" style="margin-bottom:3rem;">
+          <h2 class="section-title">
+            Hear from our <span class="text-gradient">Partners</span>
+          </h2>
+          <p class="section-subtitle" style="margin:0 auto;">
+            Direct feedback from client leaders who rely on Data Port for mission-critical operations.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="glass-panel testimonial-card">
+            <i data-lucide="quote" class="quote-icon"></i>
+            <p class="testimonial-quote">
+              "DATA PORT completely transformed our IT infrastructure. Their team's expertise in handling our cloud migration was flawless, resulting in zero downtime."
+            </p>
+            <div>
+              <div class="testimonial-author">Sarah Jenkins</div>
+              <div class="testimonial-role">CTO, TechCorp</div>
+            </div>
+          </div>
+
+          <div class="glass-panel testimonial-card">
+            <i data-lucide="quote" class="quote-icon"></i>
+            <p class="testimonial-quote">
+              "The level of creativity they bring to digital media is unmatched. They built high-impact motion graphics that skyrocketed our engagement by 300%."
+            </p>
+            <div>
+              <div class="testimonial-author">David Chen</div>
+              <div class="testimonial-role">Marketing Director, StudioX</div>
+            </div>
+          </div>
+
+          <div class="glass-panel testimonial-card">
+            <i data-lucide="quote" class="quote-icon"></i>
+            <p class="testimonial-quote">
+              "Reliable, secure, and blazing fast. The enterprise network they deployed for our headquarters exceeded all our expectations."
+            </p>
+            <div>
+              <div class="testimonial-author">Elena Rodriguez</div>
+              <div class="testimonial-role">Operations Manager, Nexus</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call To Action -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 class="section-title" style="margin-bottom:1rem;">
+            Ready to upgrade your infrastructure?
+          </h2>
+          <p class="section-subtitle" style="margin:0 auto 2.5rem; max-width:640px;">
+            Whether you need enterprise-grade networking, tailored web software, or engaging motion graphics, we're ready to build the future of your business.
+          </p>
+          <div style="display:flex; justify-content:center; gap:1.25rem; flex-wrap:wrap;">
+            <a href="quote.html" class="btn btn-primary btn-lg">
+              Get an Instant Quote <i data-lucide="calculator" style="width:18px; height:18px;"></i>
+            </a>
+            <a href="contact.html" class="btn btn-secondary btn-lg">
+              Contact Our Engineers <i data-lucide="phone-call" style="width:18px; height:18px;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1 -->
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <svg width="34" height="34" viewBox="0 0 120 120" fill="none">
+              <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
+              <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="#06b6d4" stroke-width="12" stroke-linejoin="round"/>
+              <circle cx="54" cy="60" r="14" fill="#a855f7"/>
+            </svg>
+            <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+          </a>
+          <p>
+            High-End ICT Infrastructure & Creative Media Services. Building the technological backbone for modern enterprises.
+          </p>
+          <div style="display:flex; gap:0.75rem;">
+            <a href="https://linkedin.com/in/emmanuel-nyakundi" target="_blank" class="theme-toggle-btn" style="width:36px; height:36px;" aria-label="LinkedIn">
+              <i data-lucide="linkedin" style="width:16px; height:16px;"></i>
+            </a>
+            <a href="https://github.com/4nyakundi" target="_blank" class="theme-toggle-btn" style="width:36px; height:36px;" aria-label="GitHub">
+              <i data-lucide="github" style="width:16px; height:16px;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2 -->
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="services.html">Services</a>
+            <a href="portfolio.html">Portfolio</a>
+            <a href="quote.html">Quote Generator</a>
+            <a href="contact.html">Contact Us</a>
+          </div>
+        </div>
+
+        <!-- Col 3 -->
+        <div class="footer-col">
+          <h4>Expertise</h4>
+          <div class="footer-links">
+            <a href="services.html#infrastructure">Enterprise WiFi & Networks</a>
+            <a href="services.html#infrastructure">CCTV Surveillance</a>
+            <a href="services.html#software">Custom Web Apps</a>
+            <a href="services.html#software">DevOps & Cloud</a>
+            <a href="services.html#creative">Video Motion Graphics</a>
+          </div>
+        </div>
+
+        <!-- Col 4 -->
+        <div class="footer-col">
+          <h4>Headquarters</h4>
+          <div class="footer-links" style="color:var(--text-secondary); font-size:0.875rem; line-height:1.7;">
+            <p><i data-lucide="map-pin" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-purple"></i> Mombasa Mall, Along Jomo Kenyatta Avenue, Mombasa</p>
+            <p><i data-lucide="phone" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-cyan"></i> 0790 964 002 // 0724 659 389</p>
+            <p><i data-lucide="mail" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-cyan"></i> support@dpinc.top</p>
+            <p><i data-lucide="clock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> 8:30 AM - 4:30 PM (Remote till 9:00 PM)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© <span class="current-year"></span> DATA PORT Limited. All rights reserved.</div>
+        <div style="display:flex; gap:1.5rem;">
+          <a href="contact.html">Privacy Policy</a>
+          <a href="contact.html">Terms of Service</a>
+          <a href="quote.html">Client Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript -->
+  <script src="js/main.js"></script>
+</body>
+</html>

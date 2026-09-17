@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio & Case Studies - DATA PORT Limited</title>
+  <meta name="description" content="Explore Data Port's successful case studies in ICT infrastructure, custom software development, and creative motion graphics.">
+  <link rel="icon" href="public/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Techie Background -->
+  <div class="tech-grid-bg"></div>
+  <div class="glowing-orb orb-cyan" style="top: -50px; left: 15%;"></div>
+  <div class="glowing-orb orb-pink" style="bottom: 15%; right: 10%;"></div>
+
+  <!-- Animated Data Scanlines -->
+  <div class="scanline-container">
+    <div class="scanline scanline-2"></div>
+    <div class="scanline scanline-3"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="brand-logo">
+        <svg width="40" height="40" viewBox="0 0 120 120" fill="none">
+          <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
+          <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="url(#logo_grad)" stroke-width="12" stroke-linejoin="round"/>
+          <circle cx="54" cy="60" r="14" fill="#06b6d4"/>
+          <defs>
+            <linearGradient id="logo_grad" x1="24" y1="24" x2="96" y2="96" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#06b6d4"/>
+              <stop offset="1" stop-color="#a855f7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="services.html" class="nav-link">Services</a>
+        <a href="portfolio.html" class="nav-link active">Portfolio</a>
+        <a href="quote.html" class="nav-link">Quote Generator</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" aria-label="Toggle Color Theme">
+          <i data-lucide="sun" class="theme-icon" style="width:18px; height:18px;"></i>
+        </button>
+        <button class="mobile-menu-btn" aria-label="Open Mobile Menu">
+          <i data-lucide="menu" style="width:24px; height:24px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="portfolio.html" class="nav-link active">Portfolio</a>
+      <a href="quote.html" class="nav-link">Quote Generator</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </header>
+
+  <main style="padding-top:7rem;">
+    <!-- Page Header -->
+    <section class="section text-center" style="padding-bottom:2rem;">
+      <div class="container">
+        <div class="badge" style="margin-bottom:1.25rem;">
+          <i data-lucide="folder-git-2" class="text-purple" style="width:14px; height:14px;"></i>
+          <span>Proven Track Record</span>
+        </div>
+        <h1 class="section-title">
+          Our <span class="text-gradient">Portfolio</span>
+        </h1>
+        <p class="section-subtitle" style="margin:0 auto;">
+          Explore our real-world case studies demonstrating how Data Port blends hard infrastructure with creative software engineering to drive measurable enterprise growth.
+        </p>
+      </div>
+    </section>
+
+    <!-- Portfolio Gallery & Filters -->
+    <section class="section" style="padding-top:1rem;">
+      <div class="container">
+        <!-- Interactive Filter Tabs -->
+        <div class="filter-tabs" style="justify-content:center;">
+          <button class="filter-btn active" data-filter="all">All Projects</button>
+          <button class="filter-btn" data-filter="infrastructure">Infrastructure & Security</button>
+          <button class="filter-btn" data-filter="software">Software & DevOps</button>
+          <button class="filter-btn" data-filter="creative">Creative & Marketing</button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="portfolio-grid">
+          <!-- Project 1 -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category">Infrastructure & Security</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
+                <i data-lucide="network" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">Enterprise Headquarters Build-Out</h3>
+            <p class="project-desc">
+              A complete technological fit-out for a newly constructed 3-story corporate office. Data Port engineered a fault-tolerant secure WiFi system covering 50,000 sq ft, installed 40 HD remote-view CCTV cameras, and integrated automated local-to-cloud backup servers to guarantee zero downtime.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Structured Cabling</span>
+              <span class="tag">#Secure WiFi</span>
+              <span class="tag">#HD CCTV</span>
+              <span class="tag">#Disaster Recovery</span>
+            </div>
+            <a href="contact.html?project=enterprise-infra" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 2 -->
+          <div class="glass-panel project-card" data-category="software">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category" style="color:var(--purple);">Software & DevOps</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--purple); border-color:var(--purple-glow); background:rgba(168,85,247,0.1);">
+                <i data-lucide="database" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">Global Supply Chain Management Portal</h3>
+            <p class="project-desc">
+              Developed a bespoke logistics web application allowing a global freight carrier to automate dispatch, track international shipments in real-time, and generate automated proforma invoicing. The system is deployed via a continuous integration pipeline for 99.99% reliability.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Custom Web App</span>
+              <span class="tag">#CI/CD Pipeline</span>
+              <span class="tag">#Data Automation</span>
+              <span class="tag">#REST APIs</span>
+            </div>
+            <a href="contact.html?project=supply-chain-portal" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 3 -->
+          <div class="glass-panel project-card" data-category="creative">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category" style="color:var(--pink);">Creative & Marketing</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--pink); border-color:var(--pink-glow); background:rgba(236,72,153,0.1);">
+                <i data-lucide="video" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">Neo-Retail Brand Launch & Motion Campaign</h3>
+            <p class="project-desc">
+              Conceptualized and executed a high-energy motion graphics advertising campaign for an e-commerce startup. Deliverables included 15-second hyper-engaging video segments for digital feeds and a modern digital branding identity that drove a 300% increase in user acquisition.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Motion Graphics</span>
+              <span class="tag">#Digital Branding</span>
+              <span class="tag">#Social Ad Campaign</span>
+            </div>
+            <a href="contact.html?project=retail-launch" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 4 -->
+          <div class="glass-panel project-card" data-category="software">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category" style="color:var(--lime);">Integrated Solutions</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--lime); border-color:rgba(163,230,53,0.3); background:rgba(163,230,53,0.1);">
+                <i data-lucide="folder-git-2" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">University Learning & Analytics Portal</h3>
+            <p class="project-desc">
+              A hybrid project encompassing both on-premise server array configuration and custom web application development. Data Port delivered a dynamic, mobile-responsive portal secured with strict SSL standards, backed by local high-speed server hardware.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Web Development</span>
+              <span class="tag">#Server Array</span>
+              <span class="tag">#SSL Security</span>
+            </div>
+            <a href="contact.html?project=campus-system" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 5 -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category">Cloud Infrastructure</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
+                <i data-lucide="server" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">Project Alpha Cloud Migration</h3>
+            <p class="project-desc">
+              Full-scale server migration and cloud architecture re-engineering for a high-volume financial institution, eliminating database timeouts and ensuring 100% data integrity with zero client downtime.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#Cloud Migration</span>
+              <span class="tag">#Zero Downtime</span>
+              <span class="tag">#Financial Tier</span>
+            </div>
+            <a href="contact.html?project=project-alpha" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+
+          <!-- Project 6 -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+              <span class="project-category">Enterprise Network</span>
+              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
+                <i data-lucide="shield" style="width:18px; height:18px;"></i>
+              </div>
+            </div>
+            <h3 class="project-title">Data Core Enterprise Data Center</h3>
+            <p class="project-desc">
+              Secure, high-bandwidth data center setup with redundant power feeds, active environmental cooling sensors, hardware firewall arrays, and a 99.99% uptime guarantee.
+            </p>
+            <div class="tag-list">
+              <span class="tag">#High Bandwidth</span>
+              <span class="tag">#Hardware Firewalls</span>
+              <span class="tag">#99.99% Uptime</span>
+            </div>
+            <a href="contact.html?project=data-core" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Custom Project Request Banner -->
+    <section class="section" style="padding-top:2rem;">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 class="section-title" style="margin-bottom:1rem;">Have a Custom Project in Mind?</h2>
+          <p class="section-subtitle" style="margin:0 auto 2.5rem;">
+            Whether starting from scratch or retrofitting existing systems, Data Port delivers custom-tailored solutions suited for your budget and timeline.
+          </p>
+          <a href="quote.html" class="btn btn-primary btn-lg">
+            Use Quote Estimator <i data-lucide="calculator" style="width:18px; height:18px;"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+          </a>
+          <p>High-End ICT Infrastructure & Creative Media Services. Modernizing businesses across all sectors.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="services.html">Services</a>
+            <a href="portfolio.html">Portfolio</a>
+            <a href="quote.html">Quote Generator</a>
+            <a href="contact.html">Contact Us</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Pillars</h4>
+          <div class="footer-links">
+            <a href="services.html#infrastructure">Infrastructure & Security</a>
+            <a href="services.html#software">Software & DevOps</a>
+            <a href="services.html#creative">Creative & Media</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Headquarters</h4>
+          <div class="footer-links" style="color:var(--text-secondary); font-size:0.875rem;">
+            <p>Mombasa Mall Along Jomo Kenyatta Avenue, Mombasa</p>
+            <p>Direct: 0790 964 002</p>
+            <p>Email: support@dpinc.top</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© <span class="current-year"></span> DATA PORT Limited. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
