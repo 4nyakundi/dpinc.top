@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOC Billing & Subscriber Calendar Hub - DATA PORT Limited</title>
+  <meta name="description" content="Data Port Limited internal NOC and subscriber billing calendar management system.">
+  <link rel="icon" href="public/logo.svg" type="image/svg+xml">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- GSAP & ScrollTrigger Animation Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Lenis Smooth Momentum Scrolling -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+</head>
+<body class="dashboard-body">
+
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-progress-bar no-print"></div>
+
+  <!-- Techie Background -->
+  <div class="tech-grid-bg no-print"></div>
+  <div class="glowing-orb orb-cyan no-print" style="top: -100px; left: 10%;"></div>
+  <div class="glowing-orb orb-purple no-print" style="bottom: 10%; right: 5%;"></div>
+
+  <!-- =========================================================================
+       LOGIN GATE (Shown if not authenticated as root / admin4all2)
+       ========================================================================= -->
+  <div id="loginGate" class="login-gate-overlay">
+    <div class="login-card glass-panel">
+      <div class="login-header text-center">
+        <img src="public/logo.svg" alt="Data Port" style="height:44px; margin: 0 auto 1.25rem auto;">
+        <div class="badge mb-4">
+          <span class="pulse-dot"></span>
+          <span>NOC Management Portal</span>
+        </div>
+        <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:0.5rem;">Staff Authentication</h2>
+        <p class="text-muted" style="font-size:0.875rem;">Enter administrative credentials to access subscriber billing & calendar operations.</p>
+      </div>
+
+      <form id="loginForm" class="login-form" style="margin-top:1.5rem;">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="loginUsername" class="form-input" placeholder="Enter username (e.g. root)" required autofocus>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
+          </div>
+        </div>
+
+        <div id="loginError" class="login-error-msg" style="display:none; color:#ef4444; font-size:0.8125rem; margin-bottom:1rem; text-align:center;">
+          <i data-lucide="alert-circle" style="width:14px; height:14px; display:inline;"></i> Invalid administrative credentials.
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:0.9rem;">
+          <i data-lucide="shield-check"></i> Unlock Dashboard
+        </button>
+
+        <div class="text-center text-muted" style="font-size:0.75rem; margin-top:1.25rem; font-family:var(--font-mono);">
+          DATA PORT LTD • SECURE NOC ENCRYPTION v2.4
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MAIN DASHBOARD INTERFACE (Shown when authenticated)
+       ========================================================================= -->
+  <div id="dashboardApp" class="dashboard-wrapper" style="display:none;">
+
+    <!-- Top Navigation Bar -->
+    <header class="dash-navbar no-print">
+      <div class="dash-nav-container">
+        <div class="dash-brand-area">
+          <a href="index.html" class="brand-logo">
+            <img src="public/logo.svg" alt="DataPort" style="height:36px; width:auto;">
+          </a>
+          <span class="dash-tag">NOC & Billing Hub</span>
+        </div>
+
+        <div class="dash-center-info">
+          <div class="live-clock-badge">
+            <span class="pulse-dot"></span>
+            <span id="liveKenyaClock">Nairobi: --:--:--</span>
+          </div>
+        </div>
+
+        <div class="dash-nav-actions">
+          <button class="theme-toggle-btn" aria-label="Toggle Color Theme" title="Toggle Theme">
+            <i data-lucide="sun" class="theme-icon" style="width:18px; height:18px;"></i>
+          </button>
+          <a href="index.html" class="btn btn-secondary btn-sm" title="View Public Website">
+            <i data-lucide="globe" style="width:16px; height:16px;"></i> Public Site
+          </a>
+          <button id="logoutBtn" class="btn btn-sm btn-logout" title="Lock & Logout">
+            <i data-lucide="log-out" style="width:16px; height:16px;"></i> Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dash-main-content">
+      <div class="container">
+
+        <!-- Metrics Overview Bar -->
+        <section class="dash-metrics-grid">
+          <div class="stat-card tilt-card metric-box">
+            <div class="metric-icon-wrap" style="color:var(--neon-mint); background:rgba(72, 229, 134, 0.12);">
+              <i data-lucide="users"></i>
+            </div>
+            <div>
+              <div class="metric-label">Active Subscribers</div>
+              <div class="stat-value" id="metricTotalSubs">0</div>
+              <div class="metric-subtext"><span class="text-lime">100%</span> Active Fiber & SOHO</div>
+            </div>
+          </div>
+
+          <div class="stat-card tilt-card metric-box">
+            <div class="metric-icon-wrap" style="color:var(--amber-gold); background:rgba(246, 207, 99, 0.12);">
+              <i data-lucide="trending-up"></i>
+            </div>
+            <div>
+              <div class="metric-label">Monthly Recurring (MRR)</div>
+              <div class="stat-value" id="metricMRR">KSh 0</div>
+              <div class="metric-subtext text-muted">Contracted monthly baseline</div>
+            </div>
+          </div>
+
+          <div class="stat-card tilt-card metric-box">
+            <div class="metric-icon-wrap" style="color:var(--primary); background:rgba(48, 109, 41, 0.15);">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div>
+              <div class="metric-label">Collected This Month</div>
+              <div class="stat-value text-lime" id="metricCollected">KSh 0</div>
+              <div class="metric-subtext" id="metricCollectedPercent">0% of monthly cycle</div>
+            </div>
+          </div>
+
+          <div class="stat-card tilt-card metric-box">
+            <div class="metric-icon-wrap" style="color:#ef4444; background:rgba(239, 68, 68, 0.12);">
+              <i data-lucide="clock"></i>
+            </div>
+            <div>
+              <div class="metric-label">Pending / Outstanding</div>
+              <div class="stat-value" id="metricPending" style="color:#ef4444;">KSh 0</div>
+              <div class="metric-subtext text-muted" id="metricOverdueCount">0 overdue invoices</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation Tabs & Primary Actions -->
+        <div class="dash-controls-bar">
+          <div class="dash-tabs">
+            <button class="dash-tab active" data-tab="calendarTab">
+              <i data-lucide="calendar" style="width:16px; height:16px;"></i> Billing Calendar
+            </button>
+            <button class="dash-tab" data-tab="subscribersTab">
+              <i data-lucide="users" style="width:16px; height:16px;"></i> Subscribers Directory (<span id="tabSubsCount">0</span>)
+            </button>
+            <button class="dash-tab" data-tab="invoicesTab">
+              <i data-lucide="receipt" style="width:16px; height:16px;"></i> Invoices Ledger (<span id="tabInvoicesCount">0</span>)
+            </button>
+          </div>
+
+          <div class="dash-action-buttons">
+            <button id="batchGenerateBtn" class="btn btn-secondary btn-sm" title="Generate proformas for all active subscribers for the selected month">
+              <i data-lucide="zap" style="width:16px; height:16px; color:var(--amber-gold);"></i> Batch Month Invoices
+            </button>
+            <button id="openAddSubModalBtn" class="btn btn-primary btn-sm">
+              <i data-lucide="user-plus" style="width:16px; height:16px;"></i> Add Subscriber
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 1: INTERACTIVE BILLING CALENDAR VIEW (PRIMARY) -->
+        <section id="calendarTab" class="dash-tab-pane active">
+          <div class="glass-panel calendar-wrapper">
+            
+            <!-- Calendar Header & Month Navigation -->
+            <div class="calendar-header-bar">
+              <div class="calendar-title-group">
+                <h3 id="calendarMonthYearTitle" class="calendar-month-title">September 2026</h3>
+                <span class="text-muted" style="font-size:0.8125rem;">Internet Renewal & Proforma Dispatch Grid</span>
+              </div>
+
+              <!-- Status Legend -->
+              <div class="calendar-legend">
+                <span class="legend-item"><span class="legend-dot dot-paid"></span> Paid</span>
+                <span class="legend-item"><span class="legend-dot dot-due"></span> Due Today / Approaching</span>
+                <span class="legend-item"><span class="legend-dot dot-overdue"></span> Overdue</span>
+                <span class="legend-item"><span class="legend-dot dot-upcoming"></span> Scheduled Cycle</span>
+              </div>
+
+              <div class="calendar-nav-controls">
+                <button id="prevMonthBtn" class="cal-nav-btn" aria-label="Previous Month">
+                  <i data-lucide="chevron-left"></i>
+                </button>
+                <button id="todayBtn" class="btn btn-secondary btn-sm" style="padding:0.4rem 0.9rem;">Today</button>
+                <button id="nextMonthBtn" class="cal-nav-btn" aria-label="Next Month">
+                  <i data-lucide="chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Calendar Days of Week Header -->
+            <div class="calendar-days-grid-header">
+              <div>MON</div>
+              <div>TUE</div>
+              <div>WED</div>
+              <div>THU</div>
+              <div>FRI</div>
+              <div>SAT</div>
+              <div>SUN</div>
+            </div>
+
+            <!-- 7-Column Date Cells Grid (Dynamically Populated) -->
+            <div id="calendarGrid" class="calendar-grid-body">
+              <!-- Rendered via js/dashboard.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: SUBSCRIBERS DIRECTORY -->
+        <section id="subscribersTab" class="dash-tab-pane">
+          <div class="glass-panel directory-card">
+            <div class="directory-header-bar">
+              <div class="directory-search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="subscriberSearchInput" class="form-input" placeholder="Search by name, phone, company, plan...">
+              </div>
+              <div class="directory-filters">
+                <select id="subscriberFilterPlan" class="form-select" style="width:auto;">
+                  <option value="all">All Bandwidth Packages</option>
+                  <option value="5Mbps">5 Mbps SOHO</option>
+                  <option value="10Mbps">10 Mbps Standard</option>
+                  <option value="20Mbps">20 Mbps Pro Office</option>
+                  <option value="50Mbps">50 Mbps Dedicated Fiber</option>
+                  <option value="CCTV">CCTV AMC & Retainers</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="proposal-table-wrapper" style="margin-top:1rem;">
+              <table class="proposal-table">
+                <thead>
+                  <tr>
+                    <th>Subscriber / Business</th>
+                    <th>Package / Speed</th>
+                    <th>Monthly Fee</th>
+                    <th>Billing Day</th>
+                    <th>Next Due Date</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="subscribersTableBody">
+                  <!-- Rendered via js/dashboard.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: INVOICES & PROFORMAS LEDGER -->
+        <section id="invoicesTab" class="dash-tab-pane">
+          <div class="glass-panel directory-card">
+            <div class="directory-header-bar">
+              <div class="directory-search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="invoiceSearchInput" class="form-input" placeholder="Search by invoice no (e.g. PROF-2026-), client...">
+              </div>
+              <div class="directory-filters">
+                <select id="invoiceFilterStatus" class="form-select" style="width:auto;">
+                  <option value="all">All Invoices</option>
+                  <option value="paid">Paid</option>
+                  <option value="unpaid">Unpaid / Pending</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="proposal-table-wrapper" style="margin-top:1rem;">
+              <table class="proposal-table">
+                <thead>
+                  <tr>
+                    <th>Invoice No</th>
+                    <th>Client / Organization</th>
+                    <th>Period / Month</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>Payment Status</th>
+                    <th style="text-align:right;">Dispatch & Manage</th>
+                  </tr>
+                </thead>
+                <tbody id="invoicesTableBody">
+                  <!-- Rendered via js/dashboard.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADD / EDIT SUBSCRIBER
+       ========================================================================= -->
+  <div id="subscriberModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h3 id="subModalTitle" style="font-size:1.25rem; font-weight:700;">Add New Internet Client</h3>
+        <button class="modal-close-btn" data-close="subscriberModal">&times;</button>
+      </div>
+
+      <form id="subscriberForm" style="margin-top:1.25rem;">
+        <input type="hidden" id="subEditId" value="">
+
+        <div class="form-group">
+          <label class="form-label">Client / Organization Name *</label>
+          <input type="text" id="subName" class="form-input" placeholder="e.g. Coastline Logistics Ltd" required>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Phone Number (WhatsApp) *</label>
+            <input type="tel" id="subPhone" class="form-input" placeholder="e.g. 0790964002" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="subEmail" class="form-input" placeholder="e.g. accounts@coastline.co.ke">
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Internet / Service Package *</label>
+            <select id="subPackage" class="form-select" required>
+              <option value="5 Mbps SOHO Fiber">5 Mbps SOHO Unlimited (KSh 2,500)</option>
+              <option value="10 Mbps Standard Business" selected>10 Mbps Standard Business (KSh 3,500)</option>
+              <option value="20 Mbps Pro Office Dedicated">20 Mbps Pro Office Dedicated (KSh 6,500)</option>
+              <option value="50 Mbps High-Capacity Enterprise">50 Mbps Enterprise Fiber (KSh 12,000)</option>
+              <option value="Secure Office Starter AMC">Secure Office Starter AMC (KSh 5,800/mo)</option>
+              <option value="Custom Plan">Custom Bandwidth Package</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Monthly Rate (KSh) *</label>
+            <input type="number" id="subPrice" class="form-input" placeholder="3500" required>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Monthly Billing Renewal Day (1 - 31) *</label>
+            <input type="number" id="subBillingDay" class="form-input" min="1" max="31" value="1" required>
+            <span class="text-muted" style="font-size:0.75rem;">Day of each month the proforma is due.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location / Building Details</label>
+            <input type="text" id="subLocation" class="form-input" placeholder="e.g. Mombasa Mall, 2nd Floor Suite 14">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Technical Notes / Router IP</label>
+          <input type="text" id="subNotes" class="form-input" placeholder="e.g. Mikrotik RB750Gr3, IP: 192.168.88.25">
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
+          <button type="button" class="btn btn-secondary" data-close="subscriberModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Save Subscriber
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: INVOICE DISPATCH & MANAGEMENT DRAWER
+       ========================================================================= -->
+  <div id="invoiceDrawerModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:680px;">
+      <div class="modal-header">
+        <div>
+          <span id="drawerInvoiceTag" class="badge mb-2">PROFORMA INVOICE</span>
+          <h3 id="drawerClientTitle" style="font-size:1.35rem; font-weight:800;">Client Invoicing Details</h3>
+        </div>
+        <button class="modal-close-btn" data-close="invoiceDrawerModal">&times;</button>
+      </div>
+
+      <div class="drawer-content" style="margin-top:1.25rem;">
+        <!-- Summary Box -->
+        <div class="invoice-summary-box">
+          <div class="grid-2col" style="gap:1rem;">
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Invoice Number</div>
+              <div id="drawerInvoiceNo" style="font-family:var(--font-mono); font-weight:700; font-size:1.1rem; color:var(--text-primary);">PROF-2026-0000</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Billing Period</div>
+              <div id="drawerPeriod" style="font-weight:600;">September 2026</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Package Subscribed</div>
+              <div id="drawerPackage" style="font-weight:600;">10 Mbps Standard Business</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Amount Due</div>
+              <div id="drawerAmount" class="price-highlight" style="font-size:1.3rem;">KSh 3,500</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Payment Due Date</div>
+              <div id="drawerDueDate" style="font-weight:600; color:var(--amber-gold);">5th September 2026</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Current Status</div>
+              <div id="drawerStatusBadge"><span class="badge" style="background:#ef444422; color:#ef4444; border-color:#ef4444;">Unpaid</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Channel Dispatch Section -->
+        <div style="margin-top:1.5rem;">
+          <h4 style="font-size:0.875rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--accent-gold); margin-bottom:0.75rem;">
+            Direct Multi-Channel Client Dispatch
+          </h4>
+          <div class="dispatch-grid">
+            <button id="sendWhatsAppBtn" class="dispatch-card whatsapp-card">
+              <i data-lucide="message-square" class="dispatch-icon"></i>
+              <div>
+                <strong>Dispatch via WhatsApp</strong>
+                <p>Send pre-formatted Kenyan billing notice & Paybill to client.</p>
+              </div>
+            </button>
+
+            <button id="sendEmailBtn" class="dispatch-card email-card">
+              <i data-lucide="mail" class="dispatch-icon"></i>
+              <div>
+                <strong>Send via Email</strong>
+                <p>Open official mailto invoice dispatch with itemized proforma.</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Management Actions -->
+        <div class="drawer-action-row" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+          <button id="togglePaidBtn" class="btn btn-primary" style="flex:1;">
+            <i data-lucide="check-circle-2"></i> Toggle Payment Status
+          </button>
+          <button id="printInvoiceBtn" class="btn btn-secondary" style="flex:1;">
+            <i data-lucide="printer"></i> Print Official A4 Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PRINTABLE A4 INVOICE SHEET (Formatted for window.print())
+       ========================================================================= -->
+  <div id="printableInvoiceSheet" class="printable-invoice">
+    <div class="invoice-letterhead">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1 style="font-size:1.75rem; font-weight:900; color:#071208; margin-bottom:4px;">DATA PORT LIMITED</h1>
+          <p style="font-size:0.85rem; color:#475569;">High-End ICT Infrastructure & Dedicated ISP Networks</p>
+          <p style="font-size:0.8125rem; color:#475569;">Along Jomo Kenyatta Avenue, Mombasa Mall, Mombasa, Kenya</p>
+          <p style="font-size:0.8125rem; color:#475569;">Phone: +254 790 964 002 // +254 118 228 000 | Email: accounts@dpinc.top</p>
+        </div>
+        <div style="text-align:right;">
+          <h2 id="printDocType" style="font-size:1.5rem; color:#306D29; font-weight:800; text-transform:uppercase;">PROFORMA INVOICE</h2>
+          <div id="printInvoiceNo" style="font-family:monospace; font-weight:700; font-size:1.1rem;">PROF-2026-0000</div>
+          <div style="font-size:0.85rem; color:#475569; margin-top:4px;">Date: <span id="printIssueDate">--/--/----</span></div>
+          <div style="font-size:0.85rem; color:#b91c1c; font-weight:700;">Due Date: <span id="printDueDate">--/--/----</span></div>
+        </div>
+      </div>
+    </div>
+
+    <hr style="border:none; border-top:2px solid #0D530E; margin:1.5rem 0;">
+
+    <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+      <div>
+        <h4 style="font-size:0.8125rem; text-transform:uppercase; color:#64748b; margin-bottom:4px;">Billed To:</h4>
+        <h3 id="printClientName" style="font-size:1.15rem; font-weight:700; color:#0f172a;">Client Business Name</h3>
+        <p id="printClientPhone" style="font-size:0.875rem; color:#334155;">Phone: +254 700 000 000</p>
+        <p id="printClientEmail" style="font-size:0.875rem; color:#334155;">Email: client@domain.com</p>
+        <p id="printClientLocation" style="font-size:0.875rem; color:#334155;">Location: Mombasa</p>
+      </div>
+      <div style="text-align:right;">
+        <h4 style="font-size:0.8125rem; text-transform:uppercase; color:#64748b; margin-bottom:4px;">Service Period:</h4>
+        <h4 id="printPeriod" style="font-size:1.05rem; font-weight:700; color:#0f172a;">Monthly Billing Cycle</h4>
+        <div id="printPaymentStatus" style="display:inline-block; padding:4px 12px; border-radius:4px; font-weight:700; font-size:0.85rem; margin-top:6px; background:#fee2e2; color:#b91c1c;">
+          UNPAID / DUE
+        </div>
+      </div>
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+      <thead>
+        <tr style="background:#f1f5f9; border-bottom:2px solid #cbd5e1;">
+          <th style="padding:10px; text-align:left; font-size:0.85rem;">Description</th>
+          <th style="padding:10px; text-align:center; font-size:0.85rem;">Qty</th>
+          <th style="padding:10px; text-align:right; font-size:0.85rem;">Rate (KSh)</th>
+          <th style="padding:10px; text-align:right; font-size:0.85rem;">Total (KSh)</th>
+        </tr>
+      </thead>
+      <tbody id="printLineItemsBody">
+        <tr style="border-bottom:1px solid #e2e8f0;">
+          <td style="padding:12px 10px;">
+            <strong id="printItemTitle">Monthly Dedicated High-Speed Internet Subscription</strong>
+            <div id="printItemDesc" style="font-size:0.8rem; color:#64748b;">Unlimited SLA Bandwidth + Static Routing</div>
+          </td>
+          <td style="padding:12px 10px; text-align:center;">1 Month</td>
+          <td id="printItemRate" style="padding:12px 10px; text-align:right; font-family:monospace;">3,500.00</td>
+          <td id="printItemTotal" style="padding:12px 10px; text-align:right; font-family:monospace; font-weight:700;">3,500.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" style="padding:10px; text-align:right; font-weight:700;">Total Amount Due:</td>
+          <td id="printGrandTotal" style="padding:10px; text-align:right; font-family:monospace; font-size:1.2rem; font-weight:800; color:#0D530E;">KSh 3,500.00</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1.25rem; margin-top:2rem;">
+      <h4 style="font-size:0.9rem; font-weight:700; color:#0f172a; margin-bottom:8px;">Official Payment Instructions:</h4>
+      <div style="font-size:0.85rem; color:#334155; line-height:1.6;">
+        <p>• <strong>M-PESA Paybill / Send Money:</strong> 0790964002 / Paybill: <strong>247247</strong> (Acc: <span id="printAccNo">Client Phone/ID</span>)</p>
+        <p>• <strong>Bank Transfer:</strong> Equity Bank / KCB Bank | Acc Name: <strong>DATA PORT LIMITED</strong></p>
+        <p>• <strong>Payment Terms:</strong> Invoices are due within 5 days of issue. Prompt settlement ensures uninterrupted fiber SLA.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem; display:flex; justify-content:space-between; align-items:flex-end;">
+      <div>
+        <p style="font-size:0.8rem; color:#64748b;">Thank you for partnering with Data Port Limited.</p>
+      </div>
+      <div style="text-align:center; border-top:1px dashed #94a3b8; width:200px; padding-top:6px;">
+        <p style="font-size:0.8rem; font-weight:700; color:#334155;">Authorized Signature / Stamp</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard JavaScript Controller -->
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
