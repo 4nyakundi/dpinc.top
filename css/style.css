@@ -12,20 +12,23 @@
   --bg-card: rgba(18, 18, 24, 0.6);
   --bg-card-hover: rgba(28, 28, 38, 0.8);
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(6, 182, 212, 0.4);
+  --border-hover: rgba(138, 206, 0, 0.5);
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  /* Brand Glow Accents */
-  --cyan: #06b6d4;
-  --cyan-glow: rgba(6, 182, 212, 0.35);
+  /* Brand Glow Accents (#8ACE00 Primary) */
+  --primary: #8ACE00;
+  --primary-glow: rgba(138, 206, 0, 0.35);
+  --lime: #8ACE00;
+  --lime-glow: rgba(138, 206, 0, 0.35);
+  --cyan: #8ACE00;
+  --cyan-glow: rgba(138, 206, 0, 0.35);
   --purple: #a855f7;
   --purple-glow: rgba(168, 85, 247, 0.35);
   --pink: #ec4899;
   --pink-glow: rgba(236, 72, 153, 0.35);
-  --lime: #a3e635;
-  --emerald: #10b981;
+  --emerald: #8ACE00;
   
   --glass-nav: rgba(5, 5, 5, 0.85);
   --grid-line: rgba(255, 255, 255, 0.04);
@@ -44,24 +47,159 @@
 [data-theme="light"] {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card: rgba(255, 255, 255, 0.9);
   --bg-card-hover: #ffffff;
   --border-color: rgba(15, 23, 42, 0.08);
-  --border-hover: rgba(8, 145, 178, 0.5);
+  --border-hover: rgba(114, 170, 0, 0.5);
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
-  --cyan: #0891b2;
-  --cyan-glow: rgba(8, 145, 178, 0.2);
+  --primary: #72aa00;
+  --primary-glow: rgba(114, 170, 0, 0.25);
+  --lime: #72aa00;
+  --lime-glow: rgba(114, 170, 0, 0.25);
+  --cyan: #72aa00;
+  --cyan-glow: rgba(114, 170, 0, 0.25);
   --purple: #9333ea;
   --purple-glow: rgba(147, 51, 234, 0.2);
   --pink: #db2777;
   --pink-glow: rgba(219, 39, 119, 0.2);
-  --lime: #65a30d;
-  --emerald: #059669;
+  --emerald: #72aa00;
   --glass-nav: rgba(255, 255, 255, 0.85);
   --grid-line: rgba(15, 23, 42, 0.04);
   --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+}
+
+/* --- Commercial Proposal & Contract Packages --- */
+.packages-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.package-card {
+  padding: 2.75rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  transition: all var(--transition-normal);
+}
+
+.package-card:hover {
+  border-color: var(--lime);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px -10px var(--lime-glow);
+}
+
+.package-price-tag {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--lime);
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.package-period {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+
+.contract-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.contract-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+}
+
+.contract-feature-item i {
+  color: var(--lime);
+  flex-shrink: 0;
+}
+
+/* Itemized & AMC Tables */
+.proposal-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  margin-top: 2rem;
+  box-shadow: var(--shadow-card);
+}
+
+.proposal-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+
+.proposal-table th {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.proposal-table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.proposal-table tr:last-child td {
+  border-bottom: none;
+}
+
+.proposal-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+.price-highlight {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--lime);
+  font-size: 1.05rem;
+}
+
+.payment-terms-panel {
+  background: linear-gradient(135deg, rgba(138, 206, 0, 0.08), rgba(168, 85, 247, 0.08));
+  border: 1px solid var(--lime);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* --- Base Resets --- */

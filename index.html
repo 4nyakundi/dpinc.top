@@ -38,18 +38,7 @@
   <header class="navbar">
     <div class="navbar-container">
       <a href="index.html" class="brand-logo">
-        <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
-          <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="url(#logo_grad)" stroke-width="12" stroke-linejoin="round"/>
-          <circle cx="54" cy="60" r="14" fill="#06b6d4"/>
-          <defs>
-            <linearGradient id="logo_grad" x1="24" y1="24" x2="96" y2="96" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#06b6d4"/>
-              <stop offset="1" stop-color="#a855f7"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+        <img src="public/logo.svg" alt="DataPort.INC" style="height:38px; width:auto;">
       </a>
 
       <nav class="nav-links">
@@ -346,6 +335,92 @@
       </div>
     </section>
 
+    <!-- Essentials Packages Showcase -->
+    <section class="section">
+      <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1.5rem;">
+          <div>
+            <div class="badge" style="color:var(--lime); border-color:var(--lime); margin-bottom:0.75rem;">
+              <i data-lucide="zap" style="width:14px; height:14px;"></i> Fast-Start Bundles
+            </div>
+            <h2 class="section-title">
+              Small Business <span class="text-gradient">Essentials</span>
+            </h2>
+            <p class="section-subtitle">
+              Fixed-price turnkey packages designed to set up your enterprise security and web authority immediately.
+            </p>
+          </div>
+          <a href="services.html" class="btn btn-secondary">
+            View All Investment Options <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+          </a>
+        </div>
+
+        <div class="packages-grid">
+          <!-- Package 1: Secure Office Starter -->
+          <div class="package-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <span class="badge" style="color:var(--lime); border-color:var(--lime);">Physical & Network</span>
+              <i data-lucide="shield" class="text-lime" style="width:24px; height:24px;"></i>
+            </div>
+            <h3 style="font-size:1.75rem; font-weight:800; margin-top:1.25rem; margin-bottom:0.25rem;">Secure Office Starter</h3>
+            <p class="text-muted" style="font-size:0.875rem;">18-Camera CCTV, Dual WiFi & Firewall config.</p>
+            <div class="package-price-tag">KSh 35,000</div>
+            <div class="package-period">One-Off Investment</div>
+
+            <div class="contract-features-list">
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" style="width:18px; height:18px;"></i>
+                <span>18-Camera Remote-View CCTV Setup</span>
+              </div>
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" style="width:18px; height:18px;"></i>
+                <span>Secure WiFi Config (Staff + Guest SSIDs)</span>
+              </div>
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" style="width:18px; height:18px;"></i>
+                <span>Perimeter Firewall & Network Hardening</span>
+              </div>
+            </div>
+
+            <a href="quote.html?pkg=secure-office" class="btn btn-primary" style="margin-top:auto; justify-content:center;">
+              Select Package <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+            </a>
+          </div>
+
+          <!-- Package 2: Digital Launchpad -->
+          <div class="package-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <span class="badge" style="color:var(--purple); border-color:var(--purple);">Web & High-Retention Media</span>
+              <i data-lucide="rocket" class="text-purple" style="width:24px; height:24px;"></i>
+            </div>
+            <h3 style="font-size:1.75rem; font-weight:800; margin-top:1.25rem; margin-bottom:0.25rem;">Digital Launchpad</h3>
+            <p class="text-muted" style="font-size:0.875rem;">5-Page Dynamic Website, 1-Year Hosting & 30s Motion Ad.</p>
+            <div class="package-price-tag" style="color:var(--purple);">KSh 30,000</div>
+            <div class="package-period">One-Off Investment</div>
+
+            <div class="contract-features-list">
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" class="text-purple" style="width:18px; height:18px;"></i>
+                <span>Dynamic Website (5 Custom Responsive Pages)</span>
+              </div>
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" class="text-purple" style="width:18px; height:18px;"></i>
+                <span>1 Year Fast Cloud Hosting & SSL Certificate</span>
+              </div>
+              <div class="contract-feature-item">
+                <i data-lucide="check-circle-2" class="text-purple" style="width:18px; height:18px;"></i>
+                <span>1 Promotional Motion Graphic Video (30s)</span>
+              </div>
+            </div>
+
+            <a href="quote.html?pkg=digital-launchpad" class="btn btn-secondary" style="margin-top:auto; justify-content:center; border-color:var(--purple);">
+              Select Package <i data-lucide="arrow-right" style="width:16px; height:16px;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Featured Portfolio -->
     <section class="section" id="portfolio">
       <div class="container">
@@ -482,12 +557,7 @@
         <!-- Col 1 -->
         <div class="footer-brand">
           <a href="index.html" class="brand-logo">
-            <svg width="34" height="34" viewBox="0 0 120 120" fill="none">
-              <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
-              <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="#06b6d4" stroke-width="12" stroke-linejoin="round"/>
-              <circle cx="54" cy="60" r="14" fill="#a855f7"/>
-            </svg>
-            <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+            <img src="public/logo.svg" alt="DataPort.INC" style="height:34px; width:auto;">
           </a>
           <p>
             High-End ICT Infrastructure & Creative Media Services. Building the technological backbone for modern enterprises.
@@ -507,7 +577,7 @@
           <h4>Navigation</h4>
           <div class="footer-links">
             <a href="index.html">Home</a>
-            <a href="services.html">Services</a>
+            <a href="services.html">Services & Pricing</a>
             <a href="portfolio.html">Portfolio</a>
             <a href="quote.html">Quote Generator</a>
             <a href="contact.html">Contact Us</a>
@@ -516,13 +586,12 @@
 
         <!-- Col 3 -->
         <div class="footer-col">
-          <h4>Expertise</h4>
+          <h4>Commercial Packages</h4>
           <div class="footer-links">
-            <a href="services.html#infrastructure">Enterprise WiFi & Networks</a>
-            <a href="services.html#infrastructure">CCTV Surveillance</a>
-            <a href="services.html#software">Custom Web Apps</a>
-            <a href="services.html#software">DevOps & Cloud</a>
-            <a href="services.html#creative">Video Motion Graphics</a>
+            <a href="services.html">Secure Office Starter (35k)</a>
+            <a href="services.html">Digital Launchpad (30k)</a>
+            <a href="services.html">Itemized Hardware & Dev</a>
+            <a href="services.html">Annual Retainers (AMC)</a>
           </div>
         </div>
 
@@ -530,10 +599,10 @@
         <div class="footer-col">
           <h4>Headquarters</h4>
           <div class="footer-links" style="color:var(--text-secondary); font-size:0.875rem; line-height:1.7;">
-            <p><i data-lucide="map-pin" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-purple"></i> Mombasa Mall, Along Jomo Kenyatta Avenue, Mombasa</p>
-            <p><i data-lucide="phone" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-cyan"></i> 0790 964 002 // 0724 659 389</p>
-            <p><i data-lucide="mail" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-cyan"></i> support@dpinc.top</p>
-            <p><i data-lucide="clock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> 8:30 AM - 4:30 PM (Remote till 9:00 PM)</p>
+            <p><i data-lucide="map-pin" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Along Jomo Kenyatta Avenue, Mombasa</p>
+            <p><i data-lucide="phone" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> +254 790 964 002 // +254 118 228 000</p>
+            <p><i data-lucide="mail" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> tech@dpinc.top // tech@dpinc.co.ke</p>
+            <p><i data-lucide="clock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Mon–Fri: 8:30 AM - 6:00 PM (24/7 SLA)</p>
           </div>
         </div>
       </div>

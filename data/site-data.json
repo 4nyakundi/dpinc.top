@@ -1,28 +1,32 @@
 {
   "company": {
     "name": "Data Port Limited",
-    "brand": "DataPort INC",
+    "brand": "DataPort.INC",
     "tagline": "High-End ICT Infrastructure & Creative Media Services",
     "yearEstablished": 2022,
-    "systemVersion": "v2.4.0",
+    "systemVersion": "v2.5.0",
+    "primaryColor": "#8ACE00",
     "about": "Data Port Limited offers innovative technical solutions and services for advancement of human race. We pride ourself in giving exceptional solutions and services in software integrated. Established in 2022, Data Port has built a reputation for delivering exceptional high quality and cost-effective ICT solutions to different clients in all sectors included.",
     "executiveSummary": "Data Port Limited is a full-service technology partner dedicated to modernizing businesses through integrated ICT solutions and creative digital media. Unlike traditional IT firms, we blend hard infrastructure (Networks, CCTV) with creative development (Apps, Video Graphics), ensuring your business is not just running, but growing.",
     "mission": "To provide direct, high-impact technical and creative services that drive efficiency and visibility for our clients."
   },
   "contact": {
-    "phone": "0790964002",
-    "phoneSecondary": "0724659389",
-    "email": "support@dpinc.top",
+    "phone": "+254 790 964 002",
+    "phoneSecondary": "+254 118 228 000",
+    "email": "tech@dpinc.top",
+    "emailCoKe": "tech@dpinc.co.ke",
+    "supportEmail": "support@dpinc.top",
     "gmail": "dpinc.top@gmail.com",
     "website": "dpinc.top",
-    "location": "Mombasa Mall Along Jomo Kenyatta Avenue, Mombasa, Kenya",
-    "hours": "8:30 AM - 4:30 PM",
-    "remoteHours": "Remote Support available until 9:00 PM",
+    "location": "Along Jomo Kenyatta Avenue, Mombasa, Kenya",
+    "hours": "Mon - Fri (8:30 AM - 6:00 PM)",
+    "remoteHours": "24/7 Remote Monitoring & Emergency Support Available",
     "socials": {
       "linkedin": "https://linkedin.com/in/emmanuel-nyakundi",
       "github": "https://github.com/4nyakundi"
     },
     "payment": {
+      "terms": "60% Deposit upon signing, 40% Upon completion/commissioning",
       "mpesaName": "Emmanuel Nyakundi",
       "mpesaNumber": "0790 964 002",
       "bank": "Standard Chartered Bank",
@@ -33,56 +37,150 @@
     { "value": "99.9%", "label": "Uptime Guarantee" },
     { "value": "50+", "label": "Enterprise Clients" },
     { "value": "200+", "label": "Projects Delivered" },
-    { "value": "24/7", "label": "Technical Monitoring" }
+    { "value": "24/7", "label": "SLA Tech Support" }
   ],
-  "clients": [
-    { "name": "TechCorp", "category": "Enterprise Tech" },
-    { "name": "GlobalMedia", "category": "Broadcast Media" },
-    { "name": "StudioX", "category": "Creative Studio" },
-    { "name": "Nexus Logistics", "category": "Supply Chain" },
-    { "name": "Apex Solutions", "category": "Financial Services" },
-    { "name": "Wave Form", "category": "Telecom" }
-  ],
+  "commercialProposal": {
+    "currency": "KSh",
+    "vatNote": "All prices are in KSh and exclusive of VAT.",
+    "paymentTerms": {
+      "deposit": "60% Deposit upon signing",
+      "completion": "40% Upon completion/commissioning"
+    },
+    "essentialsPackages": [
+      {
+        "id": "pkg-secure-office",
+        "name": "Secure Office Starter",
+        "badge": "Best for Small Business",
+        "price": 35000,
+        "period": "One-Off Investment",
+        "description": "Essential physical security and robust enterprise network setup for new or expanding office premises.",
+        "features": [
+          "18-Camera CCTV Setup & Configuration",
+          "Secure Dual WiFi Config (Staff + Isolated Guest)",
+          "Hardware Firewall Setup & Threat Defense",
+          "Remote View Mobile & Desktop Setup"
+        ]
+      },
+      {
+        "id": "pkg-digital-launchpad",
+        "name": "Digital Launchpad",
+        "badge": "High Growth Package",
+        "price": 30000,
+        "period": "One-Off Investment",
+        "description": "Everything needed to launch your brand digitally with an impactful web platform and high-converting video media.",
+        "features": [
+          "Dynamic Responsive Website (5 Custom Pages)",
+          "1 Year High-Speed Cloud Hosting & SSL Certificate",
+          "1 Promotional Motion Graphic Video (30s high-retention)",
+          "SEO Optimization & Social Media Integration"
+        ]
+      }
+    ],
+    "itemizedServices": [
+      {
+        "category": "Network",
+        "item": "Small Business Firewall & Configuration",
+        "price": 10000,
+        "unit": "One-Off Service",
+        "description": "Port filtering, VPN configuration, staff bandwidth management, and intrusion prevention."
+      },
+      {
+        "category": "Network",
+        "item": "Long-Range WiFi Access Point (Installation Included)",
+        "price": 35000,
+        "unit": "Per Unit / Setup",
+        "description": "High-density enterprise wireless AP installation, structured cabling, and signal heatmap tuning."
+      },
+      {
+        "category": "Creative",
+        "item": "Motion Graphics Ad (Social Media Creative Direction)",
+        "price": 20000,
+        "unit": "Per 30s Video",
+        "description": "Full storyboard, custom animation, voiceover sync, and format exports for Instagram, TikTok, and web displays."
+      },
+      {
+        "category": "Dev",
+        "item": "Custom Web App / System (Billing Automation Software)",
+        "price": 40000,
+        "unit": "Starting Price",
+        "description": "Bespoke database-backed software to automate invoicing, billing workflows, and client management."
+      },
+      {
+        "category": "Server",
+        "item": "Windows Server Setup + Domain Controller",
+        "price": 45000,
+        "unit": "Service Only",
+        "description": "Active Directory, user permission hierarchies, group policies, centralized file sharing, and automated backup."
+      }
+    ],
+    "annualMaintenanceContracts": [
+      {
+        "id": "amc-standard",
+        "name": "Standard Plan (Mass Market)",
+        "annualCost": 70000,
+        "supportHours": "Mon-Fri (8:30 - 18:00)",
+        "responseTime": "Within 4 Hours",
+        "includedVisits": "1 Preventive Visit / Month",
+        "scope": "Network & PC Support, Routine Patching & Virus Cleaning",
+        "recommendedFor": "Small businesses needing dependable weekly oversight."
+      },
+      {
+        "id": "amc-premium",
+        "name": "Premium Plan (Corporate)",
+        "annualCost": 90000,
+        "supportHours": "24/7 Remote Support",
+        "responseTime": "Within 1 Hour Priority",
+        "includedVisits": "Unlimited Remote + 2 Site Visits / Month",
+        "scope": "Full Infrastructure + DevOps & Server Monitoring",
+        "recommendedFor": "High-uptime enterprises with critical software or network reliance."
+      }
+    ],
+    "nonContractRate": {
+      "ratePerHour": 2500,
+      "minimumHours": 2,
+      "description": "KSh 2,500 / hour (Minimum 2 hours per dispatch)."
+    }
+  },
   "pillars": [
     {
       "id": "infrastructure",
       "name": "Infrastructure & Security",
       "badge": "Core Physical Layer",
-      "color": "cyan",
-      "description": "The foundation of any modern enterprise is its hardware and connectivity. We design fault-tolerant, high-speed networks and pair them with uncompromising physical security systems.",
+      "color": "lime",
+      "description": "Fault-tolerant networks, high-speed WiFi, and remote surveillance that keep enterprise operations secure and constantly online.",
       "services": [
         {
           "title": "Network Design & Maintenance",
-          "desc": "Secure WiFi, firewall implementation, and structured cabling for reliable, low-latency connectivity across your enterprise."
+          "desc": "Secure WiFi, firewall implementation, and structured cabling for reliable connectivity."
         },
         {
           "title": "Surveillance Systems (CCTV)",
-          "desc": "Installation of high-definition remote-view cameras, motion intelligence, and secure storage to protect your physical premises."
+          "desc": "Installation of high-definition remote-view cameras to secure your premises."
         },
         {
-          "title": "Disaster Recovery & Backup",
-          "desc": "Automated local and cloud backup solutions designed to mitigate critical data loss and guarantee instant business continuity."
+          "title": "Disaster Recovery",
+          "desc": "Automated backup solutions to mitigate data loss and ensure business continuity."
         }
       ]
     },
     {
       "id": "software",
-      "name": "Software & DevOps",
+      "name": "Software & Development (DevOps)",
       "badge": "Digital Systems",
-      "color": "purple",
+      "color": "lime",
       "description": "Automation and scalable architectures are the engines of modern growth. We build bespoke applications specifically designed around your unique business processes.",
       "services": [
         {
           "title": "Custom Application Development",
-          "desc": "Tailored software solutions to automate specific business workflows, reduce administrative overhead, and integrate legacy systems."
+          "desc": "Tailored software solutions to automate your specific business processes."
         },
         {
-          "title": "DevOps & Cloud Integration",
-          "desc": "Continuous integration and delivery (CI/CD) pipelines to keep your software infrastructure resilient, auto-scalable, and secure."
+          "title": "DevOps & Integration",
+          "desc": "Continuous integration and delivery (CI/CD) to keep your software infrastructure healthy and scalable."
         },
         {
-          "title": "Advanced Web Development",
-          "desc": "Dynamic, responsive, ultra-fast web platforms with SSL encryption, database integration, and intuitive administrative control."
+          "title": "Web Development",
+          "desc": "Dynamic, mobile-responsive websites with SSL security."
         }
       ]
     },
@@ -90,98 +188,30 @@
       "id": "creative",
       "name": "Creative & Marketing",
       "badge": "Brand & Visibility",
-      "color": "pink",
-      "description": "Having robust infrastructure and flawless software is only half the battle. Our creative media division produces striking visuals that engage targets and define brands.",
+      "color": "lime",
+      "description": "Having robust infrastructure and flawless software is only half the battle. Our creative media division produces striking visual media that elevates brand authority.",
       "services": [
         {
           "title": "Video Motion Graphics",
-          "desc": "High-retention advertisement videos and 3D visual graphics engineered for social media campaigns, billboards, and digital displays."
+          "desc": "High-retention advertisement videos for social media and digital displays."
         },
         {
-          "title": "Digital Branding & Strategy",
-          "desc": "Comprehensive visual identities, typography guidelines, and interactive digital branding assets that captivate your target demographic."
+          "title": "Digital Branding",
+          "desc": "Visual identity and content creation to engage your target audience."
         }
       ]
     }
   ],
-  "portfolio": [
-    {
-      "id": "enterprise-infra",
-      "title": "Enterprise Headquarters Build-Out",
-      "category": "infrastructure",
-      "categoryLabel": "Infrastructure & Security",
-      "tags": ["Structured Cabling", "Secure WiFi", "HD CCTV", "Disaster Recovery"],
-      "description": "Complete technological fit-out for a 3-story corporate office. Engineered fault-tolerant WiFi across 50,000 sq ft, 40 remote-view CCTV cameras, and automated redundant backup servers."
-    },
-    {
-      "id": "supply-chain-portal",
-      "title": "Global Supply Chain Management Portal",
-      "category": "software",
-      "categoryLabel": "Software & DevOps",
-      "tags": ["Custom Web App", "CI/CD Pipeline", "Data Automation", "REST APIs"],
-      "description": "Bespoke logistics web application allowing a freight carrier to automate dispatch, track international shipments in real-time, and generate automated proforma invoices."
-    },
-    {
-      "id": "retail-launch",
-      "title": "Neo-Retail Brand Launch",
-      "category": "creative",
-      "categoryLabel": "Creative & Marketing",
-      "tags": ["Motion Graphics", "Digital Branding", "Social Ad Campaign"],
-      "description": "High-energy motion graphics advertising campaign for an e-commerce startup. Deliverables included 15-second high-retention video segments driving a 300% increase in initial user acquisition."
-    },
-    {
-      "id": "campus-system",
-      "title": "University Learning & Analytics System",
-      "category": "software",
-      "categoryLabel": "Integrated Solutions",
-      "tags": ["Web Development", "Server Array", "SSL Security"],
-      "description": "A hybrid project encompassing on-prem server rack installation and custom web portal development secured with strict SSL standards."
-    },
-    {
-      "id": "project-alpha",
-      "title": "Project Alpha Cloud Migration",
-      "category": "infrastructure",
-      "categoryLabel": "Cloud Infrastructure",
-      "tags": ["Cloud Servers", "Zero Downtime", "Data Migration"],
-      "description": "Full-scale server migration and cloud architecture re-engineering for a high-volume financial institution."
-    },
-    {
-      "id": "data-core",
-      "title": "Data Core Enterprise Data Center",
-      "category": "infrastructure",
-      "categoryLabel": "Enterprise Network",
-      "tags": ["High Bandwidth", "Firewall Array", "99.99% Uptime"],
-      "description": "Secure, high-bandwidth data center setup with redundant power feeds, active cooling sensors, and hardware firewalls."
-    }
-  ],
-  "testimonials": [
-    {
-      "quote": "DATA PORT completely transformed our IT infrastructure. Their team's expertise in handling our cloud migration was flawless, resulting in zero downtime.",
-      "author": "Sarah Jenkins",
-      "role": "CTO, TechCorp"
-    },
-    {
-      "quote": "The level of creativity they bring to digital media is unmatched. They built high-impact motion graphics that skyrocketed our engagement by 300%.",
-      "author": "David Chen",
-      "role": "Marketing Director, StudioX"
-    },
-    {
-      "quote": "Reliable, secure, and blazing fast. The enterprise network they deployed for our headquarters exceeded all our expectations.",
-      "author": "Elena Rodriguez",
-      "role": "Operations Manager, Nexus"
-    }
-  ],
   "catalog": [
-    { "id": "net-01", "name": "Structured Network Cabling & Patching (Per Point)", "price": 3500 },
-    { "id": "net-02", "name": "Enterprise WiFi Access Point Setup & Config", "price": 12500 },
-    { "id": "sec-01", "name": "HD CCTV 4-Channel Remote Surveillance Kit", "price": 48000 },
-    { "id": "sec-02", "name": "HD CCTV 8-Channel Industrial Surveillance Kit", "price": 85000 },
-    { "id": "dev-01", "name": "Custom Business Web Portal Development", "price": 75000 },
-    { "id": "dev-02", "name": "Mobile-Responsive Corporate Website", "price": 45000 },
-    { "id": "dev-03", "name": "CI/CD & Cloud Server DevOps Setup", "price": 35000 },
-    { "id": "cre-01", "name": "15-Second High-Retention Motion Graphics Video", "price": 25000 },
-    { "id": "cre-02", "name": "Complete Digital Brand Identity Package", "price": 40000 },
-    { "id": "bak-01", "name": "Automated Cloud Disaster Recovery Backup Solution", "price": 28000 },
-    { "id": "mnt-01", "name": "Monthly SLA ICT Infrastructure Maintenance", "price": 20000 }
+    { "id": "pkg-01", "name": "[Package] Secure Office Starter (18-CCTV, WiFi, Firewall)", "price": 35000 },
+    { "id": "pkg-02", "name": "[Package] Digital Launchpad (5-Page Web, Hosting, 30s Motion Ad)", "price": 30000 },
+    { "id": "itm-01", "name": "Small Business Firewall & Configuration", "price": 10000 },
+    { "id": "itm-02", "name": "Long-Range WiFi Access Point (Installation Included)", "price": 35000 },
+    { "id": "itm-03", "name": "Motion Graphics Ad (Social Media Creative Direction)", "price": 20000 },
+    { "id": "itm-04", "name": "Custom Web App / System (Billing Automation Starter)", "price": 40000 },
+    { "id": "itm-05", "name": "Windows Server Setup + Domain Controller", "price": 45000 },
+    { "id": "amc-01", "name": "[AMC Annual] Standard Plan Retainer (Mon-Fri, 4h SLA)", "price": 70000 },
+    { "id": "amc-02", "name": "[AMC Annual] Premium Corporate Plan (24/7, 1h SLA, DevOps)", "price": 90000 },
+    { "id": "adh-01", "name": "On-Demand Engineering Support (2 Hours Min)", "price": 5000 }
   ]
 }

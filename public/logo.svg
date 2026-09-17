@@ -1,11 +1,25 @@
-<svg width="240" height="80" viewBox="0 0 240 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="240" height="80" rx="20" fill="#050505"/>
-  <path d="M24 21H44C49.5228 21 54 25.4772 54 31V49C54 54.5228 49.5228 59 44 59H24V45H38.5V35H24V21Z" fill="#A6FF00"/>
-  <path d="M68 21H84C89.5228 21 94 25.4772 94 31V49C94 54.5228 89.5228 59 84 59H68V45H82.5V35H68V21Z" fill="#A6FF00"/>
-  <path d="M82 21H112C118.627 21 124 26.373 124 33V47C124 53.6274 118.627 59 112 59H82V45H110V33H82V21Z" fill="#A6FF00"/>
-  <text x="42" y="48" fill="#050505" font-family="Inter, sans-serif" font-size="32" font-weight="700">D</text>
-  <rect x="128" y="18" width="98" height="44" rx="10" fill="white"/>
-  <text x="138" y="44" fill="#050505" font-family="Inter, sans-serif" font-size="26" font-weight="700">Data</text>
-  <text x="138" y="66" fill="#8FC900" font-family="Inter, sans-serif" font-size="26" font-weight="700">Port</text>
-  <text x="226" y="62" fill="#050505" font-family="Inter, sans-serif" font-size="10" font-weight="700">INC</text>
+<svg width="280" height="90" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- DataPort Icon Mark -->
+  <g transform="translate(10, 5) scale(0.65)">
+    <!-- Main Outer D Ring -->
+    <path d="M40 10H80C102.091 10 120 27.9086 120 50V60C120 82.0914 102.091 100 80 100H40V10Z" fill="#8ACE00"/>
+    <!-- Inner D cutout -->
+    <path d="M60 30H80C88.2843 30 95 36.7157 95 45V65C95 73.2843 88.2843 80 80 80H60V30Z" fill="#050505"/>
+    <!-- Central Inner Square & Stem -->
+    <rect x="15" y="85" width="16" height="16" rx="2" fill="#8ACE00"/>
+    <path d="M40 30H70V70H40V30Z" fill="#8ACE00"/>
+  </g>
+
+  <!-- Typography: Data (Serif Italic) + Port (Bold Lime) + .INC -->
+  <g transform="translate(100, 55)">
+    <!-- Data in Elegant Serif Italic -->
+    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="36" font-style="italic" font-weight="700" fill="currentColor" letter-spacing="-0.5">Data</text>
+    <!-- Port in Modern Bold Lime -->
+    <text x="74" y="0" font-family="'Inter', system-ui, sans-serif" font-size="36" font-weight="800" fill="#8ACE00" letter-spacing="-0.5">Port</text>
+    <!-- Dot and INC -->
+    <circle cx="156" cy="-8" r="4.5" fill="#8ACE00"/>
+    <text x="164" y="0" font-family="'Inter', system-ui, sans-serif" font-size="16" font-weight="900" fill="currentColor" letter-spacing="0.5">INC</text>
+    <!-- Underline bar -->
+    <rect x="0" y="8" width="70" height="3" rx="1.5" fill="#8ACE00"/>
+  </g>
 </svg>

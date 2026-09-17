@@ -1,6 +1,7 @@
 /**
  * DATA PORT - Interactive Quote & Invoice Generator
  * Offline-first, localStorage-enabled, dynamic live calculation & print layout
+ * Aligned with Data Port Limited Commercial Proposal & Contract
  */
 
 let lineItems = [];
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCatalogData();
   bindQuoteEvents();
   loadSavedQuotes();
+  checkUrlParamsForPresets();
   updateLiveInvoicePreview();
 });
 
@@ -27,17 +29,16 @@ async function loadCatalogData() {
   } catch (err) {
     console.warn("Using fallback catalog items", err);
     catalogItems = [
-      { id: "net-01", name: "Structured Network Cabling & Patching (Per Point)", price: 3500 },
-      { id: "net-02", name: "Enterprise WiFi Access Point Setup & Config", price: 12500 },
-      { id: "sec-01", name: "HD CCTV 4-Channel Remote Surveillance Kit", price: 48000 },
-      { id: "sec-02", name: "HD CCTV 8-Channel Industrial Surveillance Kit", price: 85000 },
-      { id: "dev-01", name: "Custom Business Web Portal Development", price: 75000 },
-      { id: "dev-02", name: "Mobile-Responsive Corporate Website", price: 45000 },
-      { id: "dev-03", name: "CI/CD & Cloud Server DevOps Setup", price: 35000 },
-      { id: "cre-01", name: "15-Second High-Retention Motion Graphics Video", price: 25000 },
-      { id: "cre-02", name: "Complete Digital Brand Identity Package", price: 40000 },
-      { id: "bak-01", name: "Automated Cloud Disaster Recovery Backup Solution", price: 28000 },
-      { id: "mnt-01", name: "Monthly SLA ICT Infrastructure Maintenance", price: 20000 }
+      { id: "pkg-01", name: "[Package] Secure Office Starter (18-CCTV, WiFi, Firewall)", price: 35000 },
+      { id: "pkg-02", name: "[Package] Digital Launchpad (5-Page Web, Hosting, 30s Motion Ad)", price: 30000 },
+      { id: "itm-01", name: "Small Business Firewall & Configuration", price: 10000 },
+      { id: "itm-02", name: "Long-Range WiFi Access Point (Installation Included)", price: 35000 },
+      { id: "itm-03", name: "Motion Graphics Ad (Social Media Creative Direction)", price: 20000 },
+      { id: "itm-04", name: "Custom Web App / System (Billing Automation Starter)", price: 40000 },
+      { id: "itm-05", name: "Windows Server Setup + Domain Controller", price: 45000 },
+      { id: "amc-01", name: "[AMC Annual] Standard Plan Retainer (Mon-Fri, 4h SLA)", price: 70000 },
+      { id: "amc-02", name: "[AMC Annual] Premium Corporate Plan (24/7, 1h SLA, DevOps)", price: 90000 },
+      { id: "adh-01", name: "On-Demand Engineering Support (2 Hours Min)", price: 5000 }
     ];
     renderCatalogOptions();
   }
@@ -47,13 +48,50 @@ function renderCatalogOptions() {
   const catalogSelect = document.getElementById("catalogSelect");
   if (!catalogSelect) return;
 
-  catalogSelect.innerHTML = '<option value="">-- Choose a standard service package --</option>';
+  catalogSelect.innerHTML = '<option value="">-- Choose an official service / package --</option>';
   catalogItems.forEach(item => {
     const opt = document.createElement("option");
     opt.value = item.id;
     opt.textContent = `${item.name} — ${formatKES(item.price)}`;
     catalogSelect.appendChild(opt);
   });
+}
+
+function checkUrlParamsForPresets() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const pkg = urlParams.get("pkg");
+  const item = urlParams.get("item");
+
+  if (pkg === "secure-office") {
+    lineItems.push({
+      id: "pkg_office_" + Date.now(),
+      service: "Secure Office Starter Package (18-CCTV Setup, Dual WiFi Config, Firewall Setup)",
+      qty: 1,
+      price: 35000
+    });
+  } else if (pkg === "digital-launchpad") {
+    lineItems.push({
+      id: "pkg_launchpad_" + Date.now(),
+      service: "Digital Launchpad Package (5-Page Dynamic Website, 1 Year Hosting & SSL, 30s Motion Graphic Ad)",
+      qty: 1,
+      price: 30000
+    });
+  } else if (item === "firewall") {
+    lineItems.push({ id: "itm_fw_" + Date.now(), service: "Small Business Firewall & Configuration", qty: 1, price: 10000 });
+  } else if (item === "wifi-ap") {
+    lineItems.push({ id: "itm_wifi_" + Date.now(), service: "Long-Range WiFi Access Point (Installation Included)", qty: 1, price: 35000 });
+  } else if (item === "motion-ad") {
+    lineItems.push({ id: "itm_motion_" + Date.now(), service: "Motion Graphics Ad Video (Social Media Creative Direction)", qty: 1, price: 20000 });
+  } else if (item === "custom-app") {
+    lineItems.push({ id: "itm_app_" + Date.now(), service: "Custom Web App / System (Billing Automation Starter)", qty: 1, price: 40000 });
+  } else if (item === "windows-server") {
+    lineItems.push({ id: "itm_srv_" + Date.now(), service: "Windows Server Setup + Domain Controller (Service Only)", qty: 1, price: 45000 });
+  }
+
+  if (lineItems.length > 0) {
+    renderLineItems();
+    updateLiveInvoicePreview();
+  }
 }
 
 function bindQuoteEvents() {
@@ -137,7 +175,7 @@ function renderLineItems() {
   if (!container) return;
 
   if (lineItems.length === 0) {
-    container.innerHTML = '<p class="text-muted" style="font-size:0.875rem; text-align:center; padding:1rem 0;">No items added yet. Add a service above.</p>';
+    container.innerHTML = '<p class="text-muted" style="font-size:0.875rem; text-align:center; padding:1rem 0;">No items added yet. Select a service above.</p>';
     return;
   }
 
@@ -151,7 +189,7 @@ function renderLineItems() {
         <p class="text-muted" style="font-size:0.8125rem;">${item.qty} × ${formatKES(item.price)}</p>
       </div>
       <div style="display:flex; align-items:center; gap:1rem;">
-        <span style="font-weight:700; color:var(--text-primary);">${formatKES(item.qty * item.price)}</span>
+        <span style="font-weight:700; color:var(--lime);">${formatKES(item.qty * item.price)}</span>
         <button type="button" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#ef4444;" onclick="removeLineItem('${item.id}')">
           <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
         </button>
@@ -268,7 +306,7 @@ function loadSavedQuotes() {
     card.style.cursor = "pointer";
     card.innerHTML = `
       <div onclick="restoreQuote('${quote.id}')">
-        <p style="font-weight:700; color:var(--cyan); font-family:var(--font-mono);">${escapeHtml(quote.invoiceNumber)}</p>
+        <p style="font-weight:700; color:var(--lime); font-family:var(--font-mono);">${escapeHtml(quote.invoiceNumber)}</p>
         <p style="font-size:0.875rem; font-weight:500;">${escapeHtml(quote.clientName)}</p>
         <p class="text-muted" style="font-size:0.75rem;">${new Date(quote.date).toLocaleDateString()}</p>
       </div>

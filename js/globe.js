@@ -76,13 +76,13 @@ class DataPortGlobe {
   getThemeColors() {
     const isLight = document.documentElement.getAttribute("data-theme") === "light";
     return {
-      dotColor: isLight ? 0x0891b2 : 0x06b6d4,
+      dotColor: isLight ? 0x72aa00 : 0x8ace00,
       dotColorSecondary: isLight ? 0x9333ea : 0xa855f7,
-      glowColor: isLight ? 0x0891b2 : 0x06b6d4,
+      glowColor: isLight ? 0x72aa00 : 0x8ace00,
       gridColor: isLight ? 0xcbd5e1 : 0x1e293b,
       oceanColor: isLight ? 0xf1f5f9 : 0x050508,
       oceanOpacity: isLight ? 0.3 : 0.7,
-      hqColor: 0x10b981,
+      hqColor: 0x8ace00,
       arcColor: isLight ? 0x9333ea : 0xa855f7
     };
   }
@@ -105,9 +105,9 @@ class DataPortGlobe {
     // Outer atmospheric ring
     const ringGeo = new THREE.RingGeometry(radius * 1.02, radius * 1.25, 64);
     const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x06b6d4,
+      color: 0x8ace00,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.15,
       side: THREE.DoubleSide
     });
     this.atmosphereRing = new THREE.Mesh(ringGeo, ringMat);

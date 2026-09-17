@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quote & Invoice Generator - DATA PORT Limited</title>
+  <title>Quote & Proforma Invoice Generator - DATA PORT Limited</title>
   <meta name="description" content="Generate instant, professional ICT and media project quotes with automated calculations and printable PDF invoices.">
   <link rel="icon" href="public/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
@@ -20,23 +20,12 @@
   <header class="navbar no-print">
     <div class="navbar-container">
       <a href="index.html" class="brand-logo">
-        <svg width="40" height="40" viewBox="0 0 120 120" fill="none">
-          <rect width="120" height="120" rx="24" fill="#0a0a0f"/>
-          <path d="M24 24H56C73.6731 24 88 38.3269 88 56V64C88 81.6731 73.6731 96 56 96H24V24Z" stroke="url(#logo_grad)" stroke-width="12" stroke-linejoin="round"/>
-          <circle cx="54" cy="60" r="14" fill="#06b6d4"/>
-          <defs>
-            <linearGradient id="logo_grad" x1="24" y1="24" x2="96" y2="96" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#06b6d4"/>
-              <stop offset="1" stop-color="#a855f7"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+        <img src="public/logo.svg" alt="DataPort.INC" style="height:36px; width:auto;">
       </a>
 
       <nav class="nav-links">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="services.html" class="nav-link">Services</a>
+        <a href="services.html" class="nav-link">Services & Pricing</a>
         <a href="portfolio.html" class="nav-link">Portfolio</a>
         <a href="quote.html" class="nav-link active">Quote Generator</a>
         <a href="contact.html" class="nav-link">Contact</a>
@@ -55,7 +44,7 @@
     <!-- Mobile Drawer -->
     <div class="mobile-nav">
       <a href="index.html" class="nav-link">Home</a>
-      <a href="services.html" class="nav-link">Services</a>
+      <a href="services.html" class="nav-link">Services & Pricing</a>
       <a href="portfolio.html" class="nav-link">Portfolio</a>
       <a href="quote.html" class="nav-link active">Quote Generator</a>
       <a href="contact.html" class="nav-link">Contact</a>
@@ -67,14 +56,14 @@
     <section class="section text-center" style="padding-bottom:1.5rem;">
       <div class="container">
         <div class="badge" style="margin-bottom:1.25rem;">
-          <i data-lucide="calculator" class="text-cyan" style="width:14px; height:14px;"></i>
-          <span>Interactive Estimator Engine</span>
+          <i data-lucide="calculator" class="text-lime" style="width:14px; height:14px;"></i>
+          <span>Official Commercial Estimator</span>
         </div>
         <h1 class="section-title">
-          Quote <span class="text-gradient">Generator</span>
+          Quote & <span class="text-gradient">Proforma Generator</span>
         </h1>
         <p class="section-subtitle" style="margin:0 auto;">
-          Configure client line items, fixed service bundles, labour, and tax in real-time. Instantly save or generate a clean printable PDF invoice.
+          Configure client line items, fixed service bundles, labour, and tax in real-time. Instantly save or generate a clean printable PDF proforma invoice.
         </p>
       </div>
     </section>
@@ -88,7 +77,7 @@
             <!-- Client Details -->
             <div class="glass-panel" style="padding:2rem;">
               <h2 class="font-display" style="font-size:1.25rem; font-weight:700; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-                <i data-lucide="user" class="text-cyan" style="width:20px; height:20px;"></i> Client Details
+                <i data-lucide="user" class="text-lime" style="width:20px; height:20px;"></i> Client Details
               </h2>
 
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
@@ -105,7 +94,7 @@
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
                 <div class="form-group">
                   <label class="form-label" for="clientPhone">Phone Number</label>
-                  <input type="tel" id="clientPhone" class="form-input" placeholder="07XX XXX XXX">
+                  <input type="tel" id="clientPhone" class="form-input" placeholder="+254 7XX XXX XXX">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="clientEmail">Email Address</label>
@@ -115,19 +104,19 @@
 
               <div class="form-group" style="margin-bottom:0;">
                 <label class="form-label" for="clientLocation">Physical / Project Location</label>
-                <input type="text" id="clientLocation" class="form-input" placeholder="e.g. Mombasa Central Business District">
+                <input type="text" id="clientLocation" class="form-input" placeholder="e.g. Mombasa Along Jomo Kenyatta Avenue">
               </div>
             </div>
 
             <!-- Add Line Items -->
             <div class="glass-panel" style="padding:2rem;">
               <h2 class="font-display" style="font-size:1.25rem; font-weight:700; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-                <i data-lucide="plus-circle" class="text-purple" style="width:20px; height:20px;"></i> Add Scope Line Item
+                <i data-lucide="plus-circle" class="text-lime" style="width:20px; height:20px;"></i> Add Scope Line Item
               </h2>
 
               <!-- Catalog Quick Pick -->
               <div class="form-group">
-                <label class="form-label" for="catalogSelect">Standard Service Catalog (Quick Autofill)</label>
+                <label class="form-label" for="catalogSelect">Contract Package / Service Catalog (Quick Autofill)</label>
                 <select id="catalogSelect" class="form-select">
                   <option value="">Loading service catalog...</option>
                 </select>
@@ -135,7 +124,7 @@
 
               <div class="form-group">
                 <label class="form-label" for="itemService">Item / Service Description *</label>
-                <input type="text" id="itemService" class="form-input" placeholder="e.g. Cat6 Structured Cabling & Termination">
+                <input type="text" id="itemService" class="form-input" placeholder="e.g. Small Business Firewall & Configuration">
               </div>
 
               <div style="display:grid; grid-template-columns:1fr 1.5fr 1fr; gap:1rem; align-items:flex-end;">
@@ -144,7 +133,7 @@
                   <input type="number" id="itemQty" class="form-input" value="1" min="1">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" for="itemPrice">Unit Price (Ksh)</label>
+                  <label class="form-label" for="itemPrice">Unit Price (KSh)</label>
                   <input type="number" id="itemPrice" class="form-input" placeholder="0.00" min="0" step="100">
                 </div>
                 <button type="button" id="addItemBtn" class="btn btn-primary" style="height:46px; width:100%; border-radius:var(--radius-md);">
@@ -158,7 +147,7 @@
                   Active Scope Items
                 </h4>
                 <div id="lineItemsList">
-                  <p class="text-muted" style="font-size:0.875rem; text-align:center; padding:1rem 0;">No items added yet. Add a service above.</p>
+                  <p class="text-muted" style="font-size:0.875rem; text-align:center; padding:1rem 0;">No items added yet. Select a service above.</p>
                 </div>
               </div>
             </div>
@@ -166,16 +155,16 @@
             <!-- Pricing & Adjustments -->
             <div class="glass-panel" style="padding:2rem;">
               <h2 class="font-display" style="font-size:1.25rem; font-weight:700; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-                <i data-lucide="dollar-sign" class="text-emerald" style="width:20px; height:20px;"></i> Labour & Tax Additions
+                <i data-lucide="dollar-sign" class="text-lime" style="width:20px; height:20px;"></i> Labour & Statutory Additions
               </h2>
 
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" for="labourFee">Labour / Installation Fee (Ksh)</label>
+                  <label class="form-label" for="labourFee">Labour / Installation Fee (KSh)</label>
                   <input type="number" id="labourFee" class="form-input" placeholder="0.00" min="0" step="500">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" for="taxFee">VAT / Statutory Tax (Ksh)</label>
+                  <label class="form-label" for="taxFee">VAT / Tax Addition (KSh)</label>
                   <input type="number" id="taxFee" class="form-input" placeholder="0.00" min="0" step="100">
                 </div>
               </div>
@@ -187,7 +176,7 @@
                 <i data-lucide="save" style="width:18px; height:18px;"></i> Save Quote to Device
               </button>
               <button type="button" id="printQuoteBtn" class="btn btn-secondary btn-lg" style="flex:1; justify-content:center;">
-                <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Export PDF
+                <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Export Proforma PDF
               </button>
             </div>
           </div>
@@ -198,11 +187,11 @@
             <div class="glass-panel invoice-preview-card" style="padding:2rem;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
                 <div>
-                  <span class="font-mono text-cyan" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Live Breakdown</span>
+                  <span class="font-mono text-lime" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Live Calculation</span>
                   <h3 class="font-display" style="font-size:1.5rem; font-weight:700;">Quote Summary</h3>
                 </div>
                 <div style="text-align:right;">
-                  <span id="invoiceNumberDisplay" class="font-mono text-purple" style="font-size:0.875rem; font-weight:700;">DP-2026-AUTO</span>
+                  <span id="invoiceNumberDisplay" class="font-mono text-lime" style="font-size:0.875rem; font-weight:700;">DP-2026-AUTO</span>
                 </div>
               </div>
 
@@ -230,7 +219,7 @@
                 </div>
                 <div class="totals-row final">
                   <span>Total Estimated</span>
-                  <span class="text-cyan" id="previewTotal">Ksh 0.00</span>
+                  <span class="text-lime" id="previewTotal">Ksh 0.00</span>
                 </div>
               </div>
             </div>
@@ -238,7 +227,7 @@
             <!-- Saved Quotes Records -->
             <div class="glass-panel" style="padding:2rem;">
               <h3 class="font-display" style="font-size:1.2rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
-                <i data-lucide="history" class="text-cyan" style="width:18px; height:18px;"></i> Saved Local Quotes
+                <i data-lucide="history" class="text-lime" style="width:18px; height:18px;"></i> Saved Local Quotes
               </h3>
               <p class="text-muted" style="font-size:0.8125rem; margin-bottom:1rem;">Click any record to reload its configuration into the workspace.</p>
               <div id="savedQuotesList">
@@ -252,21 +241,17 @@
   </main>
 
   <!-- ==========================================================================
-       Printable Invoice Layout (Displays on window.print() and hidden on screen)
+       Printable Proforma Invoice Layout (Displays on window.print() and PDF export)
        ========================================================================== -->
   <div class="printable-invoice" style="display:none;">
     <div style="max-width:750px; margin:0 auto; font-family:'Inter', sans-serif; color:#0f172a; padding:20px;">
       <!-- Header -->
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0f172a; padding-bottom:15px; margin-bottom:25px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #8ACE00; padding-bottom:15px; margin-bottom:25px;">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div style="background:#050505; color:#06b6d4; font-weight:900; font-size:24px; padding:8px 14px; border-radius:8px;">DP</div>
-          <div>
-            <h1 style="font-size:24px; font-weight:800; margin:0;">DataPort INC</h1>
-            <p style="font-size:12px; color:#64748b; margin:0;">High-End ICT Infrastructure & Creative Media</p>
-          </div>
+          <img src="public/logo.svg" alt="DataPort.INC" style="height:48px; width:auto;">
         </div>
         <div style="text-align:right;">
-          <h2 style="font-size:18px; font-weight:800; margin:0; color:#0f172a;">PROFORMA INVOICE</h2>
+          <h2 style="font-size:18px; font-weight:800; margin:0; color:#0f172a;">COMMERCIAL PROFORMA</h2>
           <p style="font-size:12px; color:#64748b; margin:2px 0;"><strong id="printInvoiceNumber">DP-0000</strong></p>
           <p style="font-size:12px; color:#64748b; margin:0;" id="printInvoiceDate">Date</p>
         </div>
@@ -274,8 +259,8 @@
 
       <!-- Parties -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px;">
-        <div style="background:#f8fafc; padding:15px; border-radius:8px; font-size:13px;">
-          <p style="font-size:11px; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:5px;">Billed To:</p>
+        <div style="background:#f8fafc; padding:15px; border-radius:8px; font-size:13px; border:1px solid #e2e8f0;">
+          <p style="font-size:11px; font-weight:700; text-transform:uppercase; color:#8ACE00; margin-bottom:5px;">Billed To (Client):</p>
           <p style="font-weight:700; font-size:14px; margin:0;" id="printClientName">Client Name</p>
           <p style="margin:2px 0;" id="printClientCompany"></p>
           <p style="margin:2px 0;" id="printClientPhone">Phone</p>
@@ -283,11 +268,11 @@
           <p style="margin:2px 0; color:#64748b;" id="printClientLocation">Location</p>
         </div>
 
-        <div style="background:#f8fafc; padding:15px; border-radius:8px; font-size:13px;">
-          <p style="font-size:11px; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:5px;">Payment Channels:</p>
+        <div style="background:#f8fafc; padding:15px; border-radius:8px; font-size:13px; border:1px solid #e2e8f0;">
+          <p style="font-size:11px; font-weight:700; text-transform:uppercase; color:#8ACE00; margin-bottom:5px;">Payment Channels & Terms:</p>
+          <p style="font-size:12px; color:#64748b; margin-bottom:6px;"><strong>Terms:</strong> 60% Deposit upon signing, 40% upon commissioning.</p>
           <p style="font-weight:700; margin:0;">M-PESA (Mobile Money)</p>
-          <p style="margin:2px 0;">Name: Emmanuel Nyakundi</p>
-          <p style="margin:2px 0; font-weight:600;">Phone: 0790 964 002</p>
+          <p style="margin:2px 0;">Name: Emmanuel Nyakundi • Phone: <strong>0790 964 002</strong></p>
           <div style="margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
             <p style="font-weight:700; margin:0;">Standard Chartered Bank</p>
             <p style="margin:2px 0;">Account No: <strong>0100499055400</strong></p>
@@ -299,10 +284,10 @@
       <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:13px;">
         <thead>
           <tr style="background:#0f172a; color:#ffffff;">
-            <th style="padding:10px 8px; text-align:left;">Item / Description</th>
+            <th style="padding:10px 8px; text-align:left;">Item / Service Description</th>
             <th style="padding:10px 8px; text-align:center;">Qty</th>
-            <th style="padding:10px 8px; text-align:right;">Unit Price (Ksh)</th>
-            <th style="padding:10px 8px; text-align:right;">Amount (Ksh)</th>
+            <th style="padding:10px 8px; text-align:right;">Unit Price (KSh)</th>
+            <th style="padding:10px 8px; text-align:right;">Total (KSh)</th>
           </tr>
         </thead>
         <tbody id="printTableBody">
@@ -318,16 +303,16 @@
             <span id="printSubtotal">Ksh 0.00</span>
           </div>
           <div style="display:flex; justify-content:space-between; padding:4px 0;">
-            <span style="color:#64748b;">Labour Fee:</span>
+            <span style="color:#64748b;">Labour / Installation:</span>
             <span id="printLabour">Ksh 0.00</span>
           </div>
           <div style="display:flex; justify-content:space-between; padding:4px 0;">
-            <span style="color:#64748b;">Tax:</span>
+            <span style="color:#64748b;">Tax Addition:</span>
             <span id="printTax">Ksh 0.00</span>
           </div>
-          <div style="display:flex; justify-content:space-between; padding:8px 0; border-top:2px solid #0f172a; font-weight:800; font-size:16px;">
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-top:2px solid #8ACE00; font-weight:800; font-size:16px;">
             <span>Total Payable:</span>
-            <span id="printTotal">Ksh 0.00</span>
+            <span id="printTotal" style="color:#8ACE00;">Ksh 0.00</span>
           </div>
         </div>
       </div>
@@ -335,8 +320,8 @@
       <!-- Footer Note -->
       <div style="border-top:1px solid #e2e8f0; padding-top:15px; display:flex; justify-content:space-between; align-items:flex-end; font-size:12px; color:#64748b;">
         <div>
-          <p style="font-weight:700; color:#0f172a; margin:0;">Thank you for partnering with Data Port Limited!</p>
-          <p style="margin:2px 0;">Mombasa Mall Along Jomo Kenyatta Avenue • support@dpinc.top • dpinc.top</p>
+          <p style="font-weight:700; color:#0f172a; margin:0;">Data Port Limited — High-End ICT & Creative Media</p>
+          <p style="margin:2px 0;">Along Jomo Kenyatta Avenue • Tel: +254 790 964 002 • tech@dpinc.top • dpinc.top</p>
         </div>
         <div style="text-align:right;">
           <p style="margin:0;">Prepared By: <strong>Nyakundi, E.</strong></p>
@@ -352,7 +337,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="brand-logo">
-            <span class="brand-title">DATA<span class="text-cyan">PORT</span></span>
+            <img src="public/logo.svg" alt="DataPort.INC" style="height:34px; width:auto;">
           </a>
           <p>High-End ICT Infrastructure & Creative Media Services. Modernizing businesses across all sectors.</p>
         </div>
@@ -360,26 +345,27 @@
           <h4>Navigation</h4>
           <div class="footer-links">
             <a href="index.html">Home</a>
-            <a href="services.html">Services</a>
+            <a href="services.html">Services & Pricing</a>
             <a href="portfolio.html">Portfolio</a>
             <a href="quote.html">Quote Generator</a>
             <a href="contact.html">Contact Us</a>
           </div>
         </div>
         <div class="footer-col">
-          <h4>Pillars</h4>
+          <h4>Commercial Packages</h4>
           <div class="footer-links">
-            <a href="services.html#infrastructure">Infrastructure & Security</a>
-            <a href="services.html#software">Software & DevOps</a>
-            <a href="services.html#creative">Creative & Media</a>
+            <a href="services.html">Secure Office Starter (35k)</a>
+            <a href="services.html">Digital Launchpad (30k)</a>
+            <a href="services.html">Itemized Hardware & Dev</a>
+            <a href="services.html">Annual Retainers (AMC)</a>
           </div>
         </div>
         <div class="footer-col">
           <h4>Headquarters</h4>
           <div class="footer-links" style="color:var(--text-secondary); font-size:0.875rem;">
-            <p>Mombasa Mall Along Jomo Kenyatta Avenue, Mombasa</p>
-            <p>Direct: 0790 964 002</p>
-            <p>Email: support@dpinc.top</p>
+            <p>Along Jomo Kenyatta Avenue, Mombasa</p>
+            <p>Tel: +254 790 964 002 // +254 118 228 000</p>
+            <p>Email: tech@dpinc.top // tech@dpinc.co.ke</p>
           </div>
         </div>
       </div>
