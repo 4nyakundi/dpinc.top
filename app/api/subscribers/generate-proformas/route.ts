@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { prisma } from "@/lib/prismadb";
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || "your-secret-key";
@@ -15,8 +16,12 @@ function verifyAuth(req: NextRequest) {
   }
 }
 
-function buildInvoiceNumber() {
-  return `INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000 + 10000)}`;
+async function getNextInvoiceNumber(prefix: string) {
+  const year = new Date().getFullYear();
+  const lastInvoice = await prisma.invoice.findFirst({ where: { invoiceNo: { startsWith: `${prefix}-${year}` } }, orderBy: { createdAt: 'desc' } });
+  const lastNumber = lastInvoice ? parseInt(lastInvoice.invoiceNo.split('-').pop() || '0') : 0;
+  const nextNumber = (lastNumber + 1).toString().padStart(5, '0');
+  return `${prefix}-${year}-${nextNumber}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -27,7 +32,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const now = new Date();
-    // Billing month identifier: e.g. "07-2026"
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const year = now.getFullYear();
     const billingMonthToken = `[Billing Month: ${month}-${year}]`;
@@ -43,63 +47,73 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    let generatedCount = 0;
+    const creationPromises = [];
 
     for (const sub of subscribers) {
       const template = sub.quotes[0]; // Active subscription quote
       if (!template) continue;
 
-      // Check if a proforma for this month already exists
-      const existingQuote = await prisma.quote.findFirst({
-        where: {
-          leadId: sub.id,
-          notes: {
-            contains: billingMonthToken,
-          },
-        },
-      });
-
-      if (!existingQuote) {
-        // Create new monthly proforma Quote
-        const monthlyQuote = await prisma.quote.create({
-          data: {
+      creationPromises.push(async () => {
+        // Check if a proforma for this month already exists inside a transaction
+        const existingQuote = await prisma.quote.findFirst({
+          where: {
             leadId: sub.id,
-            invoiceNo: `PROF-${year}-${Math.floor(Math.random() * 90000 + 10000)}`,
-            status: "proforma",
-            dueDate: new Date(year, now.getMonth() + 1, 5), // Due on 5th of next month (or same month)
-            subtotal: template.subtotal,
-            tax: template.tax,
-            labourFee: template.labourFee,
-            total: template.total,
-            notes: `${billingMonthToken} Monthly internet billing for ${sub.name}.`,
-            lineItems: {
-              create: template.lineItems.map((item) => ({
-                name: item.name,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                total: item.total,
-              })),
+            notes: {
+              contains: billingMonthToken,
             },
           },
         });
 
-        // Create associated Invoice in "unpaid" (Pending) status
-        await prisma.invoice.create({
-          data: {
-            quoteId: monthlyQuote.id,
-            invoiceNo: buildInvoiceNumber(),
-            subtotal: monthlyQuote.subtotal,
-            tax: monthlyQuote.tax,
-            labourFee: monthlyQuote.labourFee,
-            total: monthlyQuote.total,
-            status: "unpaid",
-            generatedAutomatically: true,
-          },
-        });
+        if (existingQuote) {
+          return null;
+        }
 
-        generatedCount++;
-      }
+        return prisma.$transaction(async (tx) => {
+          const proformaNumber = await getNextInvoiceNumber("PROF");
+          const invoiceNumber = await getNextInvoiceNumber("INV");
+
+          const monthlyQuote = await tx.quote.create({
+            data: {
+              leadId: sub.id,
+              invoiceNo: proformaNumber,
+              status: "proforma",
+              dueDate: new Date(year, now.getMonth() + 1, 5),
+              subtotal: template.subtotal,
+              tax: template.tax,
+              labourFee: template.labourFee,
+              total: template.total,
+              notes: `${billingMonthToken} Monthly internet billing for ${sub.name}.`,
+              lineItems: {
+                create: template.lineItems.map((item) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  total: item.total,
+                })),
+              },
+            },
+          });
+
+          await tx.invoice.create({
+            data: {
+              quoteId: monthlyQuote.id,
+              invoiceNo: invoiceNumber,
+              subtotal: monthlyQuote.subtotal,
+              tax: monthlyQuote.tax,
+              labourFee: monthlyQuote.labourFee,
+              total: monthlyQuote.total,
+              status: "unpaid",
+              generatedAutomatically: true,
+            },
+          });
+
+          return monthlyQuote.id;
+        });
+      });
     }
+
+    const results = await Promise.all(creationPromises.map(p => p()));
+    const generatedCount = results.filter(r => r !== null).length;
 
     return NextResponse.json({ success: true, generatedCount });
   } catch (error: any) {
