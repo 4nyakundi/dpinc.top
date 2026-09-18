@@ -1,9 +1,41 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setStatus("idle");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await addDoc(collection(db, "contactSubmissions"), {
+        name: String(formData.get("name") || "").trim(),
+        email: String(formData.get("email") || "").trim(),
+        message: String(formData.get("message") || "").trim(),
+        source: "website",
+        createdAt: serverTimestamp(),
+      });
+      form.reset();
+      setStatus("success");
+    } catch (error) {
+      console.error("Unable to submit contact form", error);
+      setStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black pt-24 pb-32">
       <div className="max-w-7xl mx-auto px-6">
@@ -73,11 +105,13 @@ export default function ContactPage() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none" />
             
-            <form className="relative z-10 flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="relative z-10 flex flex-col gap-6" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Name</label>
                 <input 
+                  name="name"
                   type="text" 
+                  required
                   className="bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-cyan-400 transition-colors"
                   placeholder="John Doe"
                 />
@@ -86,7 +120,9 @@ export default function ContactPage() {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Email</label>
                 <input 
+                  name="email"
                   type="email" 
+                  required
                   className="bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-cyan-400 transition-colors"
                   placeholder="john@company.com"
                 />
@@ -95,15 +131,23 @@ export default function ContactPage() {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Message</label>
                 <textarea 
+                  name="message"
                   rows={5}
+                  required
                   className="bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-cyan-400 transition-colors resize-none"
                   placeholder="Tell us about your project..."
                 />
               </div>
 
-              <button className="mt-4 px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 w-full group">
-                Send Message <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <button disabled={isSubmitting} className="mt-4 px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 w-full group disabled:cursor-not-allowed disabled:opacity-60">
+                {isSubmitting ? "Sending..." : "Send Message"} <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
+              {status === "success" && (
+                <p role="status" className="text-sm text-cyan-400">Thanks for reaching out. We&apos;ll be in touch soon.</p>
+              )}
+              {status === "error" && (
+                <p role="alert" className="text-sm text-red-400">We couldn&apos;t send your message. Please try again.</p>
+              )}
             </form>
           </motion.div>
         </div>

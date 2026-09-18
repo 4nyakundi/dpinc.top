@@ -1,4 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DATA PORT
+
+DATA PORT is a Next.js site for ICT infrastructure and creative media services. The existing component, page, styling, and Prisma structures are intentionally preserved.
+
+## Firebase
+
+The contact form uses Firebase Firestore and stores submissions in the `contactSubmissions` collection. Firebase web configuration is safe to expose in the browser; for a different Firebase project, provide the `NEXT_PUBLIC_FIREBASE_*` values used by `lib/firebase.ts`.
+
+Deploy the Firestore rules before publishing the form:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+The rules allow anonymous contact submissions with field and length validation, but do not allow client reads, updates, or deletes.
+
+## Getting Started
 
 ## Getting Started
 
