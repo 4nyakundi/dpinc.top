@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOC Billing & Subscriber Calendar Hub - DATA PORT Limited</title>
-  <meta name="description" content="Data Port Limited internal NOC and subscriber billing calendar management system.">
+  <title>Master Operations & Financial ERP Hub - DATA PORT Limited</title>
+  <meta name="description" content="Data Port Limited Master Operations ERP: ISP NOC Subscriber Billing, Field Job Cards, Financial Ledger, and Executive Treasury.">
   <link rel="icon" href="public/logo.svg" type="image/svg+xml">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
@@ -35,10 +35,10 @@
         <img src="public/logo.svg" alt="Data Port" style="height:44px; margin: 0 auto 1.25rem auto;">
         <div class="badge mb-4">
           <span class="pulse-dot"></span>
-          <span>NOC Management Portal</span>
+          <span>Unified Enterprise ERP & NOC</span>
         </div>
         <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:0.5rem;">Staff Authentication</h2>
-        <p class="text-muted" style="font-size:0.875rem;">Enter administrative credentials to access subscriber billing & calendar operations.</p>
+        <p class="text-muted" style="font-size:0.875rem;">Enter administrative credentials to access operations, billing, job cards & financial ledger.</p>
       </div>
 
       <form id="loginForm" class="login-form" style="margin-top:1.5rem;">
@@ -63,11 +63,11 @@
         </div>
 
         <button type="submit" class="btn btn-primary" style="width:100%; padding:0.9rem;">
-          <i data-lucide="shield-check"></i> Unlock Dashboard
+          <i data-lucide="shield-check"></i> Unlock ERP Cockpit
         </button>
 
         <div class="text-center text-muted" style="font-size:0.75rem; margin-top:1.25rem; font-family:var(--font-mono);">
-          DATA PORT LTD • SECURE NOC ENCRYPTION v2.4
+          DATA PORT LTD • SECURE NOC & FINANCIAL PLATFORM v2.5
         </div>
       </form>
     </div>
@@ -85,7 +85,7 @@
           <a href="index.html" class="brand-logo">
             <img src="public/logo.svg" alt="DataPort" style="height:36px; width:auto;">
           </a>
-          <span class="dash-tag">NOC & Billing Hub</span>
+          <span class="dash-tag">Operations & Financial Cockpit</span>
         </div>
 
         <div class="dash-center-info">
@@ -96,6 +96,9 @@
         </div>
 
         <div class="dash-nav-actions">
+          <button id="openSyncModalBtn" class="btn btn-secondary btn-sm" title="Cloud JSON Sync & Backup">
+            <i data-lucide="database" style="width:16px; height:16px; color:var(--lime);"></i> Data Sync
+          </button>
           <button class="theme-toggle-btn" aria-label="Toggle Color Theme" title="Toggle Theme">
             <i data-lucide="sun" class="theme-icon" style="width:18px; height:18px;"></i>
           </button>
@@ -112,49 +115,49 @@
     <main class="dash-main-content">
       <div class="container">
 
-        <!-- Metrics Overview Bar -->
+        <!-- Unified Financial & Operations Overview Metrics Bar -->
         <section class="dash-metrics-grid">
           <div class="stat-card tilt-card metric-box">
-            <div class="metric-icon-wrap" style="color:var(--neon-mint); background:rgba(72, 229, 134, 0.12);">
+            <div class="metric-icon-wrap" style="color:var(--lime); background:rgba(138, 206, 0, 0.12);">
               <i data-lucide="users"></i>
             </div>
             <div>
               <div class="metric-label">Active Subscribers</div>
               <div class="stat-value" id="metricTotalSubs">0</div>
-              <div class="metric-subtext"><span class="text-lime">100%</span> Active Fiber & SOHO</div>
+              <div class="metric-subtext"><span class="text-lime">100%</span> Active Fiber SLA</div>
             </div>
           </div>
 
           <div class="stat-card tilt-card metric-box">
-            <div class="metric-icon-wrap" style="color:var(--amber-gold); background:rgba(246, 207, 99, 0.12);">
-              <i data-lucide="trending-up"></i>
+            <div class="metric-icon-wrap" style="color:#FFFFFF; background:rgba(255, 255, 255, 0.1);">
+              <i data-lucide="wallet"></i>
             </div>
             <div>
-              <div class="metric-label">Monthly Recurring (MRR)</div>
-              <div class="stat-value" id="metricMRR">KSh 0</div>
-              <div class="metric-subtext text-muted">Contracted monthly baseline</div>
+              <div class="metric-label">Monthly Gross Revenue</div>
+              <div class="stat-value text-lime" id="metricGrossRevenue">KSh 0</div>
+              <div class="metric-subtext text-muted" id="metricMRR">MRR: KSh 0</div>
             </div>
           </div>
 
           <div class="stat-card tilt-card metric-box">
-            <div class="metric-icon-wrap" style="color:var(--primary); background:rgba(48, 109, 41, 0.15);">
-              <i data-lucide="check-circle-2"></i>
+            <div class="metric-icon-wrap" style="color:#FFFFFF; background:rgba(255, 255, 255, 0.08);">
+              <i data-lucide="arrow-down-right"></i>
             </div>
             <div>
-              <div class="metric-label">Collected This Month</div>
-              <div class="stat-value text-lime" id="metricCollected">KSh 0</div>
-              <div class="metric-subtext" id="metricCollectedPercent">0% of monthly cycle</div>
+              <div class="metric-label">Operating Costs & Transit</div>
+              <div class="stat-value" id="metricTotalExpenses" style="color:#FFFFFF;">KSh 0</div>
+              <div class="metric-subtext text-muted" id="metricTransitCost">Transit: KSh 0</div>
             </div>
           </div>
 
           <div class="stat-card tilt-card metric-box">
-            <div class="metric-icon-wrap" style="color:#ef4444; background:rgba(239, 68, 68, 0.12);">
-              <i data-lucide="clock"></i>
+            <div class="metric-icon-wrap" style="color:var(--lime); background:rgba(138, 206, 0, 0.15);">
+              <i data-lucide="activity"></i>
             </div>
             <div>
-              <div class="metric-label">Pending / Outstanding</div>
-              <div class="stat-value" id="metricPending" style="color:#ef4444;">KSh 0</div>
-              <div class="metric-subtext text-muted" id="metricOverdueCount">0 overdue invoices</div>
+              <div class="metric-label">Net Profit Margin</div>
+              <div class="stat-value text-lime" id="metricProfitMargin">0%</div>
+              <div class="metric-subtext" id="metricNetCash">Net: KSh 0</div>
             </div>
           </div>
         </section>
@@ -166,24 +169,35 @@
               <i data-lucide="calendar" style="width:16px; height:16px;"></i> Billing Calendar
             </button>
             <button class="dash-tab" data-tab="subscribersTab">
-              <i data-lucide="users" style="width:16px; height:16px;"></i> Subscribers Directory (<span id="tabSubsCount">0</span>)
+              <i data-lucide="users" style="width:16px; height:16px;"></i> Subscribers (<span id="tabSubsCount">0</span>)
             </button>
-            <button class="dash-tab" data-tab="invoicesTab">
-              <i data-lucide="receipt" style="width:16px; height:16px;"></i> Invoices Ledger (<span id="tabInvoicesCount">0</span>)
+            <button class="dash-tab" data-tab="jobCardsTab">
+              <i data-lucide="wrench" style="width:16px; height:16px;"></i> Job Cards (<span id="tabJobsCount">0</span>)
+            </button>
+            <button class="dash-tab" data-tab="ledgerTab">
+              <i data-lucide="book-open" style="width:16px; height:16px;"></i> General Ledger
+            </button>
+            <button class="dash-tab" data-tab="analyticsTab">
+              <i data-lucide="bar-chart-3" style="width:16px; height:16px;"></i> P&L Analytics
+            </button>
+            <button class="dash-tab" data-tab="vaultTab">
+              <i data-lucide="lock" style="width:16px; height:16px;"></i> Executive Vault
             </button>
           </div>
 
           <div class="dash-action-buttons">
             <button id="batchGenerateBtn" class="btn btn-secondary btn-sm" title="Generate proformas for all active subscribers for the selected month">
-              <i data-lucide="zap" style="width:16px; height:16px; color:var(--amber-gold);"></i> Batch Month Invoices
+              <i data-lucide="zap" style="width:16px; height:16px; color:var(--lime);"></i> Batch Invoices
             </button>
-            <button id="openAddSubModalBtn" class="btn btn-primary btn-sm">
-              <i data-lucide="user-plus" style="width:16px; height:16px;"></i> Add Subscriber
+            <button id="quickActionBtn" class="btn btn-primary btn-sm">
+              <i data-lucide="plus" style="width:16px; height:16px;"></i> <span id="quickActionLabel">Add Subscriber</span>
             </button>
           </div>
         </div>
 
-        <!-- TAB 1: INTERACTIVE BILLING CALENDAR VIEW (PRIMARY) -->
+        <!-- =====================================================================
+             TAB 1: NOC BILLING CALENDAR VIEW
+             ===================================================================== -->
         <section id="calendarTab" class="dash-tab-pane active">
           <div class="glass-panel calendar-wrapper">
             
@@ -191,7 +205,7 @@
             <div class="calendar-header-bar">
               <div class="calendar-title-group">
                 <h3 id="calendarMonthYearTitle" class="calendar-month-title">September 2026</h3>
-                <span class="text-muted" style="font-size:0.8125rem;">Internet Renewal & Proforma Dispatch Grid</span>
+                <span class="text-muted" style="font-size:0.8125rem;">Internet Renewal & WhatsApp Dispatch Grid</span>
               </div>
 
               <!-- Status Legend -->
@@ -224,34 +238,34 @@
               <div>SUN</div>
             </div>
 
-            <!-- 7-Column Date Cells Grid (Dynamically Populated) -->
+            <!-- 7-Column Date Cells Grid -->
             <div id="calendarGrid" class="calendar-grid-body">
               <!-- Rendered via js/dashboard.js -->
             </div>
           </div>
         </section>
 
-        <!-- TAB 2: SUBSCRIBERS DIRECTORY -->
+        <!-- =====================================================================
+             TAB 2: SUBSCRIBERS DIRECTORY
+             ===================================================================== -->
         <section id="subscribersTab" class="dash-tab-pane">
-          <div class="glass-panel directory-card">
-            <div class="directory-header-bar">
-              <div class="directory-search-box">
-                <i data-lucide="search" class="search-icon"></i>
-                <input type="text" id="subscriberSearchInput" class="form-input" placeholder="Search by name, phone, company, plan...">
+          <div class="glass-panel directory-card" style="padding:2rem;">
+            <div class="directory-header-bar" style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+              <div class="directory-search-box" style="flex:1; min-width:280px; position:relative;">
+                <input type="text" id="subscriberSearchInput" class="form-input" placeholder="Search by name, phone, company, plan, IP...">
               </div>
               <div class="directory-filters">
                 <select id="subscriberFilterPlan" class="form-select" style="width:auto;">
                   <option value="all">All Bandwidth Packages</option>
-                  <option value="5Mbps">5 Mbps SOHO</option>
-                  <option value="10Mbps">10 Mbps Standard</option>
-                  <option value="20Mbps">20 Mbps Pro Office</option>
-                  <option value="50Mbps">50 Mbps Dedicated Fiber</option>
-                  <option value="CCTV">CCTV AMC & Retainers</option>
+                  <option value="5 Mbps">5 Mbps SOHO</option>
+                  <option value="10 Mbps">10 Mbps Standard</option>
+                  <option value="20 Mbps">20 Mbps Pro Office</option>
+                  <option value="50 Mbps">50 Mbps Dedicated Fiber</option>
                 </select>
               </div>
             </div>
 
-            <div class="proposal-table-wrapper" style="margin-top:1rem;">
+            <div class="proposal-table-wrapper" style="margin-top:1.5rem;">
               <table class="proposal-table">
                 <thead>
                   <tr>
@@ -259,7 +273,6 @@
                     <th>Package / Speed</th>
                     <th>Monthly Fee</th>
                     <th>Billing Day</th>
-                    <th>Next Due Date</th>
                     <th>Status</th>
                     <th style="text-align:right;">Actions</th>
                   </tr>
@@ -272,43 +285,208 @@
           </div>
         </section>
 
-        <!-- TAB 3: INVOICES & PROFORMAS LEDGER -->
-        <section id="invoicesTab" class="dash-tab-pane">
-          <div class="glass-panel directory-card">
-            <div class="directory-header-bar">
-              <div class="directory-search-box">
-                <i data-lucide="search" class="search-icon"></i>
-                <input type="text" id="invoiceSearchInput" class="form-input" placeholder="Search by invoice no (e.g. PROF-2026-), client...">
+        <!-- =====================================================================
+             TAB 3: FIELD OPERATIONS & JOB CARDS
+             ===================================================================== -->
+        <section id="jobCardsTab" class="dash-tab-pane">
+          <div class="glass-panel" style="padding:2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <h3 style="font-size:1.35rem; font-weight:800;">Field Deployments & Job Cards</h3>
+                <p class="text-muted" style="font-size:0.875rem;">Track technician dispatch, material expenses, labor charges, and convert to invoices.</p>
               </div>
-              <div class="directory-filters">
-                <select id="invoiceFilterStatus" class="form-select" style="width:auto;">
-                  <option value="all">All Invoices</option>
-                  <option value="paid">Paid</option>
-                  <option value="unpaid">Unpaid / Pending</option>
-                  <option value="overdue">Overdue</option>
-                </select>
-              </div>
+              <button id="openAddJobModalBtn" class="btn btn-primary btn-sm">
+                <i data-lucide="plus-circle"></i> Create Job Card
+              </button>
             </div>
 
-            <div class="proposal-table-wrapper" style="margin-top:1rem;">
+            <div class="job-cards-grid" id="jobCardsGrid">
+              <!-- Populated dynamically via js/dashboard.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 4: FINANCIAL GENERAL LEDGER
+             ===================================================================== -->
+        <section id="ledgerTab" class="dash-tab-pane">
+          <div class="glass-panel" style="padding:2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+              <div>
+                <h3 style="font-size:1.35rem; font-weight:800;">Double-Entry Cash Flow Ledger</h3>
+                <p class="text-muted" style="font-size:0.875rem;">Real-time record of all ISP subscriptions, wholesale bandwidth transit, hardware, and operational disbursements.</p>
+              </div>
+              <button id="openAddTxModalBtn" class="btn btn-primary btn-sm">
+                <i data-lucide="plus-circle"></i> Record Transaction
+              </button>
+            </div>
+
+            <div class="proposal-table-wrapper">
               <table class="proposal-table">
                 <thead>
                   <tr>
-                    <th>Invoice No</th>
-                    <th>Client / Organization</th>
-                    <th>Period / Month</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Entity / Branch</th>
+                    <th>Payment Method</th>
                     <th>Amount</th>
-                    <th>Due Date</th>
-                    <th>Payment Status</th>
-                    <th style="text-align:right;">Dispatch & Manage</th>
+                    <th style="text-align:right;">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="invoicesTableBody">
-                  <!-- Rendered via js/dashboard.js -->
+                <tbody id="ledgerTableBody">
+                  <!-- Populated dynamically via js/dashboard.js -->
                 </tbody>
               </table>
             </div>
           </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 5: P&L ANALYTICS & CASH FLOW CHARTS
+             ===================================================================== -->
+        <section id="analyticsTab" class="dash-tab-pane">
+          <div class="analytics-grid">
+            
+            <!-- Cash Flow Trend Chart -->
+            <div class="glass-panel chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 style="font-size:1.25rem; font-weight:800;">Financial Trajectory & Cash Flow</h3>
+                  <p class="text-muted" style="font-size:0.8125rem;">Gross Income vs. Operating Costs vs. Net Margin</p>
+                </div>
+                <span class="badge"><i data-lucide="activity" class="text-lime" style="width:12px; height:12px;"></i> Live Data</span>
+              </div>
+              
+              <div class="chart-canvas-container">
+                <canvas id="cashFlowCanvas" width="700" height="280"></canvas>
+              </div>
+            </div>
+
+            <!-- Revenue vs Cost Breakdown -->
+            <div class="glass-panel chart-card">
+              <h3 style="font-size:1.25rem; font-weight:800; margin-bottom:0.5rem;">Cost Structure</h3>
+              <p class="text-muted" style="font-size:0.8125rem;">Overhead distribution against gross revenue</p>
+
+              <div class="breakdown-bars-list">
+                <div>
+                  <div class="breakdown-item-header">
+                    <span>Upstream Fiber Transit</span>
+                    <strong id="transitPercentLabel">25%</strong>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill-white" id="transitProgressBar" style="width: 25%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="breakdown-item-header">
+                    <span>Hardware & Field Equipment</span>
+                    <strong id="hardwarePercentLabel">15%</strong>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill-white" id="hardwareProgressBar" style="width: 15%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="breakdown-item-header">
+                    <span>Net Operating Profit</span>
+                    <strong class="text-lime" id="profitPercentLabel">60%</strong>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill-green" id="profitProgressBar" style="width: 60%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             TAB 6: EXECUTIVE VAULT & RULES ENGINE (PIN PROTECTED)
+             ===================================================================== -->
+        <section id="vaultTab" class="dash-tab-pane">
+          
+          <!-- Locked State (PIN Pad) -->
+          <div id="vaultLockedState" class="glass-panel vault-locked-box">
+            <div class="badge mb-3">
+              <i data-lucide="shield" class="text-lime" style="width:14px; height:14px;"></i>
+              <span>Encrypted Executive Treasury</span>
+            </div>
+            <h3 style="font-size:1.5rem; font-weight:800; margin-bottom:0.5rem;">Enter Security PIN</h3>
+            <p class="text-muted" style="font-size:0.875rem;">Owner dividends, personal drawings, and tax reserves require executive clearance.</p>
+
+            <div class="pin-display-dots" style="margin-top:1.5rem;">
+              <span class="pin-dot-circle" id="pindot1"></span>
+              <span class="pin-dot-circle" id="pindot2"></span>
+              <span class="pin-dot-circle" id="pindot3"></span>
+              <span class="pin-dot-circle" id="pindot4"></span>
+            </div>
+
+            <div class="pin-keypad-grid">
+              <button class="pin-key-btn" data-key="1">1</button>
+              <button class="pin-key-btn" data-key="2">2</button>
+              <button class="pin-key-btn" data-key="3">3</button>
+              <button class="pin-key-btn" data-key="4">4</button>
+              <button class="pin-key-btn" data-key="5">5</button>
+              <button class="pin-key-btn" data-key="6">6</button>
+              <button class="pin-key-btn" data-key="7">7</button>
+              <button class="pin-key-btn" data-key="8">8</button>
+              <button class="pin-key-btn" data-key="9">9</button>
+              <button class="pin-key-btn" data-key="clear" style="font-size:0.9rem; color:#ef4444;">CLR</button>
+              <button class="pin-key-btn" data-key="0">0</button>
+              <button class="pin-key-btn" data-key="back" style="font-size:0.9rem;"><i data-lucide="delete" style="width:16px;"></i></button>
+            </div>
+
+            <div id="vaultPinError" style="display:none; color:#ef4444; font-size:0.8125rem; margin-top:0.75rem;">
+              <i data-lucide="alert-circle" style="width:14px; display:inline;"></i> Invalid security PIN.
+            </div>
+            <div class="text-muted" style="font-size:0.72rem; margin-top:1rem; font-family:var(--font-mono);">
+              Default Demo PIN: 4422
+            </div>
+          </div>
+
+          <!-- Unlocked State -->
+          <div id="vaultUnlockedState" class="vault-unlocked-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+              <div>
+                <h3 style="font-size:1.5rem; font-weight:800;">Executive Vault & Treasury</h3>
+                <p class="text-muted" style="font-size:0.875rem;">Separated owner drawings, tax reserve allocations, and active financial rules.</p>
+              </div>
+              <button id="lockVaultBtn" class="btn btn-secondary btn-sm">
+                <i data-lucide="lock"></i> Re-Lock Vault
+              </button>
+            </div>
+
+            <div class="vault-grid">
+              <div class="stat-card">
+                <div class="metric-label">Owner Drawings (This Month)</div>
+                <div class="stat-value text-lime" id="vaultDrawings">KSh 40,000</div>
+                <div class="metric-subtext text-muted">Direct partner distributions</div>
+              </div>
+              <div class="stat-card">
+                <div class="metric-label">Tax Reserve Fund (16% VAT)</div>
+                <div class="stat-value" id="vaultTaxReserve" style="color:#FFFFFF;">KSh 35,000</div>
+                <div class="metric-subtext text-muted">Ring-fenced statutory reserve</div>
+              </div>
+              <div class="stat-card">
+                <div class="metric-label">Emergency Cash Reserve</div>
+                <div class="stat-value text-lime" id="vaultEmergency">KSh 50,000</div>
+                <div class="metric-subtext text-muted">Core infrastructure buffer</div>
+              </div>
+            </div>
+
+            <!-- Rules & Guardrails -->
+            <div style="margin-top:2.5rem;">
+              <h4 style="font-size:1.15rem; font-weight:700; margin-bottom:1rem;">Active Financial Guardrails & Rules</h4>
+              <div class="rules-grid" id="rulesGrid">
+                <!-- Populated dynamically via js/dashboard.js -->
+              </div>
+            </div>
+          </div>
+
         </section>
 
       </div>
@@ -352,7 +530,6 @@
               <option value="10 Mbps Standard Business" selected>10 Mbps Standard Business (KSh 3,500)</option>
               <option value="20 Mbps Pro Office Dedicated">20 Mbps Pro Office Dedicated (KSh 6,500)</option>
               <option value="50 Mbps High-Capacity Enterprise">50 Mbps Enterprise Fiber (KSh 12,000)</option>
-              <option value="Secure Office Starter AMC">Secure Office Starter AMC (KSh 5,800/mo)</option>
               <option value="Custom Plan">Custom Bandwidth Package</option>
             </select>
           </div>
@@ -374,15 +551,136 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Technical Notes / Router IP</label>
-          <input type="text" id="subNotes" class="form-input" placeholder="e.g. Mikrotik RB750Gr3, IP: 192.168.88.25">
-        </div>
-
         <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
           <button type="button" class="btn btn-secondary" data-close="subscriberModal">Cancel</button>
           <button type="submit" class="btn btn-primary">
             <i data-lucide="check"></i> Save Subscriber
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADD JOB CARD
+       ========================================================================= -->
+  <div id="jobCardModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:640px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem; font-weight:700;">Create Field Deployment Job Card</h3>
+        <button class="modal-close-btn" data-close="jobCardModal">&times;</button>
+      </div>
+
+      <form id="jobCardForm" style="margin-top:1.25rem;">
+        <div class="form-group">
+          <label class="form-label">Job Title / Task Description *</label>
+          <input type="text" id="jobTitle" class="form-input" placeholder="e.g. 16-Port Fiber Switch & CCTV Drop" required>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Client / Location *</label>
+            <input type="text" id="jobClient" class="form-input" placeholder="Client or Subscriber Name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned Technician *</label>
+            <input type="text" id="jobTech" class="form-input" placeholder="e.g. Emmanuel N. / Field Tech" required>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Deployment Category *</label>
+            <select id="jobCategory" class="form-select" required>
+              <option value="Fiber Deployment">Fiber Deployment & Splicing</option>
+              <option value="CCTV Security">CCTV Surveillance & NVR</option>
+              <option value="Structured Cabling">Structured LAN Cabling</option>
+              <option value="Wireless Link">Wireless Point-to-Point Link</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Labor Charge (KSh) *</label>
+            <input type="number" id="jobLaborCost" class="form-input" placeholder="e.g. 5000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Materials & Hardware Cost (KSh)</label>
+          <input type="number" id="jobMaterialCost" class="form-input" placeholder="e.g. 15000" value="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Technical Field Notes / Specifications</label>
+          <textarea id="jobNotes" class="form-textarea" rows="2" placeholder="Optical power reading, serial numbers, port assignments..."></textarea>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
+          <button type="button" class="btn btn-secondary" data-close="jobCardModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Create Job Card
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADD LEDGER TRANSACTION
+       ========================================================================= -->
+  <div id="ledgerModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem; font-weight:700;">Record Ledger Transaction</h3>
+        <button class="modal-close-btn" data-close="ledgerModal">&times;</button>
+      </div>
+
+      <form id="ledgerForm" style="margin-top:1.25rem;">
+        <div class="form-group">
+          <label class="form-label">Transaction Description *</label>
+          <input type="text" id="txDescription" class="form-input" placeholder="e.g. Wholesale IP Transit Fee (Liquid/IXP)" required>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Transaction Type *</label>
+            <select id="txType" class="form-select" required>
+              <option value="income">Income / Credit (+)</option>
+              <option value="expense">Operating Expense (-)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount (KSh) *</label>
+            <input type="number" id="txAmount" class="form-input" placeholder="e.g. 14000" required>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="txCategory" class="form-select" required>
+              <option value="ISP Subscription Income">ISP Subscription Income</option>
+              <option value="Projects & Installations">Projects & Installations</option>
+              <option value="Wholesale Bandwidth Transit">Wholesale Bandwidth Transit</option>
+              <option value="Hardware & Inventory">Hardware & Inventory</option>
+              <option value="Field Ops & Logistics">Field Ops & Logistics</option>
+              <option value="Utilities & Overhead">Utilities & Overhead</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Method *</label>
+            <select id="txPaymentMethod" class="form-select" required>
+              <option value="M-Pesa Paybill">M-Pesa Paybill</option>
+              <option value="Bank Transfer">Bank Transfer / Wire</option>
+              <option value="M-Pesa Buy Goods">M-Pesa Buy Goods</option>
+              <option value="Cash / Petty Cash">Cash / Petty Cash</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
+          <button type="button" class="btn btn-secondary" data-close="ledgerModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Post to Ledger
           </button>
         </div>
       </form>
@@ -403,7 +701,6 @@
       </div>
 
       <div class="drawer-content" style="margin-top:1.25rem;">
-        <!-- Summary Box -->
         <div class="invoice-summary-box">
           <div class="grid-2col" style="gap:1rem;">
             <div>
@@ -424,18 +721,18 @@
             </div>
             <div>
               <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Payment Due Date</div>
-              <div id="drawerDueDate" style="font-weight:600; color:var(--amber-gold);">5th September 2026</div>
+              <div id="drawerDueDate" style="font-weight:600; color:#FFFFFF;">5th September 2026</div>
             </div>
             <div>
               <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Current Status</div>
-              <div id="drawerStatusBadge"><span class="badge" style="background:#ef444422; color:#ef4444; border-color:#ef4444;">Unpaid</span></div>
+              <div id="drawerStatusBadge"><span class="badge">Unpaid</span></div>
             </div>
           </div>
         </div>
 
         <!-- Multi-Channel Dispatch Section -->
         <div style="margin-top:1.5rem;">
-          <h4 style="font-size:0.875rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--accent-gold); margin-bottom:0.75rem;">
+          <h4 style="font-size:0.875rem; font-family:var(--font-mono); text-transform:uppercase; color:#FFFFFF; margin-bottom:0.75rem;">
             Direct Multi-Channel Client Dispatch
           </h4>
           <div class="dispatch-grid">
@@ -457,14 +754,45 @@
           </div>
         </div>
 
-        <!-- Quick Management Actions -->
         <div class="drawer-action-row" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
           <button id="togglePaidBtn" class="btn btn-primary" style="flex:1;">
-            <i data-lucide="check-circle-2"></i> Toggle Payment Status
+            <i data-lucide="check-circle-2"></i> Toggle Payment Status & Post to Ledger
           </button>
           <button id="printInvoiceBtn" class="btn btn-secondary" style="flex:1;">
             <i data-lucide="printer"></i> Print Official A4 Invoice
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CLOUD DATA SYNC & BACKUP
+       ========================================================================= -->
+  <div id="syncModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:540px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem; font-weight:700;">Data Sync & JSON Backup Engine</h3>
+        <button class="modal-close-btn" data-close="syncModal">&times;</button>
+      </div>
+
+      <div style="margin-top:1.25rem; display:flex; flex-direction:column; gap:1.25rem;">
+        <p class="text-muted" style="font-size:0.875rem;">
+          DATA PORT operates with high-speed local persistence and real-time cloud sync. You can download a complete backup or restore state anytime.
+        </p>
+
+        <div style="display:flex; gap:1rem;">
+          <button id="exportJsonBtn" class="btn btn-primary" style="flex:1;">
+            <i data-lucide="download"></i> Download JSON Backup
+          </button>
+          <button id="triggerSyncApiBtn" class="btn btn-secondary" style="flex:1;">
+            <i data-lucide="refresh-cw"></i> Sync Cloud API
+          </button>
+        </div>
+
+        <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
+          <label class="form-label">Restore from JSON File</label>
+          <input type="file" id="importJsonInput" accept=".json" class="form-input" style="padding:0.5rem;">
         </div>
       </div>
     </div>
@@ -542,7 +870,7 @@
       <h4 style="font-size:0.9rem; font-weight:700; color:#0f172a; margin-bottom:8px;">Official Payment Instructions:</h4>
       <div style="font-size:0.85rem; color:#334155; line-height:1.6;">
         <p>• <strong>M-PESA Paybill / Send Money:</strong> 0790964002 / Paybill: <strong>247247</strong> (Acc: <span id="printAccNo">Client Phone/ID</span>)</p>
-        <p>• <strong>Bank Transfer:</strong> Equity Bank / KCB Bank | Acc Name: <strong>DATA PORT LIMITED</strong></p>
+        <p>• <strong>Bank Transfer:</strong> Standard Chartered / KCB Bank | Acc Name: <strong>DATA PORT LIMITED</strong></p>
         <p>• <strong>Payment Terms:</strong> Invoices are due within 5 days of issue. Prompt settlement ensures uninterrupted fiber SLA.</p>
       </div>
     </div>

@@ -1961,3 +1961,344 @@ img, svg {
   }
 }
 
+/* ==========================================================================
+   UNIFIED ERP EXTENSIONS: JOB CARDS, LEDGER, ANALYTICS & EXECUTIVE VAULT
+   ========================================================================== */
+
+/* --- 1. Job Cards & Field Deployments --- */
+.job-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .job-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .job-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.job-card-item {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.job-card-item:hover {
+  border-color: var(--lime);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -8px var(--primary-glow);
+}
+
+.job-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.job-category-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.job-status-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.job-status-completed {
+  background: rgba(138, 206, 0, 0.15);
+  color: #8ACE00;
+  border: 1px solid rgba(138, 206, 0, 0.4);
+}
+
+.job-status-progress {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.job-status-pending {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.job-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.job-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.job-materials-summary {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+}
+
+.job-materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.job-material-line {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+}
+
+.job-cost-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+/* --- 2. Financial Ledger Transactions --- */
+.ledger-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.tx-amount-income {
+  color: #8ACE00 !important;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.tx-amount-expense {
+  color: #FFFFFF !important;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.tx-badge-income {
+  background: rgba(138, 206, 0, 0.12);
+  color: #8ACE00;
+  border: 1px solid rgba(138, 206, 0, 0.35);
+}
+
+.tx-badge-expense {
+  background: rgba(255, 255, 255, 0.08);
+  color: #EDEDED;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* --- 3. Analytics & Cash Flow Charts --- */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .analytics-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.chart-card {
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.chart-canvas-container {
+  width: 100%;
+  height: 280px;
+  position: relative;
+}
+
+.breakdown-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.breakdown-item-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill-green {
+  height: 100%;
+  background: #8ACE00;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 10px rgba(138, 206, 0, 0.5);
+  transition: width 0.6s ease-out;
+}
+
+.progress-fill-white {
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease-out;
+}
+
+/* --- 4. Executive Vault & Rules Engine --- */
+.vault-locked-box {
+  max-width: 480px;
+  margin: 3rem auto;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  border-radius: var(--radius-lg);
+}
+
+.pin-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  max-width: 260px;
+  margin: 1.5rem auto;
+}
+
+.pin-key-btn {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-key-btn:hover {
+  background: #8ACE00;
+  color: #000000;
+  border-color: #8ACE00;
+  transform: scale(1.05);
+}
+
+.pin-display-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pin-dot-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.pin-dot-circle.filled {
+  background: #8ACE00;
+  border-color: #8ACE00;
+  box-shadow: 0 0 10px #8ACE00;
+}
+
+.vault-unlocked-panel {
+  display: none;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .vault-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .rules-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rule-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+

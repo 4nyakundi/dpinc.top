@@ -1,0 +1,352 @@
+{
+  "version": "2.5.0",
+  "lastUpdated": "2026-09-19T00:00:00.000Z",
+  "subscribers": [
+    {
+      "id": "sub-101",
+      "name": "Mombasa Ocean View Suites",
+      "company": "Ocean View Hospitality Ltd",
+      "phone": "+254 712 345 678",
+      "email": "management@oceanview.co.ke",
+      "package": "Dedicated 50 Mbps Enterprise Fiber",
+      "monthlyRate": 12500,
+      "billingDay": 1,
+      "location": "Nyali Beach Road, Mombasa",
+      "ipAddress": "197.232.44.12",
+      "status": "active",
+      "joinedDate": "2024-01-15"
+    },
+    {
+      "id": "sub-102",
+      "name": "Crown Logistics Hub",
+      "company": "Crown Global Forwarders",
+      "phone": "+254 722 987 654",
+      "email": "operations@crownlogistics.com",
+      "package": "Dedicated 30 Mbps Business Pro",
+      "monthlyRate": 8500,
+      "billingDay": 1,
+      "location": "Mbaraki Port Area, Mombasa",
+      "ipAddress": "197.232.44.18",
+      "status": "active",
+      "joinedDate": "2024-03-10"
+    },
+    {
+      "id": "sub-103",
+      "name": "Dr. Sarah Kimani Dental Clinic",
+      "company": "Kimani Healthcare Group",
+      "phone": "+254 733 112 233",
+      "email": "reception@kimanidental.co.ke",
+      "package": "Essential 20 Mbps Office Fiber",
+      "monthlyRate": 5500,
+      "billingDay": 5,
+      "location": "Digo Road, CBD, Mombasa",
+      "ipAddress": "197.232.44.25",
+      "status": "active",
+      "joinedDate": "2024-06-01"
+    },
+    {
+      "id": "sub-104",
+      "name": "Apex Creative Studio",
+      "company": "Apex Media House",
+      "phone": "+254 701 445 566",
+      "email": "accounts@apexcreative.co.ke",
+      "package": "Creative High-Upload 40 Mbps",
+      "monthlyRate": 9500,
+      "billingDay": 10,
+      "location": "Bamburi Mtambo, Mombasa",
+      "ipAddress": "197.232.44.33",
+      "status": "active",
+      "joinedDate": "2024-08-12"
+    },
+    {
+      "id": "sub-105",
+      "name": "Tudor Heights Apartment 4B",
+      "company": "Residential Subscriber",
+      "phone": "+254 790 964 002",
+      "email": "resident4b@tudorheights.ke",
+      "package": "Home Fiber Fast 15 Mbps",
+      "monthlyRate": 3500,
+      "billingDay": 15,
+      "location": "Tudor, Mombasa",
+      "ipAddress": "197.232.44.41",
+      "status": "active",
+      "joinedDate": "2025-01-05"
+    },
+    {
+      "id": "sub-106",
+      "name": "Coast Marine Spares",
+      "company": "Coast Marine Engineering",
+      "phone": "+254 720 778 899",
+      "email": "info@coastmarine.co.ke",
+      "package": "Dedicated 30 Mbps Business Pro",
+      "monthlyRate": 8500,
+      "billingDay": 20,
+      "location": "Shimanzi Industrial Area, Mombasa",
+      "ipAddress": "197.232.44.52",
+      "status": "active",
+      "joinedDate": "2025-02-18"
+    }
+  ],
+  "jobCards": [
+    {
+      "id": "job-101",
+      "title": "18-Camera IP CCTV & NVR Setup",
+      "clientName": "Mombasa Ocean View Suites",
+      "technician": "Emmanuel Nyakundi (Lead Tech)",
+      "date": "2026-09-15",
+      "status": "completed",
+      "category": "CCTV Security",
+      "materials": [
+        { "name": "4MP Hikvision Dome Cameras", "qty": 18, "unitCost": 3500 },
+        { "name": "32-Channel 4K NVR + 8TB SkyHawk HDD", "qty": 1, "unitCost": 42000 },
+        { "name": "Cat6 Outdoor UTP Cable Roll (305m)", "qty": 2, "unitCost": 8500 },
+        { "name": "24-Port Gigabit PoE Switch", "qty": 1, "unitCost": 18000 }
+      ],
+      "laborCost": 25000,
+      "totalCost": 165000,
+      "notes": "All cameras focused, cloud remote view app configured on manager iPhone & tablet.",
+      "invoiceGenerated": true,
+      "invoiceRef": "INV-2026-0089"
+    },
+    {
+      "id": "job-102",
+      "title": "Drop Fiber Splicing & Dual-Band Router Install",
+      "clientName": "Apex Creative Studio",
+      "technician": "Ali Hassan (Field Tech)",
+      "date": "2026-09-17",
+      "status": "completed",
+      "category": "Fiber Deployment",
+      "materials": [
+        { "name": "2-Core Armored Drop Fiber (150m)", "qty": 1, "unitCost": 4500 },
+        { "name": "Huawei Dual-Band Gigabit ONT Router", "qty": 1, "unitCost": 4200 },
+        { "name": "Fiber Wall Terminal Box + Fast Connectors", "qty": 2, "unitCost": 800 }
+      ],
+      "laborCost": 3500,
+      "totalCost": 13800,
+      "notes": "Optical power reading -18.4 dBm (Optimum range). Latency to IXP 3ms.",
+      "invoiceGenerated": true,
+      "invoiceRef": "INV-2026-0091"
+    },
+    {
+      "id": "job-103",
+      "title": "Structured LAN Cabling & Rack Dressing",
+      "clientName": "Crown Logistics Hub",
+      "technician": "Ali Hassan & Kevin O.",
+      "date": "2026-09-18",
+      "status": "in_progress",
+      "category": "Structured Cabling",
+      "materials": [
+        { "name": "9U Data Cabinet Wall Mount", "qty": 1, "unitCost": 12500 },
+        { "name": "24-Port Cat6 Patch Panel", "qty": 2, "unitCost": 4500 },
+        { "name": "Cat6 Patch Cords 1m", "qty": 24, "unitCost": 250 }
+      ],
+      "laborCost": 15000,
+      "totalCost": 42500,
+      "notes": "Cabling running across warehouse conduit. Termination scheduled for completion by tomorrow.",
+      "invoiceGenerated": false,
+      "invoiceRef": null
+    }
+  ],
+  "ledger": [
+    {
+      "id": "tx-101",
+      "date": "2026-09-01",
+      "description": "Monthly Fiber Subscription - Mombasa Ocean View Suites",
+      "category": "ISP Subscription Income",
+      "type": "income",
+      "amount": 12500,
+      "paymentMethod": "M-Pesa Paybill",
+      "reference": "QKD8923KL9",
+      "entity": "DATA PORT Core"
+    },
+    {
+      "id": "tx-102",
+      "date": "2026-09-01",
+      "description": "Monthly Fiber Subscription - Crown Logistics Hub",
+      "category": "ISP Subscription Income",
+      "type": "income",
+      "amount": 8500,
+      "paymentMethod": "Bank Transfer",
+      "reference": "FT26245892",
+      "entity": "DATA PORT Core"
+    },
+    {
+      "id": "tx-103",
+      "date": "2026-09-03",
+      "description": "Upstream Wholesale IP Transit & STM Bandwidth (Liquid/IXP)",
+      "category": "Wholesale Bandwidth Transit",
+      "type": "expense",
+      "amount": 14000,
+      "paymentMethod": "Bank Wire",
+      "reference": "LQD-TR-992",
+      "entity": "NOC Operations"
+    },
+    {
+      "id": "tx-104",
+      "date": "2026-09-05",
+      "description": "Monthly Fiber Subscription - Dr. Sarah Kimani Clinic",
+      "category": "ISP Subscription Income",
+      "type": "income",
+      "amount": 5500,
+      "paymentMethod": "M-Pesa Paybill",
+      "reference": "QKF2218NM1",
+      "entity": "DATA PORT Core"
+    },
+    {
+      "id": "tx-105",
+      "date": "2026-09-08",
+      "description": "Bulk Fiber Drop Cable & FTTH Optical Accessories Purchase",
+      "category": "Hardware & Inventory",
+      "type": "expense",
+      "amount": 18500,
+      "paymentMethod": "M-Pesa Buy Goods",
+      "reference": "QKH7782AA4",
+      "entity": "Field Infrastructure"
+    },
+    {
+      "id": "tx-106",
+      "date": "2026-09-10",
+      "description": "Monthly Fiber Subscription - Apex Creative Studio",
+      "category": "ISP Subscription Income",
+      "type": "income",
+      "amount": 9500,
+      "paymentMethod": "M-Pesa Paybill",
+      "reference": "QKJ9923PO8",
+      "entity": "DATA PORT Core"
+    },
+    {
+      "id": "tx-107",
+      "date": "2026-09-15",
+      "description": "Project Settlement: Ocean View Suites CCTV Installation",
+      "category": "Projects & Installations",
+      "type": "income",
+      "amount": 165000,
+      "paymentMethod": "Bank Transfer",
+      "reference": "FT26258901",
+      "entity": "DATA PORT Projects"
+    },
+    {
+      "id": "tx-108",
+      "date": "2026-09-16",
+      "description": "Technician Field Allowances & Transport Logistics",
+      "category": "Field Ops & Logistics",
+      "type": "expense",
+      "amount": 6500,
+      "paymentMethod": "M-Pesa Send Money",
+      "reference": "QKM3321VV7",
+      "entity": "Operations"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "inv-001",
+      "invoiceNo": "PROF-2026-0089",
+      "subId": "sub-101",
+      "clientName": "Mombasa Ocean View Suites",
+      "phone": "+254 712 345 678",
+      "email": "management@oceanview.co.ke",
+      "package": "Dedicated 50 Mbps Enterprise Fiber",
+      "amount": 12500,
+      "period": "September 2026",
+      "dueDate": "2026-09-05",
+      "status": "paid",
+      "paidAt": "2026-09-01T08:30:00.000Z",
+      "jobCardId": null
+    },
+    {
+      "id": "inv-002",
+      "invoiceNo": "PROF-2026-0090",
+      "subId": "sub-102",
+      "clientName": "Crown Logistics Hub",
+      "phone": "+254 722 987 654",
+      "email": "operations@crownlogistics.com",
+      "package": "Dedicated 30 Mbps Business Pro",
+      "amount": 8500,
+      "period": "September 2026",
+      "dueDate": "2026-09-05",
+      "status": "paid",
+      "paidAt": "2026-09-01T10:15:00.000Z",
+      "jobCardId": null
+    },
+    {
+      "id": "inv-003",
+      "invoiceNo": "PROF-2026-0091",
+      "subId": "sub-103",
+      "clientName": "Dr. Sarah Kimani Dental Clinic",
+      "phone": "+254 733 112 233",
+      "email": "reception@kimanidental.co.ke",
+      "package": "Essential 20 Mbps Office Fiber",
+      "amount": 5500,
+      "period": "September 2026",
+      "dueDate": "2026-09-10",
+      "status": "paid",
+      "paidAt": "2026-09-05T14:20:00.000Z",
+      "jobCardId": null
+    },
+    {
+      "id": "inv-004",
+      "invoiceNo": "PROF-2026-0092",
+      "subId": "sub-104",
+      "clientName": "Apex Creative Studio",
+      "phone": "+254 701 445 566",
+      "email": "accounts@apexcreative.co.ke",
+      "package": "Creative High-Upload 40 Mbps",
+      "amount": 9500,
+      "period": "September 2026",
+      "dueDate": "2026-09-15",
+      "status": "paid",
+      "paidAt": "2026-09-10T11:00:00.000Z",
+      "jobCardId": null
+    },
+    {
+      "id": "inv-005",
+      "invoiceNo": "PROF-2026-0093",
+      "subId": "sub-105",
+      "clientName": "Tudor Heights Apartment 4B",
+      "phone": "+254 790 964 002",
+      "email": "resident4b@tudorheights.ke",
+      "package": "Home Fiber Fast 15 Mbps",
+      "amount": 3500,
+      "period": "September 2026",
+      "dueDate": "2026-09-20",
+      "status": "unpaid",
+      "paidAt": null,
+      "jobCardId": null
+    },
+    {
+      "id": "inv-006",
+      "invoiceNo": "PROF-2026-0094",
+      "subId": "sub-106",
+      "clientName": "Coast Marine Spares",
+      "phone": "+254 720 778 899",
+      "email": "info@coastmarine.co.ke",
+      "package": "Dedicated 30 Mbps Business Pro",
+      "amount": 8500,
+      "period": "September 2026",
+      "dueDate": "2026-09-25",
+      "status": "unpaid",
+      "paidAt": null,
+      "jobCardId": null
+    }
+  ],
+  "vault": {
+    "pin": "4422",
+    "treasuryBalance": 125000,
+    "taxReserveBalance": 35000,
+    "emergencyFund": 50000,
+    "personalDrawingsMonth": 40000,
+    "savingsGoals": [
+      { "name": "Core Router Upgrade (MikroTik CCR2004)", "target": 85000, "current": 60000 },
+      { "name": "Optical Time Domain Reflectometer (OTDR)", "target": 120000, "current": 45000 }
+    ],
+    "allocations": [
+      { "date": "2026-09-16", "description": "Owner Dividend Distribution", "amount": 40000, "type": "drawing" },
+      { "date": "2026-09-15", "description": "VAT & Withholding Tax Reserve (16%)", "amount": 26400, "type": "tax_reserve" }
+    ]
+  },
+  "rules": [
+    { "id": "rule-1", "name": "Upstream Transit Budget Cap", "threshold": 25000, "period": "monthly", "active": true },
+    { "id": "rule-2", "name": "Minimum Gross Profit Margin (60%)", "threshold": 60, "unit": "%", "active": true },
+    { "id": "rule-3", "name": "Automated WhatsApp Reminder at Due Date - 2 Days", "trigger": "due_minus_2", "active": true }
+  ]
+}
