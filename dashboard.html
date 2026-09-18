@@ -208,12 +208,12 @@
                 <span class="text-muted" style="font-size:0.8125rem;">Internet Renewal & WhatsApp Dispatch Grid</span>
               </div>
 
-              <!-- Status Legend -->
+              <!-- Status Legend & Quick Status Filters -->
               <div class="calendar-legend">
-                <span class="legend-item"><span class="legend-dot dot-paid"></span> Paid</span>
-                <span class="legend-item"><span class="legend-dot dot-due"></span> Due Today / Approaching</span>
-                <span class="legend-item"><span class="legend-dot dot-overdue"></span> Overdue</span>
-                <span class="legend-item"><span class="legend-dot dot-upcoming"></span> Scheduled Cycle</span>
+                <button class="cal-filter-pill active" data-cal-filter="all">All</button>
+                <button class="cal-filter-pill" data-cal-filter="paid"><span class="legend-dot dot-paid"></span> Paid</button>
+                <button class="cal-filter-pill" data-cal-filter="due"><span class="legend-dot dot-due"></span> Due Today / Approaching</button>
+                <button class="cal-filter-pill" data-cal-filter="overdue"><span class="legend-dot dot-overdue"></span> Overdue</button>
               </div>
 
               <div class="calendar-nav-controls">
@@ -249,19 +249,27 @@
              TAB 2: SUBSCRIBERS DIRECTORY
              ===================================================================== -->
         <section id="subscribersTab" class="dash-tab-pane">
-          <div class="glass-panel directory-card" style="padding:2rem;">
-            <div class="directory-header-bar" style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
-              <div class="directory-search-box" style="flex:1; min-width:280px; position:relative;">
+          <div class="glass-panel directory-card" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
+            <div class="directory-header-bar" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <div class="directory-search-box" style="flex:1; min-width:260px; position:relative;">
                 <input type="text" id="subscriberSearchInput" class="form-input" placeholder="Search by name, phone, company, plan, IP...">
               </div>
-              <div class="directory-filters">
+              <div class="directory-filters" style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 <select id="subscriberFilterPlan" class="form-select" style="width:auto;">
                   <option value="all">All Bandwidth Packages</option>
                   <option value="5 Mbps">5 Mbps SOHO</option>
                   <option value="10 Mbps">10 Mbps Standard</option>
                   <option value="20 Mbps">20 Mbps Pro Office</option>
+                  <option value="30 Mbps">30 Mbps Business Pro</option>
+                  <option value="40 Mbps">40 Mbps Creative</option>
                   <option value="50 Mbps">50 Mbps Dedicated Fiber</option>
                 </select>
+                <button id="exportSubsCsvBtn" class="btn btn-secondary btn-sm" title="Export Subscribers to CSV">
+                  <i data-lucide="file-spreadsheet"></i> Export CSV
+                </button>
+                <button id="openAddSubFromTabBtn" class="btn btn-primary btn-sm">
+                  <i data-lucide="user-plus"></i> Add Client
+                </button>
               </div>
             </div>
 
@@ -289,7 +297,7 @@
              TAB 3: FIELD OPERATIONS & JOB CARDS
              ===================================================================== -->
         <section id="jobCardsTab" class="dash-tab-pane">
-          <div class="glass-panel" style="padding:2rem;">
+          <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
               <div>
                 <h3 style="font-size:1.35rem; font-weight:800;">Field Deployments & Job Cards</h3>
@@ -310,15 +318,39 @@
              TAB 4: FINANCIAL GENERAL LEDGER
              ===================================================================== -->
         <section id="ledgerTab" class="dash-tab-pane">
-          <div class="glass-panel" style="padding:2rem;">
+          <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
               <div>
                 <h3 style="font-size:1.35rem; font-weight:800;">Double-Entry Cash Flow Ledger</h3>
                 <p class="text-muted" style="font-size:0.875rem;">Real-time record of all ISP subscriptions, wholesale bandwidth transit, hardware, and operational disbursements.</p>
               </div>
-              <button id="openAddTxModalBtn" class="btn btn-primary btn-sm">
-                <i data-lucide="plus-circle"></i> Record Transaction
-              </button>
+              <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <button id="exportLedgerCsvBtn" class="btn btn-secondary btn-sm" title="Export Ledger to CSV">
+                  <i data-lucide="file-spreadsheet"></i> Export CSV
+                </button>
+                <button id="openAddTxModalBtn" class="btn btn-primary btn-sm">
+                  <i data-lucide="plus-circle"></i> Record Transaction
+                </button>
+              </div>
+            </div>
+
+            <!-- Ledger Filters Bar -->
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.25rem;">
+              <div style="flex:1; min-width:240px;">
+                <input type="text" id="ledgerSearchInput" class="form-input" placeholder="Search transactions by description, reference, entity...">
+              </div>
+              <div style="min-width:200px;">
+                <select id="ledgerFilterCategory" class="form-select">
+                  <option value="all">All Categories</option>
+                  <option value="ISP Subscription Income">ISP Subscription Income</option>
+                  <option value="Projects & Installations">Projects & Installations</option>
+                  <option value="Wholesale Bandwidth Transit">Wholesale Bandwidth Transit</option>
+                  <option value="Hardware & Inventory">Hardware & Inventory</option>
+                  <option value="Field Ops & Logistics">Field Ops & Logistics</option>
+                  <option value="income">Income Only (+)</option>
+                  <option value="expense">Expenses Only (-)</option>
+                </select>
+              </div>
             </div>
 
             <div class="proposal-table-wrapper">
@@ -355,7 +387,12 @@
                   <h3 style="font-size:1.25rem; font-weight:800;">Financial Trajectory & Cash Flow</h3>
                   <p class="text-muted" style="font-size:0.8125rem;">Gross Income vs. Operating Costs vs. Net Margin</p>
                 </div>
-                <span class="badge"><i data-lucide="activity" class="text-lime" style="width:12px; height:12px;"></i> Live Data</span>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                  <button id="printAnalyticsBtn" class="btn btn-secondary btn-sm" title="Print Financial Report">
+                    <i data-lucide="printer"></i> Print Report
+                  </button>
+                  <span class="badge"><i data-lucide="activity" class="text-lime" style="width:12px; height:12px;"></i> Live Data</span>
+                </div>
               </div>
               
               <div class="chart-canvas-container">
@@ -455,9 +492,14 @@
                 <h3 style="font-size:1.5rem; font-weight:800;">Executive Vault & Treasury</h3>
                 <p class="text-muted" style="font-size:0.875rem;">Separated owner drawings, tax reserve allocations, and active financial rules.</p>
               </div>
-              <button id="lockVaultBtn" class="btn btn-secondary btn-sm">
-                <i data-lucide="lock"></i> Re-Lock Vault
-              </button>
+              <div style="display:flex; gap:0.75rem;">
+                <button id="openVaultDepositModalBtn" class="btn btn-primary btn-sm">
+                  <i data-lucide="plus"></i> Allocate Treasury Fund
+                </button>
+                <button id="lockVaultBtn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="lock"></i> Re-Lock Vault
+                </button>
+              </div>
             </div>
 
             <div class="vault-grid">
@@ -795,6 +837,110 @@
           <input type="file" id="importJsonInput" accept=".json" class="form-input" style="padding:0.5rem;">
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: BATCH INVOICING & PROFORMA GENERATOR
+       ========================================================================= -->
+  <div id="batchInvoiceModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:680px;">
+      <div class="modal-header">
+        <div>
+          <span class="badge mb-2"><i data-lucide="zap" class="text-lime" style="width:14px; height:14px;"></i> Automated Billing Dispatch</span>
+          <h3 style="font-size:1.35rem; font-weight:800;">Batch Proforma Invoices Generator</h3>
+        </div>
+        <button class="modal-close-btn" data-close="batchInvoiceModal">&times;</button>
+      </div>
+
+      <div style="margin-top:1.25rem;">
+        <p class="text-muted" style="font-size:0.875rem;">
+          Generate monthly renewal proformas for all active subscribers for <strong id="batchModalMonthTitle" class="text-lime">September 2026</strong>.
+        </p>
+
+        <div class="proposal-table-wrapper" style="margin-top:1rem; max-height:260px; overflow-y:auto;">
+          <table class="proposal-table">
+            <thead>
+              <tr>
+                <th>Subscriber</th>
+                <th>Package</th>
+                <th>Rate (KSh)</th>
+                <th>Renewal Day</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="batchSubscribersList">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="invoice-summary-box" style="margin-top:1.25rem; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Total Expected Billing</span>
+            <div id="batchTotalAmount" style="font-family:var(--font-mono); font-size:1.35rem; font-weight:800; color:#8ACE00;">KSh 0</div>
+          </div>
+          <span id="batchSubCountBadge" class="badge" style="background:rgba(138,206,0,0.12); color:#8ACE00; border-color:#8ACE00;">0 Subscribers</span>
+        </div>
+
+        <div style="display:flex; gap:1rem; margin-top:1.5rem; flex-wrap:wrap;">
+          <button id="executeBatchGenerateBtn" class="btn btn-primary" style="flex:1;">
+            <i data-lucide="check-check"></i> Generate & Issue All Invoices
+          </button>
+          <button id="batchPrintAllBtn" class="btn btn-secondary" style="flex:1;">
+            <i data-lucide="printer"></i> Print Batch Summary
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: EXECUTIVE VAULT ALLOCATION
+       ========================================================================= -->
+  <div id="vaultAllocationModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:540px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem; font-weight:700;">Executive Treasury Allocation</h3>
+        <button class="modal-close-btn" data-close="vaultAllocationModal">&times;</button>
+      </div>
+
+      <form id="vaultAllocationForm" style="margin-top:1.25rem;">
+        <div class="form-group">
+          <label class="form-label">Allocation Purpose / Description *</label>
+          <input type="text" id="vaultAllocDesc" class="form-input" placeholder="e.g. Partner Dividend Drawing or VAT Reserve" required>
+        </div>
+
+        <div class="grid-2col">
+          <div class="form-group">
+            <label class="form-label">Fund Target *</label>
+            <select id="vaultAllocType" class="form-select" required>
+              <option value="drawing">Owner Drawings (Dividend)</option>
+              <option value="tax_reserve">16% VAT / Tax Reserve</option>
+              <option value="emergency">Emergency Infrastructure Fund</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount (KSh) *</label>
+            <input type="number" id="vaultAllocAmount" class="form-input" placeholder="e.g. 25000" required>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" data-close="vaultAllocationModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="shield-check"></i> Execute Allocation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="dashToast" class="toast-msg">
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <i data-lucide="check-circle" class="text-lime" style="width:20px; height:20px;"></i>
+      <span id="dashToastMsg" style="font-weight:600; font-size:0.9rem;">Notification</span>
     </div>
   </div>
 
