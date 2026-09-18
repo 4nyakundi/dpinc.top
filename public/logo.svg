@@ -1,30 +1,30 @@
 <svg width="280" height="90" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#306D29"/>
-      <stop offset="100%" stop-color="#E7E1B1"/>
+      <stop offset="0%" stop-color="#8ACE00"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
     </linearGradient>
   </defs>
 
   <!-- DataPort Icon Mark -->
   <g transform="translate(10, 5) scale(0.65)">
-    <!-- Main Outer D Ring (Deep Forest #306D29) -->
-    <path d="M40 10H80C102.091 10 120 27.9086 120 50V60C120 82.0914 102.091 100 80 100H40V10Z" fill="#306D29"/>
+    <!-- Main Outer D Ring (Electric Green #8ACE00) -->
+    <path d="M40 10H80C102.091 10 120 27.9086 120 50V60C120 82.0914 102.091 100 80 100H40V10Z" fill="#8ACE00"/>
     <!-- Inner D cutout -->
-    <path d="M60 30H80C88.2843 30 95 36.7157 95 45V65C95 73.2843 88.2843 80 80 80H60V30Z" fill="#0D530E"/>
-    <!-- Central Inner Square & Accent Stem (Gold #E7E1B1 & Forest #306D29) -->
-    <rect x="15" y="85" width="16" height="16" rx="2" fill="#E7E1B1"/>
+    <path d="M60 30H80C88.2843 30 95 36.7157 95 45V65C95 73.2843 88.2843 80 80 80H60V30Z" fill="#000000"/>
+    <!-- Central Inner Square & Accent Stem -->
+    <rect x="15" y="85" width="16" height="16" rx="2" fill="#FFFFFF"/>
     <path d="M40 30H70V70H40V30Z" fill="url(#logoGrad)"/>
   </g>
 
-  <!-- Typography: Data (Serif Italic) + Port (Bold Forest Green) + .INC -->
+  <!-- Typography: Data (Serif Italic) + Port (Bold Electric Green) + .INC -->
   <g transform="translate(100, 55)">
     <!-- Data in Elegant Serif Italic -->
     <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="36" font-style="italic" font-weight="700" fill="currentColor" letter-spacing="-0.5">Data</text>
     <!-- Port in Modern Bold Green -->
-    <text x="74" y="0" font-family="'Inter', system-ui, sans-serif" font-size="36" font-weight="800" fill="#306D29" letter-spacing="-0.5">Port</text>
-    <!-- Dot in Gold #E7E1B1 -->
-    <circle cx="156" cy="-8" r="4.5" fill="#E7E1B1"/>
+    <text x="74" y="0" font-family="'Inter', system-ui, sans-serif" font-size="36" font-weight="800" fill="#8ACE00" letter-spacing="-0.5">Port</text>
+    <!-- Dot in White -->
+    <circle cx="156" cy="-8" r="4.5" fill="#FFFFFF"/>
     <text x="164" y="0" font-family="'Inter', system-ui, sans-serif" font-size="16" font-weight="900" fill="currentColor" letter-spacing="0.5">INC</text>
     <!-- Underline bar -->
     <rect x="0" y="8" width="70" height="3" rx="1.5" fill="url(#logoGrad)"/>

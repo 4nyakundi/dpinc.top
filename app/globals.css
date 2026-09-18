@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #071208;
-  --foreground: #FBF5DD;
+  --background: #000000;
+  --foreground: #FFFFFF;
 
-  /* Brand 4-Color Palette */
-  --color-cream: #FBF5DD;
-  --color-gold: #E7E1B1;
-  --color-green: #306D29;
-  --color-pine: #0D530E;
+  /* 60-30-10 Design Palette Tokens */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-green: #8ACE00;
+  --color-green-hover: #99E600;
 
-  --color-neon-cyan: #306D29;
-  --color-electric-purple: #E7E1B1;
-  --color-deep-charcoal: #071208;
+  --color-cream: #FFFFFF;
+  --color-gold: #FFFFFF;
+  --color-pine: #0A0A0A;
+
+  --color-neon-cyan: #8ACE00;
+  --color-electric-purple: #EDEDED;
+  --color-deep-charcoal: #050505;
 
   /* Fonts */
   --font-inter: var(--font-inter);
@@ -23,14 +27,14 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-cream: #FBF5DD;
-  --color-gold: #E7E1B1;
-  --color-green: #306D29;
-  --color-pine: #0D530E;
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-green: #8ACE00;
+  --color-pine: #0A0A0A;
 
-  --color-cyan-glow: var(--color-green);
-  --color-purple-glow: var(--color-gold);
-  --color-charcoal: var(--color-deep-charcoal);
+  --color-cyan-glow: rgba(138, 206, 0, 0.4);
+  --color-purple-glow: rgba(255, 255, 255, 0.2);
+  --color-charcoal: #050505;
 
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-space-grotesk), sans-serif;

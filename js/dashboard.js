@@ -549,7 +549,7 @@
 
     const statusBadge = document.getElementById("drawerStatusBadge");
     if (inv.status === "paid") {
-      statusBadge.innerHTML = `<span class="badge" style="background:rgba(72,229,134,0.15); color:var(--neon-mint); border-color:var(--neon-mint);">PAID IN FULL</span>`;
+      statusBadge.innerHTML = `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">PAID IN FULL</span>`;
     } else {
       statusBadge.innerHTML = `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;">UNPAID / PENDING</span>`;
     }
@@ -721,7 +721,7 @@ Phone: +254 790 964 002 | Web: https://dpinc.top`;
           ${sub.billingDay} ${monthNames[currentMonth]} ${currentYear}
         </td>
         <td>
-          <span class="badge" style="${isPaid ? 'background:rgba(72,229,134,0.15); color:var(--neon-mint); border-color:var(--neon-mint);' : 'background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;'}">
+          <span class="badge" style="${isPaid ? 'background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;' : 'background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;'}">
             ${isPaid ? 'Paid' : 'Unpaid'}
           </span>
         </td>
@@ -782,7 +782,7 @@ Phone: +254 790 964 002 | Web: https://dpinc.top`;
         </td>
         <td style="font-size:0.85rem; color:var(--amber-gold);">${inv.dueDate}</td>
         <td>
-          <span class="badge" style="${inv.status === 'paid' ? 'background:rgba(72,229,134,0.15); color:var(--neon-mint); border-color:var(--neon-mint);' : 'background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;'}">
+          <span class="badge" style="${inv.status === 'paid' ? 'background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;' : 'background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;'}">
             ${inv.status.toUpperCase()}
           </span>
         </td>
