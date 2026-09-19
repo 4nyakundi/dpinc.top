@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -255,8 +255,7 @@ export default function QuoteGenerator() {
         </head>
         <body>
           <div class="invoice">
-            <img src="/logo.svg" alt="DataPort Logo" class="logo" />
-            <p class="business-name">DataPort INC</p>
+            <img src="/logo-light.png" alt="DataPort.INC" class="logo" style="height:48px; width:auto; margin-bottom:16px;" />
             <p class="business-subtitle">Excel Enterprise Limited</p>
 
             <div class="section text-sm">
@@ -724,10 +723,9 @@ export default function QuoteGenerator() {
           <div className="max-w-4xl mx-auto bg-white text-slate-900 p-8 print:p-0" id="invoice-print">
             <div className="flex flex-col gap-6 print:gap-0 print:flex-row print:justify-between print:items-center">
               <div className="flex items-center gap-4">
-                <img src="/logo.svg" alt="DataPort Logo" className="h-16 w-16" />
+                <img src="/logo-light.png" alt="DataPort.INC" className="h-12 w-auto" />
                 <div>
-                  <p className="text-2xl font-bold tracking-tight">Data<span className="text-lime-500">Port</span> INC</p>
-                  <p className="text-sm text-slate-500">Excel Enterprise Limited</p>
+                  <p className="text-xs text-slate-500 font-mono">Excel Enterprise Limited</p>
                 </div>
               </div>
               <div className="text-right">

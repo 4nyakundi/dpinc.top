@@ -2,22 +2,23 @@ import Image from "next/image";
 
 export default function Logo({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-3 ${className || ""}`}>
+    <div className={`flex items-center ${className || ""}`}>
       <Image
-        src="/logo.svg"
-        alt="DataPort Logo"
-        width={48}
-        height={48}
-        className="h-12 w-12"
+        src="/logo.png"
+        alt="DataPort.INC"
+        width={184}
+        height={40}
+        className="h-10 w-auto object-contain dark:block hidden"
+        priority
       />
-      <div className="leading-tight">
-        <span className="block text-lg font-bold tracking-tight text-white">
-          Data<span className="text-lime-400">Port</span>
-        </span>
-        <span className="block text-xs uppercase tracking-[0.3em] text-slate-300">
-          INC
-        </span>
-      </div>
+      <Image
+        src="/logo-light.png"
+        alt="DataPort.INC"
+        width={184}
+        height={40}
+        className="h-10 w-auto object-contain dark:hidden block"
+        priority
+      />
     </div>
   );
 }
