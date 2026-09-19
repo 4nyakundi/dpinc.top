@@ -7,42 +7,42 @@
 
 /* --- CSS Variables & Theme Engine (Strict 60-30-10 Rule: 60% Black, 30% White, 10% Green #8ACE00) --- */
 :root {
-  /* 60% Dominant (Deep Sleek Black & Surfaces) */
+  /* 60% Dominant (Deep Sleek Black & Solid Contrast Surfaces) */
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
-  --bg-card: rgba(18, 18, 18, 0.75);
-  --bg-card-hover: rgba(28, 28, 28, 0.95);
-  --glass-nav: rgba(0, 0, 0, 0.85);
-  --grid-line: rgba(255, 255, 255, 0.04);
+  --bg-card: rgba(14, 14, 14, 0.92);
+  --bg-card-hover: rgba(24, 24, 24, 0.98);
+  --glass-nav: rgba(0, 0, 0, 0.92);
+  --grid-line: rgba(255, 255, 255, 0.05);
   --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.9);
 
-  /* 30% Secondary (Crisp White & Precision Structural Tones) */
+  /* 30% Secondary (Crisp High-Contrast White & Precision Chrome) */
   --text-primary: #FFFFFF;
-  --text-secondary: #EDEDED;
-  --text-muted: #A1A1AA;
-  --border-color: rgba(255, 255, 255, 0.12);
-  --border-card: rgba(255, 255, 255, 0.08);
+  --text-secondary: #F4F4F5;
+  --text-muted: #D4D4D8;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --border-card: rgba(255, 255, 255, 0.16);
 
   /* 10% Accent (Electric Green #8ACE00) */
   --primary: #8ACE00;
-  --primary-glow: rgba(138, 206, 0, 0.35);
+  --primary-glow: rgba(138, 206, 0, 0.4);
   --accent-green: #8ACE00;
-  --accent-green-glow: rgba(138, 206, 0, 0.45);
+  --accent-green-glow: rgba(138, 206, 0, 0.5);
   --lime: #8ACE00;
-  --lime-glow: rgba(138, 206, 0, 0.4);
+  --lime-glow: rgba(138, 206, 0, 0.45);
   --border-hover: #8ACE00;
   --cyan: #8ACE00;
-  --cyan-glow: rgba(138, 206, 0, 0.35);
+  --cyan-glow: rgba(138, 206, 0, 0.4);
   --neon-mint: #8ACE00;
-  --neon-mint-glow: rgba(138, 206, 0, 0.45);
+  --neon-mint-glow: rgba(138, 206, 0, 0.5);
   --amber-gold: #FFFFFF;
-  --amber-gold-glow: rgba(255, 255, 255, 0.3);
+  --amber-gold-glow: rgba(255, 255, 255, 0.35);
   --cyber-teal: #8ACE00;
-  --cyber-teal-glow: rgba(138, 206, 0, 0.35);
-  --purple: #EDEDED;
-  --purple-glow: rgba(255, 255, 255, 0.2);
+  --cyber-teal-glow: rgba(138, 206, 0, 0.4);
+  --purple: #F4F4F5;
+  --purple-glow: rgba(255, 255, 255, 0.25);
   --pink: #8ACE00;
-  --pink-glow: rgba(138, 206, 0, 0.35);
+  --pink-glow: rgba(138, 206, 0, 0.4);
   --emerald: #8ACE00;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -59,40 +59,40 @@
 [data-theme="light"] {
   /* 60% Dominant (Crisp Clean White) */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F8F9FA;
-  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-secondary: #F4F4F5;
+  --bg-card: rgba(255, 255, 255, 0.98);
   --bg-card-hover: #FFFFFF;
-  --glass-nav: rgba(255, 255, 255, 0.9);
-  --grid-line: rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+  --glass-nav: rgba(255, 255, 255, 0.95);
+  --grid-line: rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.12);
 
   /* 30% Secondary (Deep Black Structure & Typography) */
   --text-primary: #000000;
-  --text-secondary: #27272A;
-  --text-muted: #71717A;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --border-card: rgba(0, 0, 0, 0.06);
+  --text-secondary: #18181B;
+  --text-muted: #3F3F46;
+  --border-color: rgba(0, 0, 0, 0.16);
+  --border-card: rgba(0, 0, 0, 0.12);
 
   /* 10% Accent (Electric Green #8ACE00) */
   --primary: #74B000;
-  --primary-glow: rgba(116, 176, 0, 0.25);
+  --primary-glow: rgba(116, 176, 0, 0.3);
   --accent-green: #74B000;
-  --accent-green-glow: rgba(116, 176, 0, 0.25);
+  --accent-green-glow: rgba(116, 176, 0, 0.3);
   --lime: #74B000;
-  --lime-glow: rgba(116, 176, 0, 0.25);
+  --lime-glow: rgba(116, 176, 0, 0.3);
   --border-hover: #74B000;
   --cyan: #74B000;
-  --cyan-glow: rgba(116, 176, 0, 0.25);
+  --cyan-glow: rgba(116, 176, 0, 0.3);
   --neon-mint: #74B000;
-  --neon-mint-glow: rgba(116, 176, 0, 0.25);
+  --neon-mint-glow: rgba(116, 176, 0, 0.3);
   --amber-gold: #000000;
-  --amber-gold-glow: rgba(0, 0, 0, 0.15);
+  --amber-gold-glow: rgba(0, 0, 0, 0.2);
   --cyber-teal: #74B000;
-  --cyber-teal-glow: rgba(116, 176, 0, 0.25);
-  --purple: #27272A;
-  --purple-glow: rgba(0, 0, 0, 0.15);
+  --cyber-teal-glow: rgba(116, 176, 0, 0.3);
+  --purple: #18181B;
+  --purple-glow: rgba(0, 0, 0, 0.2);
   --pink: #74B000;
-  --pink-glow: rgba(116, 176, 0, 0.25);
+  --pink-glow: rgba(116, 176, 0, 0.3);
   --emerald: #74B000;
 }
 
@@ -154,49 +154,72 @@
 }
 
 .package-card:hover {
-  border-color: var(--lime);
-  transform: translateY(-6px);
-  box-shadow: 0 20px 45px -12px var(--lime-glow);
+  border-color: #8ACE00;
+  transform: translateY(-5px);
+  box-shadow: 0 20px 45px -10px rgba(138, 206, 0, 0.3);
 }
 
-.package-price-tag {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+.package-card.highlight {
+  border-color: #8ACE00;
+  background: linear-gradient(180deg, rgba(138, 206, 0, 0.08) 0%, rgba(14, 14, 14, 0.95) 100%);
+}
+
+.package-header {
+  margin-bottom: 2rem;
+}
+
+.package-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: 800;
-  color: var(--lime);
-  margin-top: 1rem;
-  margin-bottom: 0.35rem;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  color: #FFFFFF;
 }
 
-.package-period {
-  font-size: 0.8125rem;
-  font-family: var(--font-mono);
+.package-desc {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.package-price {
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  font-weight: 900;
+  font-family: var(--font-display);
+  color: #8ACE00;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.package-price span {
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 1.75rem;
+  font-family: var(--font-sans);
 }
 
-.contract-features-list {
+.package-features {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1.5rem;
-  margin-bottom: 2.25rem;
+  margin-bottom: 2.5rem;
+  flex-grow: 1;
 }
 
-.contract-feature-item {
+.feature-item {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   font-size: 0.95rem;
-  color: var(--text-primary);
-  line-height: 1.5;
+  color: #FFFFFF;
+  font-weight: 500;
 }
 
-.contract-feature-item i {
+.feature-icon {
+  width: 20px;
+  height: 20px;
   color: var(--lime);
   flex-shrink: 0;
 }
@@ -222,10 +245,11 @@
 }
 
 .proposal-table th {
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
+  background: #111111;
+  color: #8ACE00;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 1.25rem 1.75rem;
@@ -235,7 +259,8 @@
 .proposal-table td {
   padding: 1.25rem 1.75rem;
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: #FFFFFF;
+  font-weight: 500;
 }
 
 .proposal-table tr:last-child td {
@@ -248,9 +273,9 @@
 
 .price-highlight {
   font-family: var(--font-mono);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--lime);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
 .payment-terms-panel {
@@ -316,7 +341,7 @@ img, svg {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #FFFFFF 25%, #8ACE00 100%);
+  background: linear-gradient(135deg, #FFFFFF 30%, #8ACE00 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -332,7 +357,7 @@ img, svg {
 .text-pink { color: var(--primary); }
 .text-lime { color: var(--primary); }
 .text-emerald { color: var(--primary); }
-.text-muted { color: var(--text-muted); }
+.text-muted { color: var(--text-muted) !important; font-weight: 500; }
 .text-secondary { color: var(--text-secondary); }
 
 /* --- Container & Layout --- */
@@ -1036,12 +1061,13 @@ img, svg {
 }
 
 .tag {
-  background: var(--bg-secondary);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  color: var(--text-muted);
+  color: #FFFFFF;
   font-size: 0.75rem;
   font-family: var(--font-mono);
-  padding: 0.25rem 0.6rem;
+  font-weight: 500;
+  padding: 0.3rem 0.65rem;
   border-radius: var(--radius-sm);
 }
 
@@ -1165,6 +1191,24 @@ img, svg {
   margin-bottom: 0.6rem;
 }
 
+::placeholder {
+  color: #A1A1AA;
+  opacity: 1;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #A1A1AA;
+  opacity: 1;
+}
+
+[data-theme="light"] ::placeholder,
+[data-theme="light"] .form-input::placeholder,
+[data-theme="light"] .form-textarea::placeholder {
+  color: #52525B;
+  opacity: 1;
+}
+
 .form-input, .form-select, .form-textarea {
   width: 100%;
   padding: clamp(0.9rem, 1.8vw, 1.15rem) clamp(1rem, 2vw, 1.35rem);
@@ -1173,6 +1217,7 @@ img, svg {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 0.95rem;
+  font-weight: 500;
   transition: all var(--transition-fast);
 }
 
@@ -1180,6 +1225,7 @@ img, svg {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-glow);
+  background: var(--bg-card);
 }
 
 /* --- Quote Generator Page Styles --- */
@@ -1770,8 +1816,9 @@ img, svg {
 
 .calendar-day-cell.prev-month-day,
 .calendar-day-cell.next-month-day {
-  opacity: 0.25;
-  background: transparent;
+  opacity: 0.45;
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.08);
   cursor: default;
 }
 
