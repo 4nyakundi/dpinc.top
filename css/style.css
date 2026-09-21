@@ -562,6 +562,87 @@ img, svg {
   50% { transform: translateY(-15px) rotate(1deg); }
 }
 
+/* --- Annnimate Signature Custom Studio Cursor --- */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: #5C9400;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s ease-out, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(92, 148, 0, 0.45);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
+}
+
+.custom-cursor-ring.cursor-hover {
+  width: 58px;
+  height: 58px;
+  border-color: #5C9400;
+  background: rgba(92, 148, 0, 0.08);
+  backdrop-filter: blur(2px);
+}
+
+@media (hover: none) or (max-width: 1024px) {
+  .custom-cursor-dot, .custom-cursor-ring {
+    display: none !important;
+  }
+}
+
+/* --- Annnimate Bento Focus & Spotlight Card Grid --- */
+.bento-grid {
+  display: grid;
+  position: relative;
+}
+
+.bento-card, .pillar-card, .package-card, .project-card, .stat-card, .client-card-modern, .testimonial-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, border-color 0.3s ease, box-shadow 0.35s ease;
+}
+
+.bento-card::after, .pillar-card::after, .package-card::after, .project-card::after, .stat-card::after, .client-card-modern::after, .testimonial-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(92, 148, 0, 0.12), transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.bento-card:hover::after, .pillar-card:hover::after, .package-card:hover::after, .project-card:hover::after, .stat-card:hover::after, .client-card-modern:hover::after, .testimonial-card:hover::after {
+  opacity: 1;
+}
+
+/* Bento Focus: Softly dim sibling cards on grid hover */
+.pillars-grid:hover .pillar-card:not(:hover),
+.packages-grid:hover .package-card:not(:hover),
+.portfolio-grid:hover .project-card:not(:hover),
+.clients-grid-modern:hover .client-card-modern:not(:hover),
+.testimonials-grid:hover .testimonial-card:not(:hover) {
+  opacity: 0.72;
+  transform: scale(0.985);
+}
+
 /* --- Buttons --- */
 .btn {
   display: inline-flex;
@@ -579,6 +660,32 @@ img, svg {
   position: relative;
   z-index: 10;
   user-select: none;
+  overflow: hidden;
+}
+
+/* Annnimate Signature Rolling Text */
+.roll-text-track {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  line-height: 1.2;
+  overflow: hidden;
+  height: 1.25em;
+  text-align: inherit;
+}
+
+.roll-text-item {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.btn:hover .roll-text-track .roll-text-item:first-child {
+  transform: translateY(-100%);
+}
+
+.btn:hover .roll-text-track .roll-text-item:last-child {
+  transform: translateY(-100%);
 }
 
 .btn-primary {

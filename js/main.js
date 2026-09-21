@@ -1,18 +1,23 @@
 /**
- * DATA PORT - Elevated GSAP 3 & ScrollTrigger Animation Engine
- * Modern ICT Infrastructure & Creative Media Platform
- * Powered by GreenSock GSAP 3, ScrollTrigger & Lenis Smooth Momentum Scrolling
+ * DATA PORT - Annnimate & GSAP 3 Motion Engine
+ * Studio-Grade Motion Components: Magnetic Buttons, Bento Spotlight,
+ * Text Scramble Decoder, Dual-Layer Rolling Text, Count-Up Counters & Lenis Scroll
+ * Powered by GSAP 3 & ScrollTrigger (Inspired by annnimate.com)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", "light");
   initLenisSmoothScroll();
+  initCustomStudioCursor();
   initLucideIcons();
   initYear();
   initNavbarScrollEffect();
   initHeroAnimations();
   initScrollTriggerSections();
   initCountUpCounters();
+  initBentoSpotlight();
+  initButtonRollingText();
+  initTextScramble();
   initMagneticButtons();
   initCardTiltAndGlare();
   initMobileNav();
@@ -56,7 +61,167 @@ function initLenisSmoothScroll() {
 }
 
 /* ==========================================================================
-   2. NAVBAR DYNAMIC GLASS ELEVATION ON SCROLL
+   2. ANNNIMATE CUSTOM MAGNETIC STUDIO CURSOR
+   ========================================================================== */
+function initCustomStudioCursor() {
+  if (window.innerWidth < 1024 || 'ontouchstart' in window) return;
+
+  let dot = document.querySelector(".custom-cursor-dot");
+  let ring = document.querySelector(".custom-cursor-ring");
+
+  if (!dot) {
+    dot = document.createElement("div");
+    dot.className = "custom-cursor-dot";
+    document.body.appendChild(dot);
+  }
+
+  if (!ring) {
+    ring = document.createElement("div");
+    ring.className = "custom-cursor-ring";
+    document.body.appendChild(ring);
+  }
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let ringX = mouseX;
+  let ringY = mouseY;
+
+  window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = `${mouseX}px`;
+    dot.style.top = `${mouseY}px`;
+  }, { passive: true });
+
+  // Smooth ring lag using GSAP ticker
+  if (typeof gsap !== "undefined") {
+    gsap.ticker.add(() => {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      ring.style.left = `${ringX}px`;
+      ring.style.top = `${ringY}px`;
+    });
+  }
+
+  // Hover triggers for interactive elements
+  const hoverTargets = document.querySelectorAll(
+    "a, button, input, select, textarea, .stat-card, .pillar-card, .package-card, .project-card, .client-card-modern, .testimonial-card"
+  );
+
+  hoverTargets.forEach((target) => {
+    target.addEventListener("mouseenter", () => {
+      ring.classList.add("cursor-hover");
+      dot.style.transform = "translate(-50%, -50%) scale(1.5)";
+    });
+    target.addEventListener("mouseleave", () => {
+      ring.classList.remove("cursor-hover");
+      dot.style.transform = "translate(-50%, -50%) scale(1)";
+    });
+  });
+}
+
+/* ==========================================================================
+   3. ANNNIMATE BENTO SPOTLIGHT (CURSOR LIGHT TRACKING)
+   ========================================================================== */
+function initBentoSpotlight() {
+  const cards = document.querySelectorAll(
+    ".bento-card, .pillar-card, .package-card, .project-card, .stat-card, .client-card-modern, .testimonial-card, .metric-box"
+  );
+
+  cards.forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      card.style.setProperty("--mouse-x", `${x}px`);
+      card.style.setProperty("--mouse-y", `${y}px`);
+    }, { passive: true });
+  });
+}
+
+/* ==========================================================================
+   4. ANNNIMATE DUAL-LAYER ROLLING TEXT BUTTON EFFECT
+   ========================================================================== */
+function initButtonRollingText() {
+  const buttons = document.querySelectorAll(".btn-primary, .btn-secondary, .btn-lg");
+
+  buttons.forEach((btn) => {
+    // Avoid double wrapping
+    if (btn.querySelector(".roll-text-track")) return;
+
+    // Find direct text nodes or first text child
+    const childNodes = Array.from(btn.childNodes);
+    childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+        const text = node.textContent.trim();
+        const rollWrapper = document.createElement("span");
+        rollWrapper.className = "roll-text-track";
+        rollWrapper.innerHTML = `
+          <span class="roll-text-item">${text}</span>
+          <span class="roll-text-item" aria-hidden="true">${text}</span>
+        `;
+        node.replaceWith(rollWrapper);
+      }
+    });
+  });
+}
+
+/* ==========================================================================
+   5. ANNNIMATE TEXT SCRAMBLE / CYBER DECODER EFFECT
+   ========================================================================== */
+function initTextScramble() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_#@&%";
+  const scrambleElements = document.querySelectorAll(".badge span:last-child, .dash-tag, .chip-1 div > div:first-child");
+
+  scrambleElements.forEach((el) => {
+    const originalText = el.textContent.trim();
+    if (!originalText || originalText.length < 3) return;
+
+    let interval = null;
+
+    const doScramble = () => {
+      let iteration = 0;
+      clearInterval(interval);
+
+      interval = setInterval(() => {
+        el.textContent = originalText
+          .split("")
+          .map((letter, index) => {
+            if (index < iteration) {
+              return originalText[index];
+            }
+            if (letter === " " || letter === "•" || letter === "/" || letter === "-") return letter;
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("");
+
+        if (iteration >= originalText.length) {
+          clearInterval(interval);
+          el.textContent = originalText;
+        }
+
+        iteration += 1 / 2;
+      }, 25);
+    };
+
+    // Trigger scramble on mouseenter
+    el.addEventListener("mouseenter", doScramble);
+
+    // Initial trigger when entering viewport
+    if (typeof ScrollTrigger !== "undefined") {
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 90%",
+        once: true,
+        onEnter: doScramble
+      });
+    }
+  });
+}
+
+/* ==========================================================================
+   6. NAVBAR DYNAMIC GLASS ELEVATION ON SCROLL
    ========================================================================== */
 function initNavbarScrollEffect() {
   const navbar = document.querySelector(".navbar");
@@ -65,7 +230,6 @@ function initNavbarScrollEffect() {
   ScrollTrigger.create({
     start: "top -40",
     end: 99999,
-    toggleClass: { className: "navbar-scrolled", targets: navbar },
     onUpdate: (self) => {
       if (self.progress > 0.005) {
         gsap.to(navbar, {
@@ -80,7 +244,7 @@ function initNavbarScrollEffect() {
         });
       } else {
         gsap.to(navbar, {
-          backgroundColor: "rgba(255, 255, 255, 0.92)",
+          backgroundColor: "rgba(255, 255, 255, 0.94)",
           boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
           paddingTop: "0.85rem",
           paddingBottom: "0.85rem",
@@ -95,12 +259,12 @@ function initNavbarScrollEffect() {
 }
 
 /* ==========================================================================
-   3. HERO ENTRANCE CINEMATIC TIMELINE
+   7. HERO ENTRANCE CINEMATIC TIMELINE
    ========================================================================== */
 function initHeroAnimations() {
   if (typeof gsap === "undefined") return;
 
-  // 1. Scroll Progress Bar
+  // Scroll Progress Bar
   const progressBar = document.querySelector(".scroll-progress-bar");
   if (progressBar) {
     window.addEventListener("scroll", () => {
@@ -176,7 +340,7 @@ function initHeroAnimations() {
 }
 
 /* ==========================================================================
-   4. SCROLLTRIGGER SECTION REVEALS & STAGGER
+   8. SCROLLTRIGGER SECTION REVEALS & STAGGER
    ========================================================================== */
 function initScrollTriggerSections() {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
@@ -196,7 +360,7 @@ function initScrollTriggerSections() {
     });
   });
 
-  // Section Headers Reveal (Badge + Title + Subtitle)
+  // Section Headers Reveal
   gsap.utils.toArray(".section").forEach((sec) => {
     const badge = sec.querySelector(".badge");
     const title = sec.querySelector(".section-title");
@@ -356,28 +520,10 @@ function initScrollTriggerSections() {
       }
     );
   }
-
-  // Proposal Tables Wrapper Reveal
-  gsap.utils.toArray(".proposal-table-wrapper").forEach(wrapper => {
-    gsap.fromTo(wrapper,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.75,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: wrapper,
-          start: "top 88%",
-          toggleActions: "play none none none"
-        }
-      }
-    );
-  });
 }
 
 /* ==========================================================================
-   5. DYNAMIC NUMERIC COUNT-UP ANIMATION (GSAP Counter)
+   9. DYNAMIC NUMERIC COUNT-UP ANIMATION (GSAP Counter)
    ========================================================================== */
 function initCountUpCounters() {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
@@ -385,7 +531,6 @@ function initCountUpCounters() {
   const statValues = document.querySelectorAll(".stat-card .stat-value");
   statValues.forEach(el => {
     const rawText = el.textContent.trim();
-    // Parse pure numeric value and suffix
     const match = rawText.match(/^([^\d]*)([\d,.]+)(.*)$/);
     if (!match) return;
 
@@ -423,7 +568,7 @@ function initCountUpCounters() {
 }
 
 /* ==========================================================================
-   6. MAGNETIC BUTTONS HOVER ATTRACTION
+   10. ANNNIMATE MAGNETIC BUTTONS (PHYSICS SPRING)
    ========================================================================== */
 function initMagneticButtons() {
   if (typeof gsap === "undefined" || window.innerWidth < 768) return;
@@ -458,7 +603,7 @@ function initMagneticButtons() {
 }
 
 /* ==========================================================================
-   7. 3D CARD TILT & INTERACTIVE GLARE REFLECTION
+   11. 3D CARD TILT & INTERACTIVE PERSPECTIVE
    ========================================================================== */
 function initCardTiltAndGlare() {
   if (typeof gsap === "undefined" || window.innerWidth < 768) return;
@@ -505,7 +650,7 @@ function initCardTiltAndGlare() {
 }
 
 /* ==========================================================================
-   8. MOBILE NAVIGATION DRAWER
+   12. MOBILE NAVIGATION DRAWER
    ========================================================================== */
 function initMobileNav() {
   const menuBtn = document.querySelector(".mobile-menu-btn");
@@ -545,7 +690,7 @@ function initMobileNav() {
 }
 
 /* ==========================================================================
-   9. LUCIDE ICONS & DYNAMIC SVG RE-RENDER
+   13. LUCIDE ICONS & FOOTER YEAR
    ========================================================================== */
 function initLucideIcons() {
   if (window.lucide) {
@@ -553,9 +698,6 @@ function initLucideIcons() {
   }
 }
 
-/* ==========================================================================
-   10. CURRENT YEAR IN FOOTER
-   ========================================================================== */
 function initYear() {
   const yearEls = document.querySelectorAll(".current-year");
   const year = new Date().getFullYear();
@@ -563,7 +705,7 @@ function initYear() {
 }
 
 /* ==========================================================================
-   11. OFFICE LIVE STATUS INDICATOR
+   14. OFFICE LIVE STATUS INDICATOR
    ========================================================================== */
 function initStatusIndicator() {
   const statusEl = document.querySelector(".office-status-badge");
@@ -597,7 +739,7 @@ function initStatusIndicator() {
 }
 
 /* ==========================================================================
-   12. PORTFOLIO CATEGORY FILTER WITH GSAP ANIMATION
+   15. PORTFOLIO CATEGORY FILTER WITH GSAP ANIMATION
    ========================================================================== */
 function initPortfolioFilters() {
   const filterBtns = document.querySelectorAll(".filter-btn");
@@ -631,7 +773,7 @@ function initPortfolioFilters() {
 }
 
 /* ==========================================================================
-   13. CONTACT FORM TRANSMISSION & TOAST
+   16. CONTACT FORM TRANSMISSION & TOAST
    ========================================================================== */
 function initContactForm() {
   const form = document.getElementById("contactForm");
@@ -661,7 +803,7 @@ function initContactForm() {
 }
 
 /* ==========================================================================
-   14. GLOBAL TOAST MESSAGE
+   17. GLOBAL TOAST MESSAGE
    ========================================================================== */
 function showToast(msg) {
   let toast = document.getElementById("globalToast");
