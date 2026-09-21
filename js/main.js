@@ -6,7 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initLenisSmoothScroll();
-  initTheme();
+  document.documentElement.setAttribute("data-theme", "light");
   initMobileNav();
   initLucideIcons();
   initYear();
@@ -297,36 +297,6 @@ function initCardTilt() {
       }
     });
   });
-}
-
-/* --- Theme Management (Light by Default) --- */
-function initTheme() {
-  const savedTheme = localStorage.getItem("dp_theme") || "light";
-  setTheme(savedTheme);
-
-  const toggleBtns = document.querySelectorAll(".theme-toggle-btn");
-  toggleBtns.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
-      const newTheme = currentTheme === "dark" ? "light" : "dark";
-      setTheme(newTheme);
-    });
-  });
-}
-
-function setTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("dp_theme", theme);
-
-  const toggleBtns = document.querySelectorAll(".theme-toggle-btn");
-  toggleBtns.forEach(btn => {
-    btn.innerHTML = `<i data-lucide="${theme === 'dark' ? 'sun' : 'moon'}" class="theme-icon" style="width:18px; height:18px;"></i>`;
-  });
-
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
 }
 
 /* --- Mobile Navigation --- */
