@@ -3,11 +3,13 @@
     "rules": "firestore.rules"
   },
   "hosting": {
-    "source": ".",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "app/**",
+      "components/**"
     ]
   }
 }
