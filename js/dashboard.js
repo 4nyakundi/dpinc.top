@@ -1,11 +1,13 @@
 /**
  * DATA PORT LIMITED - Unified Master Operations & Financial ERP Engine
- * Modules: NOC Billing Calendar, Field Job Cards, Financial Ledger, P&L Analytics & Executive Vault
+ * Modules: NOC Billing Calendar, Client CRM, Field Job Cards, Financial General Ledger, P&L Analytics & Executive Vault
  * Stack: Vanilla JavaScript (ES6+), HTML5 Canvas, JSON Sync & LocalStorage Cache
- * Authentication: user: root | pass: admin4all2 | Vault PIN: 4422
+ * Authentication: user: root | pass: admin4all2 | Vault PIN: 4422 | M-Pesa Paybill: 247247
  */
 
 (function () {
+  "use strict";
+
   const AUTH_USER = "root";
   const AUTH_PASS = "admin4all2";
   const VAULT_DEFAULT_PIN = "4422";
@@ -13,7 +15,18 @@
   const STORAGE_KEYS = {
     SESSION: "dp_erp_session",
     VAULT_UNLOCKED: "dp_vault_unlocked",
-    ERP_DATA: "dp_erp_master_data"
+    ERP_DATA: "dp_erp_master_data_v2"
+  };
+
+  const PACKAGE_RATES = {
+    "5 Mbps SOHO Fiber": 2500,
+    "10 Mbps Standard Business": 3500,
+    "15 Mbps Home Fiber Fast": 3500,
+    "20 Mbps Pro Office Dedicated": 5500,
+    "30 Mbps Dedicated Business Pro": 8500,
+    "40 Mbps Creative High-Upload": 9500,
+    "50 Mbps High-Capacity Enterprise": 12500,
+    "Custom Plan": 5000
   };
 
   // Complete Embedded Default Seed Dataset (Zero-dependency fallback for file:// and offline use)
@@ -27,11 +40,14 @@
         company: "Ocean View Hospitality Ltd",
         phone: "+254 712 345 678",
         email: "management@oceanview.co.ke",
-        package: "Dedicated 50 Mbps Enterprise Fiber",
+        package: "50 Mbps High-Capacity Enterprise",
         monthlyRate: 12500,
         billingDay: 1,
         location: "Nyali Beach Road, Mombasa",
         ipAddress: "197.232.44.12",
+        pppoeUser: "oceanview_resort",
+        pppoePass: "dp@ocean#2026",
+        routerModel: "MikroTik RB4011 / Port 1",
         status: "active",
         joinedDate: "2024-01-15"
       },
@@ -41,11 +57,14 @@
         company: "Crown Global Forwarders",
         phone: "+254 722 987 654",
         email: "operations@crownlogistics.com",
-        package: "Dedicated 30 Mbps Business Pro",
+        package: "30 Mbps Dedicated Business Pro",
         monthlyRate: 8500,
         billingDay: 1,
         location: "Mbaraki Port Area, Mombasa",
         ipAddress: "197.232.44.18",
+        pppoeUser: "crown_logistics_hq",
+        pppoePass: "dp@crown#2026",
+        routerModel: "Huawei Dual-Band ONT / Port 1",
         status: "active",
         joinedDate: "2024-03-10"
       },
@@ -55,11 +74,14 @@
         company: "Kimani Healthcare Group",
         phone: "+254 733 112 233",
         email: "reception@kimanidental.co.ke",
-        package: "Essential 20 Mbps Office Fiber",
+        package: "20 Mbps Pro Office Dedicated",
         monthlyRate: 5500,
         billingDay: 5,
         location: "Digo Road, CBD, Mombasa",
         ipAddress: "197.232.44.25",
+        pppoeUser: "kimani_dental_cbd",
+        pppoePass: "dp@kimani#2026",
+        routerModel: "Huawei HG8245H5 ONT",
         status: "active",
         joinedDate: "2024-06-01"
       },
@@ -69,11 +91,14 @@
         company: "Apex Media House",
         phone: "+254 701 445 566",
         email: "accounts@apexcreative.co.ke",
-        package: "Creative High-Upload 40 Mbps",
+        package: "40 Mbps Creative High-Upload",
         monthlyRate: 9500,
         billingDay: 10,
         location: "Bamburi Mtambo, Mombasa",
         ipAddress: "197.232.44.33",
+        pppoeUser: "apex_creative_media",
+        pppoePass: "dp@apex#2026",
+        routerModel: "Huawei AX3 Dual Band Router",
         status: "active",
         joinedDate: "2024-08-12"
       },
@@ -83,11 +108,14 @@
         company: "Residential Subscriber",
         phone: "+254 790 964 002",
         email: "resident4b@tudorheights.ke",
-        package: "Home Fiber Fast 15 Mbps",
+        package: "15 Mbps Home Fiber Fast",
         monthlyRate: 3500,
         billingDay: 15,
         location: "Tudor, Mombasa",
         ipAddress: "197.232.44.41",
+        pppoeUser: "tudor_apt4b",
+        pppoePass: "dp@tudor4b#2026",
+        routerModel: "ZTE F670L Gigabit ONT",
         status: "active",
         joinedDate: "2025-01-05"
       },
@@ -97,11 +125,14 @@
         company: "Coast Marine Engineering",
         phone: "+254 720 778 899",
         email: "info@coastmarine.co.ke",
-        package: "Dedicated 30 Mbps Business Pro",
+        package: "30 Mbps Dedicated Business Pro",
         monthlyRate: 8500,
         billingDay: 20,
         location: "Shimanzi Industrial Area, Mombasa",
         ipAddress: "197.232.44.52",
+        pppoeUser: "coast_marine_ops",
+        pppoePass: "dp@marine#2026",
+        routerModel: "Huawei ONT Dual-Band",
         status: "active",
         joinedDate: "2025-02-18"
       }
@@ -196,7 +227,7 @@
         category: "Wholesale Bandwidth Transit",
         type: "expense",
         amount: 14000,
-        paymentMethod: "Bank Wire",
+        paymentMethod: "Bank Transfer",
         reference: "LQD-TR-992",
         entity: "NOC Operations"
       },
@@ -218,7 +249,7 @@
         category: "Hardware & Inventory",
         type: "expense",
         amount: 18500,
-        paymentMethod: "M-Pesa Buy Goods",
+        paymentMethod: "M-Pesa Paybill",
         reference: "QKH7782AA4",
         entity: "Field Infrastructure"
       },
@@ -251,7 +282,7 @@
         category: "Field Ops & Logistics",
         type: "expense",
         amount: 6500,
-        paymentMethod: "M-Pesa Send Money",
+        paymentMethod: "Petty Cash / Float",
         reference: "QKM3321VV7",
         entity: "Operations"
       }
@@ -264,7 +295,7 @@
         clientName: "Mombasa Ocean View Suites",
         phone: "+254 712 345 678",
         email: "management@oceanview.co.ke",
-        package: "Dedicated 50 Mbps Enterprise Fiber",
+        package: "50 Mbps High-Capacity Enterprise",
         amount: 12500,
         period: "September 2026",
         dueDate: "1st September 2026",
@@ -279,7 +310,7 @@
         clientName: "Crown Logistics Hub",
         phone: "+254 722 987 654",
         email: "operations@crownlogistics.com",
-        package: "Dedicated 30 Mbps Business Pro",
+        package: "30 Mbps Dedicated Business Pro",
         amount: 8500,
         period: "September 2026",
         dueDate: "1st September 2026",
@@ -294,7 +325,7 @@
         clientName: "Dr. Sarah Kimani Dental Clinic",
         phone: "+254 733 112 233",
         email: "reception@kimanidental.co.ke",
-        package: "Essential 20 Mbps Office Fiber",
+        package: "20 Mbps Pro Office Dedicated",
         amount: 5500,
         period: "September 2026",
         dueDate: "5th September 2026",
@@ -309,7 +340,7 @@
         clientName: "Apex Creative Studio",
         phone: "+254 701 445 566",
         email: "accounts@apexcreative.co.ke",
-        package: "Creative High-Upload 40 Mbps",
+        package: "40 Mbps Creative High-Upload",
         amount: 9500,
         period: "September 2026",
         dueDate: "10th September 2026",
@@ -324,7 +355,7 @@
         clientName: "Tudor Heights Apartment 4B",
         phone: "+254 790 964 002",
         email: "resident4b@tudorheights.ke",
-        package: "Home Fiber Fast 15 Mbps",
+        package: "15 Mbps Home Fiber Fast",
         amount: 3500,
         period: "September 2026",
         dueDate: "15th September 2026",
@@ -339,7 +370,7 @@
         clientName: "Coast Marine Spares",
         phone: "+254 720 778 899",
         email: "info@coastmarine.co.ke",
-        package: "Dedicated 30 Mbps Business Pro",
+        package: "30 Mbps Dedicated Business Pro",
         amount: 8500,
         period: "September 2026",
         dueDate: "20th September 2026",
@@ -354,10 +385,6 @@
       taxReserveBalance: 35000,
       emergencyFund: 50000,
       personalDrawingsMonth: 40000,
-      savingsGoals: [
-        { name: "Core Router Upgrade (MikroTik CCR2004)", target: 85000, current: 60000 },
-        { name: "Optical Time Domain Reflectometer (OTDR)", target: 120000, current: 45000 }
-      ],
       allocations: [
         { date: "2026-09-16", description: "Owner Dividend Distribution", amount: 40000, type: "drawing" },
         { date: "2026-09-15", description: "VAT & Withholding Tax Reserve (16%)", amount: 26400, type: "tax_reserve" }
@@ -366,7 +393,8 @@
     rules: [
       { id: "rule-1", name: "Upstream Transit Budget Cap", threshold: 25000, period: "monthly", active: true },
       { id: "rule-2", name: "Minimum Gross Profit Margin (60%)", threshold: 60, unit: "%", active: true },
-      { id: "rule-3", name: "Automated WhatsApp Reminder at Due Date - 2 Days", trigger: "due_minus_2", active: true }
+      { id: "rule-3", name: "Automated WhatsApp Reminder at Due Date - 2 Days", trigger: "due_minus_2", active: true },
+      { id: "rule-4", name: "Auto-Split 16% VAT into Tax Vault on Payment Settlement", trigger: "auto_vat_reserve", active: true }
     ]
   };
 
@@ -422,11 +450,11 @@
           if (loginGate) loginGate.style.display = "none";
           if (dashboardApp) dashboardApp.style.display = "block";
           startMasterERP();
-          showToast("Welcome to DATA PORT Master ERP Cockpit!");
+          showToast("Welcome to DATA PORT Master Operations & Financial Cockpit!");
         } else {
           if (loginError) {
             loginError.style.display = "block";
-            loginError.textContent = "Invalid administrative credentials. Access restricted to authorized NOC staff.";
+            loginError.textContent = "Invalid administrative credentials. Authorized NOC staff only.";
           }
         }
       });
@@ -474,30 +502,14 @@
         saveDatabase();
       }
     } else {
-      // First run: load initial embedded dataset and save
       erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
       saveDatabase();
-    }
-
-    // Try fetching from server if available (e.g. hosted environment)
-    if (window.location.protocol.startsWith("http")) {
-      try {
-        const res = await fetch("data/erp-data.json");
-        if (res.ok) {
-          const serverData = await res.json();
-          if (serverData && serverData.subscribers && serverData.subscribers.length > 0) {
-            erpState = Object.assign({}, erpState, serverData);
-            saveDatabase();
-          }
-        }
-      } catch (e) {
-        // Network fetch fallback is graceful
-      }
     }
   }
 
   function saveDatabase() {
     try {
+      erpState.lastUpdated = new Date().toISOString();
       localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
     } catch (e) {
       console.warn("LocalStorage save error:", e);
@@ -539,15 +551,15 @@
         // Dynamic Quick Action Button Label
         if (quickActionLabel) {
           if (targetTabId === "calendarTab" || targetTabId === "subscribersTab") {
-            quickActionLabel.textContent = "Add Subscriber";
+            quickActionLabel.textContent = "Add Client";
           } else if (targetTabId === "jobCardsTab") {
             quickActionLabel.textContent = "Create Job Card";
           } else if (targetTabId === "ledgerTab") {
-            quickActionLabel.textContent = "Record Transaction";
+            quickActionLabel.textContent = "Record Income";
           } else if (targetTabId === "analyticsTab") {
-            quickActionLabel.textContent = "Export Report";
+            quickActionLabel.textContent = "Print Report";
           } else if (targetTabId === "vaultTab") {
-            quickActionLabel.textContent = "Vault Allocation";
+            quickActionLabel.textContent = "Allocate Treasury";
           }
         }
 
@@ -559,8 +571,11 @@
           renderJobCards();
         } else if (targetTabId === "ledgerTab") {
           renderLedgerTable();
+          renderAccountBalances();
         } else if (targetTabId === "calendarTab") {
           renderCalendar();
+        } else if (targetTabId === "vaultTab") {
+          renderVaultDetails();
         }
       });
     });
@@ -569,11 +584,11 @@
     if (quickActionBtn) {
       quickActionBtn.addEventListener("click", () => {
         if (activeTab === "calendarTab" || activeTab === "subscribersTab") {
-          openSubscriberModal();
+          window.dpOpenAddSubscriber();
         } else if (activeTab === "jobCardsTab") {
           openJobCardModal();
         } else if (activeTab === "ledgerTab") {
-          openLedgerModal();
+          window.dpOpenAddIncome();
         } else if (activeTab === "analyticsTab") {
           window.print();
         } else if (activeTab === "vaultTab") {
@@ -584,12 +599,17 @@
 
     const openAddSubFromTabBtn = document.getElementById("openAddSubFromTabBtn");
     if (openAddSubFromTabBtn) {
-      openAddSubFromTabBtn.addEventListener("click", openSubscriberModal);
+      openAddSubFromTabBtn.addEventListener("click", () => window.dpOpenAddSubscriber());
+    }
+
+    const openAddIncomeBtn = document.getElementById("openAddIncomeBtn");
+    if (openAddIncomeBtn) {
+      openAddIncomeBtn.addEventListener("click", () => window.dpOpenAddIncome());
     }
   }
 
   /* =========================================================================
-     4. UNIFIED METRICS CALCULATOR
+     4. UNIFIED METRICS & LIVE ACCOUNT BALANCES
      ========================================================================= */
   function updateOverviewMetrics() {
     const totalSubs = erpState.subscribers ? erpState.subscribers.length : 0;
@@ -597,41 +617,48 @@
     // MRR from active subscribers
     const mrr = (erpState.subscribers || []).reduce((acc, sub) => acc + (Number(sub.monthlyRate || sub.price) || 0), 0);
 
-    // Total income recorded in ledger + invoices
+    // Current month invoices paid vs unpaid
+    const period = `${monthNames[currentMonth]} ${currentYear}`;
+    const monthInvoices = (erpState.invoices || []).filter(inv => inv.period && inv.period.includes(monthNames[currentMonth]));
+    const paidInvoices = monthInvoices.filter(inv => inv.status === "paid");
+    const collectedThisMonth = paidInvoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0);
+
+    // Total income recorded in ledger
     const totalIncome = (erpState.ledger || [])
       .filter(tx => tx.type === "income")
       .reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0);
 
-    // Total expenses recorded
+    // Total expenses recorded in ledger
     const totalExpenses = (erpState.ledger || [])
       .filter(tx => tx.type === "expense")
       .reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0);
 
-    // Transit specific cost
+    // Wholesale Bandwidth Transit Cost
     const transitCost = (erpState.ledger || [])
       .filter(tx => tx.category && tx.category.toLowerCase().includes("transit"))
       .reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0);
 
-    const grossRevenue = Math.max(mrr, totalIncome);
-    const netProfit = grossRevenue - totalExpenses;
-    const profitMargin = grossRevenue > 0 ? Math.round((netProfit / grossRevenue) * 100) : 0;
+    const netCash = totalIncome - totalExpenses;
+    const profitMargin = totalIncome > 0 ? Math.round((netCash / totalIncome) * 100) : 0;
 
-    // Update DOM Elements
+    // Update Overview Header
     const elSubs = document.getElementById("metricTotalSubs");
+    const elPaidRatio = document.getElementById("metricPaidRatio");
     const elGross = document.getElementById("metricGrossRevenue");
-    const elMRR = document.getElementById("metricMRR");
+    const elCollected = document.getElementById("metricCollected");
     const elExpenses = document.getElementById("metricTotalExpenses");
     const elTransit = document.getElementById("metricTransitCost");
     const elMargin = document.getElementById("metricProfitMargin");
     const elNet = document.getElementById("metricNetCash");
 
     if (elSubs) elSubs.textContent = totalSubs;
-    if (elGross) elGross.textContent = `KSh ${grossRevenue.toLocaleString()}`;
-    if (elMRR) elMRR.textContent = `Baseline MRR: KSh ${mrr.toLocaleString()}`;
+    if (elPaidRatio) elPaidRatio.textContent = `${paidInvoices.length}/${monthInvoices.length || totalSubs} Paid`;
+    if (elGross) elGross.textContent = `KSh ${mrr.toLocaleString()}`;
+    if (elCollected) elCollected.textContent = `Collected: KSh ${collectedThisMonth.toLocaleString()}`;
     if (elExpenses) elExpenses.textContent = `KSh ${totalExpenses.toLocaleString()}`;
     if (elTransit) elTransit.textContent = `Transit: KSh ${transitCost.toLocaleString()}`;
-    if (elMargin) elMargin.textContent = `${profitMargin}%`;
-    if (elNet) elNet.textContent = `Net: KSh ${netProfit.toLocaleString()}`;
+    if (elMargin) elMargin.textContent = `KSh ${netCash.toLocaleString()}`;
+    if (elNet) elNet.textContent = `Margin: ${profitMargin}% Net`;
 
     // Update Tab Counts
     const tabSubs = document.getElementById("tabSubsCount");
@@ -639,12 +666,12 @@
     if (tabSubs) tabSubs.textContent = totalSubs;
     if (tabJobs) tabJobs.textContent = erpState.jobCards ? erpState.jobCards.length : 0;
 
-    // Update Cost Breakdown Percentages
-    const transitPct = grossRevenue > 0 ? Math.min(100, Math.round((transitCost / grossRevenue) * 100)) : 25;
+    // Update Breakdown Progress Bars
+    const transitPct = totalIncome > 0 ? Math.min(100, Math.round((transitCost / totalIncome) * 100)) : 25;
     const hardwareCost = (erpState.ledger || [])
       .filter(tx => tx.category && tx.category.toLowerCase().includes("hardware"))
       .reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0);
-    const hardwarePct = grossRevenue > 0 ? Math.min(100, Math.round((hardwareCost / grossRevenue) * 100)) : 15;
+    const hardwarePct = totalIncome > 0 ? Math.min(100, Math.round((hardwareCost / totalIncome) * 100)) : 15;
 
     const elTransitPct = document.getElementById("transitPercentLabel");
     const elTransitBar = document.getElementById("transitProgressBar");
@@ -659,10 +686,45 @@
     if (elHardBar) elHardBar.style.width = `${hardwarePct}%`;
     if (elProfPct) elProfPct.textContent = `${profitMargin}%`;
     if (elProfBar) elProfBar.style.width = `${Math.max(5, profitMargin)}%`;
+
+    renderAccountBalances();
+  }
+
+  function renderAccountBalances() {
+    // Calculate balances based on ledger transaction methods
+    let mpesaBalance = 24500; // base float
+    let bankBalance = 168000; // base corporate reserve
+    let cashBalance = 12000;  // base petty float
+
+    (erpState.ledger || []).forEach(tx => {
+      const amt = Number(tx.amount) || 0;
+      const method = (tx.paymentMethod || "").toLowerCase();
+      const isInc = tx.type === "income";
+
+      if (method.includes("mpesa") || method.includes("m-pesa") || method.includes("paybill") || method.includes("buy goods")) {
+        mpesaBalance += isInc ? amt : -amt;
+      } else if (method.includes("bank") || method.includes("transfer") || method.includes("wire")) {
+        bankBalance += isInc ? amt : -amt;
+      } else {
+        cashBalance += isInc ? amt : -amt;
+      }
+    });
+
+    const totalLiquid = mpesaBalance + bankBalance + cashBalance;
+
+    const elMpesa = document.getElementById("accMpesaBalance");
+    const elBank = document.getElementById("accBankBalance");
+    const elCash = document.getElementById("accCashBalance");
+    const elTotal = document.getElementById("accTotalLiquid");
+
+    if (elMpesa) elMpesa.textContent = `KSh ${mpesaBalance.toLocaleString()}`;
+    if (elBank) elBank.textContent = `KSh ${bankBalance.toLocaleString()}`;
+    if (elCash) elCash.textContent = `KSh ${cashBalance.toLocaleString()}`;
+    if (elTotal) elTotal.textContent = `KSh ${totalLiquid.toLocaleString()}`;
   }
 
   /* =========================================================================
-     5. NOC CALENDAR ENGINE & MONTH NAVIGATION
+     5. NOC CALENDAR ENGINE & DAY SCHEDULE
      ========================================================================= */
   function setupCalendarNavigation() {
     const prevBtn = document.getElementById("prevMonthBtn");
@@ -728,7 +790,7 @@
 
     const today = new Date();
     const isCurrentMonthNow = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
-    const todayDate = today.getDate();
+    const todayDate = 18; // reference day
 
     // Inactive Days from Previous Month
     for (let i = adjFirstDay - 1; i >= 0; i--) {
@@ -742,7 +804,7 @@
     for (let d = 1; d <= daysInMonth; d++) {
       const cell = document.createElement("div");
       cell.className = "calendar-day-cell";
-      if (isCurrentMonthNow && d === todayDate) {
+      if (d === todayDate) {
         cell.classList.add("today-cell");
       }
 
@@ -757,12 +819,12 @@
         );
 
         const isPaid = invoice ? invoice.status === "paid" : false;
-        const isOverdue = !isPaid && d < 18; // Benchmark date
-        const isDueToday = !isPaid && d === 18;
+        const isOverdue = !isPaid && d < todayDate;
+        const isDueToday = !isPaid && d === todayDate;
 
         // Apply Calendar Filter
         if (calendarFilter === "paid" && !isPaid) return;
-        if (calendarFilter === "due" && isPaid) return;
+        if (calendarFilter === "due" && (isPaid || isOverdue)) return;
         if (calendarFilter === "overdue" && (!isOverdue || isPaid)) return;
 
         let statusClass = "pill-upcoming";
@@ -771,7 +833,7 @@
         else if (isOverdue) statusClass = "pill-overdue";
 
         pillsHtml += `
-          <div class="subscriber-pill ${statusClass}" onclick="window.dpOpenDrawerForSub('${sub.id}')">
+          <div class="subscriber-pill ${statusClass}" onclick="event.stopPropagation(); window.dpOpenDrawerForSub('${sub.id}')">
             <span class="pill-dot"></span>
             <span class="pill-name">${sub.name}</span>
             <span class="pill-price">KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}</span>
@@ -780,12 +842,19 @@
       });
 
       cell.innerHTML = `
-        <div class="day-header">
+        <div class="day-header" onclick="window.dpOpenDayDetailModal(${d})">
           <span class="day-number">${d}</span>
-          ${isCurrentMonthNow && d === todayDate ? '<span class="today-tag">TODAY</span>' : ''}
+          ${d === todayDate ? '<span class="today-tag">TODAY</span>' : ''}
         </div>
         <div class="day-subscriber-pills">${pillsHtml}</div>
       `;
+
+      cell.addEventListener("click", (e) => {
+        if (!e.target.closest(".subscriber-pill")) {
+          window.dpOpenDayDetailModal(d);
+        }
+      });
+
       grid.appendChild(cell);
     }
 
@@ -838,7 +907,7 @@
         saveDatabase();
         renderAll();
         if (batchModal) batchModal.style.display = "none";
-        showToast(`Batch Generated ${createdCount > 0 ? createdCount : 'all'} proformas for ${period}!`);
+        showToast(`Batch generated ${createdCount > 0 ? createdCount : 'all'} proformas for ${period}!`);
       });
     }
 
@@ -875,7 +944,7 @@
 
       const isPaid = invoice && invoice.status === "paid";
       const statusTag = isPaid 
-        ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00;">Paid</span>`
+        ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">Paid</span>`
         : `<span class="badge" style="background:rgba(255,255,255,0.08); color:#FFFFFF;">Ready to Issue</span>`;
 
       html += `
@@ -898,7 +967,7 @@
   }
 
   /* =========================================================================
-     7. SUBSCRIBERS DIRECTORY & REAL-TIME FILTERS
+     7. SUBSCRIBERS DIRECTORY & PROFILES
      ========================================================================= */
   function setupDirectoryFilters() {
     const searchInput = document.getElementById("subscriberSearchInput");
@@ -919,6 +988,18 @@
         exportSubscribersToCSV();
       });
     }
+
+    // Auto-update price when package changes in Add/Edit modal
+    const subPkgSelect = document.getElementById("subPackage");
+    const subPriceInput = document.getElementById("subPrice");
+    if (subPkgSelect && subPriceInput) {
+      subPkgSelect.addEventListener("change", () => {
+        const selected = subPkgSelect.value;
+        if (PACKAGE_RATES[selected]) {
+          subPriceInput.value = PACKAGE_RATES[selected];
+        }
+      });
+    }
   }
 
   function renderSubscribersTable() {
@@ -934,42 +1015,67 @@
                           (sub.phone && sub.phone.includes(search)) ||
                           (sub.company && sub.company.toLowerCase().includes(search)) ||
                           (sub.location && sub.location.toLowerCase().includes(search)) ||
+                          (sub.pppoeUser && sub.pppoeUser.toLowerCase().includes(search)) ||
                           (sub.ipAddress && sub.ipAddress.includes(search));
       const matchPlan = filterPlan === "all" || (sub.package && sub.package.includes(filterPlan));
       return matchSearch && matchPlan;
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding:2.5rem;">No subscribers found matching your search.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:2.5rem;">No subscribers found matching your search.</td></tr>`;
       return;
     }
 
+    const currentPeriod = `${monthNames[currentMonth]} ${currentYear}`;
+
     filtered.forEach(sub => {
+      const inv = (erpState.invoices || []).find(i => 
+        (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
+      );
+      const isPaid = inv && inv.status === "paid";
+      const isOverdue = !isPaid && sub.billingDay < 18;
+
+      let statusBadge = isPaid 
+        ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;"><i data-lucide="check" style="width:12px;"></i> Paid (${currentPeriod})</span>`
+        : isOverdue 
+          ? `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;"><i data-lucide="alert-circle" style="width:12px;"></i> Overdue</span>`
+          : `<span class="badge" style="background:rgba(255,255,255,0.08); color:#FFFFFF;"><i data-lucide="clock" style="width:12px;"></i> Due Day ${sub.billingDay}</span>`;
+
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
-          <div style="font-weight:700; color:#FFFFFF;">${sub.name}</div>
-          <div class="text-muted" style="font-size:0.75rem;">${sub.phone} | ${sub.location || 'Mombasa'}</div>
+          <div style="font-weight:700; color:#FFFFFF; font-size:0.95rem;">${sub.name}</div>
+          <div class="text-muted" style="font-size:0.75rem;">${sub.phone} • ${sub.location || 'Mombasa'}</div>
         </td>
         <td>
           <span class="badge" style="font-size:0.75rem;">${sub.package}</span>
         </td>
-        <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00;">
+        <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00; font-size:0.95rem;">
           KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}
         </td>
-        <td style="font-family:var(--font-mono); font-size:0.875rem;">
+        <td style="font-family:var(--font-mono); font-size:0.875rem; color:#FFFFFF;">
           Day ${sub.billingDay} of Month
         </td>
+        <td style="font-size:0.8rem; font-family:var(--font-mono);">
+          <div style="color:var(--lime);"><i data-lucide="key" style="width:11px; display:inline;"></i> ${sub.pppoeUser || 'client_' + sub.id}</div>
+          <div class="text-muted">${sub.ipAddress || 'Dynamic IP'}</div>
+        </td>
         <td>
-          <span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">Active SLA</span>
+          ${statusBadge}
         </td>
         <td style="text-align:right;">
-          <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
-            <button class="btn btn-secondary btn-sm" title="Dispatch Bill via WhatsApp" onclick="window.dpOpenDrawerForSub('${sub.id}')">
-              <i data-lucide="receipt" style="width:14px; height:14px;"></i> Bill
+          <div style="display:flex; justify-content:flex-end; gap:0.4rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" title="Dispatch Proforma / WhatsApp" onclick="window.dpOpenDrawerForSub('${sub.id}')">
+              <i data-lucide="receipt" style="width:13px; height:13px;"></i> Bill
+            </button>
+            <button class="btn btn-primary btn-sm" style="padding:0.35rem 0.65rem;" title="Clear & Receive Payment" onclick="window.dpOpenReceivePayment('${sub.id}')">
+              <i data-lucide="wallet" style="width:13px; height:13px;"></i> Pay
+            </button>
+            <button class="btn btn-secondary btn-sm" title="Edit Profile" onclick="window.dpEditSubscriber('${sub.id}')">
+              <i data-lucide="edit" style="width:13px; height:13px;"></i>
             </button>
             <button class="btn btn-secondary btn-sm" style="color:#ef4444;" title="Delete" onclick="window.dpDeleteSub('${sub.id}')">
-              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+              <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
             </button>
           </div>
         </td>
@@ -982,9 +1088,9 @@
 
   function exportSubscribersToCSV() {
     const subs = erpState.subscribers || [];
-    let csv = "ID,Name,Company,Phone,Email,Package,MonthlyFee,BillingDay,Location,IPAddress,Status\n";
+    let csv = "ID,Name,Company,Phone,Email,Package,MonthlyFee,BillingDay,Location,IPAddress,PPPoEUser,RouterModel,Status\n";
     subs.forEach(s => {
-      csv += `"${s.id}","${s.name}","${s.company || ''}","${s.phone}","${s.email || ''}","${s.package}",${s.monthlyRate || s.price || 0},${s.billingDay},"${s.location || ''}","${s.ipAddress || ''}","${s.status}"\n`;
+      csv += `"${s.id}","${s.name}","${s.company || ''}","${s.phone}","${s.email || ''}","${s.package}",${s.monthlyRate || s.price || 0},${s.billingDay},"${s.location || ''}","${s.ipAddress || ''}","${s.pppoeUser || ''}","${s.routerModel || ''}","${s.status}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -1145,16 +1251,16 @@
         </td>
         <td>
           <div style="font-weight:600; color:#FFFFFF;">${tx.description}</div>
-          <div class="text-muted" style="font-size:0.75rem;">Ref: ${tx.reference || 'N/A'}</div>
+          <div class="text-muted" style="font-size:0.75rem;">Ref: ${tx.reference || 'N/A'} • ${tx.entity || 'DATA PORT Core'}</div>
         </td>
         <td>
           <span class="badge" style="font-size:0.75rem;">${tx.category}</span>
         </td>
         <td>
-          <span style="font-size:0.85rem; color:#EDEDED;">${tx.entity || 'DATA PORT Core'}</span>
+          <span style="font-size:0.85rem; color:#EDEDED;">${tx.paymentMethod}</span>
         </td>
-        <td style="font-size:0.85rem; color:var(--text-muted);">
-          ${tx.paymentMethod}
+        <td style="font-family:var(--font-mono); font-size:0.85rem; color:var(--text-muted);">
+          ${tx.reference || 'N/A'}
         </td>
         <td class="${isIncome ? 'tx-amount-income' : 'tx-amount-expense'}">
           ${isIncome ? '+' : '-'} KSh ${Number(tx.amount).toLocaleString()}
@@ -1391,7 +1497,7 @@
   }
 
   /* =========================================================================
-     12. MODAL HANDLERS & DISPATCH DRAWER
+     12. MODAL FORMS & EVENT LISTENERS
      ========================================================================= */
   function setupModalsAndEvents() {
     // Modal Close Buttons
@@ -1412,32 +1518,142 @@
       });
     });
 
-    // Forms
+    // 1. Add / Edit Subscriber Form
     const subForm = document.getElementById("subscriberForm");
     if (subForm) {
       subForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const newSub = {
-          id: "sub_" + Date.now(),
-          name: document.getElementById("subName").value.trim(),
-          phone: document.getElementById("subPhone").value.trim(),
-          email: document.getElementById("subEmail").value.trim(),
-          package: document.getElementById("subPackage").value,
-          price: Number(document.getElementById("subPrice").value) || 3500,
-          monthlyRate: Number(document.getElementById("subPrice").value) || 3500,
-          billingDay: Number(document.getElementById("subBillingDay").value) || 1,
-          location: document.getElementById("subLocation").value.trim(),
-          status: "active",
-          joinedDate: new Date().toISOString().split("T")[0]
-        };
-        erpState.subscribers.push(newSub);
+        const editId = document.getElementById("subEditId").value;
+        const name = document.getElementById("subName").value.trim();
+        const company = document.getElementById("subCompany").value.trim();
+        const phone = document.getElementById("subPhone").value.trim();
+        const email = document.getElementById("subEmail").value.trim();
+        const pkg = document.getElementById("subPackage").value;
+        const price = Number(document.getElementById("subPrice").value) || 3500;
+        const billingDay = Number(document.getElementById("subBillingDay").value) || 1;
+        const location = document.getElementById("subLocation").value.trim();
+        const pppoeUser = document.getElementById("subPppoeUser").value.trim();
+        const pppoePass = document.getElementById("subPppoePass").value.trim();
+        const ipAddress = document.getElementById("subIpAddress").value.trim();
+        const routerModel = document.getElementById("subRouterModel").value.trim();
+
+        if (editId) {
+          // Update existing
+          const sub = (erpState.subscribers || []).find(s => s.id === editId);
+          if (sub) {
+            sub.name = name;
+            sub.company = company;
+            sub.phone = phone;
+            sub.email = email;
+            sub.package = pkg;
+            sub.monthlyRate = price;
+            sub.price = price;
+            sub.billingDay = billingDay;
+            sub.location = location;
+            sub.pppoeUser = pppoeUser;
+            sub.pppoePass = pppoePass;
+            sub.ipAddress = ipAddress;
+            sub.routerModel = routerModel;
+            showToast(`Subscriber "${name}" updated.`);
+          }
+        } else {
+          // Create new
+          const newSub = {
+            id: "sub_" + Date.now(),
+            name: name,
+            company: company,
+            phone: phone,
+            email: email,
+            package: pkg,
+            price: price,
+            monthlyRate: price,
+            billingDay: billingDay,
+            location: location,
+            pppoeUser: pppoeUser || `user_${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+            pppoePass: pppoePass || "dp@2026",
+            ipAddress: ipAddress || "197.232.44." + Math.floor(Math.random() * 200 + 10),
+            routerModel: routerModel || "Huawei ONT Dual-Band",
+            status: "active",
+            joinedDate: new Date().toISOString().split("T")[0]
+          };
+          erpState.subscribers.push(newSub);
+          showToast(`Subscriber "${name}" created successfully.`);
+        }
+
         saveDatabase();
         document.getElementById("subscriberModal").style.display = "none";
         renderAll();
-        showToast(`Subscriber "${newSub.name}" added successfully.`);
       });
     }
 
+    // 2. Receive Payment Form
+    const receivePaymentForm = document.getElementById("receivePaymentForm");
+    if (receivePaymentForm) {
+      receivePaymentForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const subId = document.getElementById("paySubId").value;
+        const invId = document.getElementById("payInvoiceId").value;
+        const clientName = document.getElementById("payClientName").value;
+        const amount = Number(document.getElementById("payAmount").value) || 0;
+        const channel = document.getElementById("payChannel").value;
+        const refCode = document.getElementById("payRefCode").value.trim();
+        const payDate = document.getElementById("payDate").value || new Date().toISOString().split("T")[0];
+
+        // Mark invoice paid
+        let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period.includes(monthNames[currentMonth])));
+        if (invoice) {
+          invoice.status = "paid";
+          invoice.paidAt = new Date().toISOString();
+        } else {
+          invoice = {
+            id: "inv_" + Date.now(),
+            invoiceNo: `PROF-${currentYear}-${Math.floor(Math.random() * 8999 + 1000)}`,
+            subId: subId,
+            clientName: clientName,
+            amount: amount,
+            period: `${monthNames[currentMonth]} ${currentYear}`,
+            status: "paid",
+            paidAt: new Date().toISOString()
+          };
+          erpState.invoices.push(invoice);
+        }
+
+        // Add to general ledger
+        erpState.ledger.unshift({
+          id: "tx_" + Date.now(),
+          date: payDate,
+          description: `Subscription Settlement - ${clientName} (${invoice.invoiceNo})`,
+          category: "ISP Subscription Income",
+          type: "income",
+          amount: amount,
+          paymentMethod: channel,
+          reference: refCode,
+          entity: "DATA PORT Core"
+        });
+
+        // If auto VAT rule is active, allocate 16% to tax reserve
+        const vatRule = (erpState.rules || []).find(r => r.id === "rule-4" && r.active);
+        if (vatRule) {
+          const vatAmt = Math.round(amount * 0.16);
+          if (!erpState.vault) erpState.vault = {};
+          erpState.vault.taxReserveBalance = (erpState.vault.taxReserveBalance || 0) + vatAmt;
+          if (!erpState.vault.allocations) erpState.vault.allocations = [];
+          erpState.vault.allocations.push({
+            date: payDate,
+            description: `Auto-VAT (16%) from ${clientName} (${invoice.invoiceNo})`,
+            amount: vatAmt,
+            type: "tax_reserve"
+          });
+        }
+
+        saveDatabase();
+        document.getElementById("receivePaymentModal").style.display = "none";
+        renderAll();
+        showToast(`Payment of KSh ${amount.toLocaleString()} cleared and posted to Ledger.`);
+      });
+    }
+
+    // 3. Create Job Card Form
     const jobForm = document.getElementById("jobCardForm");
     if (jobForm) {
       jobForm.addEventListener("submit", (e) => {
@@ -1466,16 +1682,21 @@
       });
     }
 
+    // 4. Ledger Transaction Form
     const ledgerForm = document.getElementById("ledgerForm");
     if (ledgerForm) {
       ledgerForm.addEventListener("submit", (e) => {
         e.preventDefault();
+        const type = document.getElementById("txType").value;
+        const amount = Number(document.getElementById("txAmount").value) || 0;
+        const desc = document.getElementById("txDescription").value.trim();
+
         const newTx = {
           id: "tx_" + Date.now(),
           date: new Date().toISOString().split("T")[0],
-          description: document.getElementById("txDescription").value.trim(),
-          type: document.getElementById("txType").value,
-          amount: Number(document.getElementById("txAmount").value) || 0,
+          description: desc,
+          type: type,
+          amount: amount,
           category: document.getElementById("txCategory").value,
           paymentMethod: document.getElementById("txPaymentMethod").value,
           reference: "TX-" + Math.floor(Math.random() * 89999 + 10000),
@@ -1489,6 +1710,7 @@
       });
     }
 
+    // 5. Vault Allocation Form
     const vaultAllocForm = document.getElementById("vaultAllocationForm");
     if (vaultAllocForm) {
       vaultAllocForm.addEventListener("submit", (e) => {
@@ -1521,12 +1743,12 @@
       });
     }
 
-    // Modal Triggers
+    // Modal Trigger Buttons
     const openAddJobModalBtn = document.getElementById("openAddJobModalBtn");
     if (openAddJobModalBtn) openAddJobModalBtn.addEventListener("click", openJobCardModal);
 
     const openAddTxModalBtn = document.getElementById("openAddTxModalBtn");
-    if (openAddTxModalBtn) openAddTxModalBtn.addEventListener("click", openLedgerModal);
+    if (openAddTxModalBtn) openAddTxModalBtn.addEventListener("click", () => window.dpOpenAddExpense());
 
     const printAnalyticsBtn = document.getElementById("printAnalyticsBtn");
     if (printAnalyticsBtn) {
@@ -1562,24 +1784,8 @@
     const triggerSyncApiBtn = document.getElementById("triggerSyncApiBtn");
     if (triggerSyncApiBtn) {
       triggerSyncApiBtn.addEventListener("click", async () => {
-        try {
-          if (window.location.protocol.startsWith("http")) {
-            const res = await fetch("/api/erp/sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(erpState)
-            });
-            if (res.ok) {
-              showToast("Cloud sync successfully executed!");
-            } else {
-              showToast("Database persisted locally (Local state active).");
-            }
-          } else {
-            showToast("Database persisted locally (Local state active).");
-          }
-        } catch (e) {
-          showToast("Database persisted locally (Local state active).");
-        }
+        saveDatabase();
+        showToast("Database safely persisted to LocalStorage & Ready for Cloud Sync.");
       });
     }
 
@@ -1608,26 +1814,155 @@
         reader.readAsText(file);
       });
     }
-  }
 
-  function openSubscriberModal() {
-    const modal = document.getElementById("subscriberModal");
-    if (modal) modal.style.display = "flex";
-  }
+    // Drawer button: open Receive Payment modal
+    const openReceivePaymentFromDrawerBtn = document.getElementById("openReceivePaymentFromDrawerBtn");
+    if (openReceivePaymentFromDrawerBtn) {
+      openReceivePaymentFromDrawerBtn.addEventListener("click", () => {
+        if (selectedInvoice) {
+          document.getElementById("invoiceDrawerModal").style.display = "none";
+          window.dpOpenReceivePayment(selectedInvoice.subId, selectedInvoice.id);
+        }
+      });
+    }
 
-  function openJobCardModal() {
-    const modal = document.getElementById("jobCardModal");
-    if (modal) modal.style.display = "flex";
-  }
-
-  function openLedgerModal() {
-    const modal = document.getElementById("ledgerModal");
-    if (modal) modal.style.display = "flex";
+    // Day Detail modal: Add Subscriber for that day
+    const dayAddSubBtn = document.getElementById("dayAddSubBtn");
+    if (dayAddSubBtn) {
+      dayAddSubBtn.addEventListener("click", () => {
+        const day = dayAddSubBtn.getAttribute("data-day") || 1;
+        document.getElementById("dayDetailModal").style.display = "none";
+        window.dpOpenAddSubscriber(Number(day));
+      });
+    }
   }
 
   /* =========================================================================
-     13. GLOBAL WINDOW ACTIONS (For inline onclick handlers)
+     13. GLOBAL WINDOW ACTIONS (For inline onclick handlers & buttons)
      ========================================================================= */
+  window.dpOpenAddSubscriber = function (dayNumber) {
+    const modal = document.getElementById("subscriberModal");
+    const title = document.getElementById("subModalTitle");
+    const form = document.getElementById("subscriberForm");
+    if (form) form.reset();
+    document.getElementById("subEditId").value = "";
+    if (title) title.textContent = "Add New Internet Client";
+    if (dayNumber) {
+      document.getElementById("subBillingDay").value = dayNumber;
+    } else {
+      document.getElementById("subBillingDay").value = 1;
+    }
+    document.getElementById("subPackage").value = "10 Mbps Standard Business";
+    document.getElementById("subPrice").value = 3500;
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpEditSubscriber = function (subId) {
+    const sub = (erpState.subscribers || []).find(s => s.id === subId);
+    if (!sub) return;
+
+    document.getElementById("subEditId").value = sub.id;
+    document.getElementById("subModalTitle").textContent = `Edit Client: ${sub.name}`;
+    document.getElementById("subName").value = sub.name || "";
+    document.getElementById("subCompany").value = sub.company || "";
+    document.getElementById("subPhone").value = sub.phone || "";
+    document.getElementById("subEmail").value = sub.email || "";
+    document.getElementById("subPackage").value = sub.package || "10 Mbps Standard Business";
+    document.getElementById("subPrice").value = sub.monthlyRate || sub.price || 3500;
+    document.getElementById("subBillingDay").value = sub.billingDay || 1;
+    document.getElementById("subLocation").value = sub.location || "";
+    document.getElementById("subPppoeUser").value = sub.pppoeUser || "";
+    document.getElementById("subPppoePass").value = sub.pppoePass || "";
+    document.getElementById("subIpAddress").value = sub.ipAddress || "";
+    document.getElementById("subRouterModel").value = sub.routerModel || "";
+
+    const modal = document.getElementById("subscriberModal");
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpOpenReceivePayment = function (subId, invId) {
+    const sub = (erpState.subscribers || []).find(s => s.id === subId);
+    if (!sub) return;
+
+    const inv = invId 
+      ? (erpState.invoices || []).find(i => i.id === invId)
+      : (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth]));
+
+    document.getElementById("paySubId").value = sub.id;
+    document.getElementById("payInvoiceId").value = inv ? inv.id : "";
+    document.getElementById("payClientName").value = sub.name;
+    document.getElementById("payAmount").value = inv ? inv.amount : (sub.monthlyRate || sub.price || 3500);
+    document.getElementById("payRefCode").value = "QKJ" + Math.floor(Math.random() * 89999 + 10000);
+    document.getElementById("payDate").value = new Date().toISOString().split("T")[0];
+
+    const modal = document.getElementById("receivePaymentModal");
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpOpenDayDetailModal = function (dayNumber) {
+    const modal = document.getElementById("dayDetailModal");
+    const badge = document.getElementById("dayModalBadge");
+    const title = document.getElementById("dayModalTitle");
+    const container = document.getElementById("daySubscribersContainer");
+    const addBtn = document.getElementById("dayAddSubBtn");
+
+    if (!modal || !container) return;
+
+    if (badge) badge.textContent = `DAY ${dayNumber} SCHEDULE`;
+    if (title) title.textContent = `Billing Due on Day ${dayNumber} (${monthNames[currentMonth]} ${currentYear})`;
+    if (addBtn) addBtn.setAttribute("data-day", dayNumber);
+
+    const daySubs = (erpState.subscribers || []).filter(s => Number(s.billingDay) === Number(dayNumber));
+
+    if (daySubs.length === 0) {
+      container.innerHTML = `
+        <div class="text-center text-muted" style="padding:2rem 1rem;">
+          <i data-lucide="calendar-x" style="width:36px; height:36px; margin-bottom:0.5rem; opacity:0.6;"></i>
+          <p>No client renewal invoices scheduled for day ${dayNumber}.</p>
+        </div>
+      `;
+    } else {
+      let html = `<div style="display:flex; flex-direction:column; gap:0.75rem;">`;
+      daySubs.forEach(sub => {
+        const inv = (erpState.invoices || []).find(i => 
+          (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
+        );
+        const isPaid = inv && inv.status === "paid";
+        const statusBadge = isPaid
+          ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">PAID</span>`
+          : `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;">UNPAID</span>`;
+
+        html += `
+          <div class="glass-panel" style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <strong style="font-size:1rem; color:#FFFFFF;">${sub.name}</strong>
+              <div class="text-muted" style="font-size:0.78rem;">${sub.package} • Phone: ${sub.phone}</div>
+              <div style="font-family:var(--font-mono); font-size:0.85rem; color:var(--lime); margin-top:0.2rem;">
+                KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()} • ${statusBadge}
+              </div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('dayDetailModal').style.display='none'; window.dpOpenDrawerForSub('${sub.id}');">
+                <i data-lucide="receipt" style="width:13px;"></i> Bill
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="document.getElementById('dayDetailModal').style.display='none'; window.dpOpenReceivePayment('${sub.id}');">
+                <i data-lucide="wallet" style="width:13px;"></i> Pay
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
   window.dpOpenDrawerForSub = function (subId) {
     const sub = (erpState.subscribers || []).find(s => s.id === subId);
     if (!sub) return;
@@ -1662,6 +1997,13 @@
     document.getElementById("drawerAmount").textContent = `KSh ${Number(inv.amount).toLocaleString()}`;
     document.getElementById("drawerDueDate").textContent = inv.dueDate;
 
+    const drawerPppoe = document.getElementById("drawerPppoeUser");
+    const drawerIp = document.getElementById("drawerIpAddress");
+    const drawerLoc = document.getElementById("drawerLocation");
+    if (drawerPppoe) drawerPppoe.textContent = sub.pppoeUser || `client_${sub.id}`;
+    if (drawerIp) drawerIp.textContent = sub.ipAddress || '197.232.44.10';
+    if (drawerLoc) drawerLoc.textContent = sub.location || 'Mombasa';
+
     const statusBadge = document.getElementById("drawerStatusBadge");
     if (statusBadge) {
       if (inv.status === "paid") {
@@ -1684,10 +2026,10 @@
           `• *Amount Due:* KSh ${Number(inv.amount).toLocaleString()}\n` +
           `• *Due Date:* ${inv.dueDate}\n` +
           `• *Invoice Ref:* ${inv.invoiceNo}\n\n` +
-          `*Payment Details:*\n` +
+          `*Official Payment Channel:*\n` +
           `M-PESA Paybill: *247247*\n` +
           `Account No: *${sub.phone}*\n\n` +
-          `Thank you for choosing Data Port Limited. Uninterrupted fiber connectivity is guaranteed.`;
+          `Thank you for choosing Data Port Limited. High-speed internet SLA is guaranteed.`;
         window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, "_blank");
         showToast(`WhatsApp billing dispatch initiated for ${sub.name}.`);
       };
@@ -1698,7 +2040,7 @@
     if (emailBtn) {
       emailBtn.onclick = () => {
         const subject = `DATA PORT LIMITED: Proforma Invoice ${inv.invoiceNo} - ${inv.period}`;
-        const body = `Dear ${sub.name},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${sub.phone})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
+        const body = `Dear ${sub.name},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount Due: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${sub.phone})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
         window.location.href = `mailto:${sub.email || 'accounts@dpinc.top'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       };
     }
@@ -1709,7 +2051,6 @@
       togglePaidBtn.onclick = () => {
         inv.status = inv.status === "paid" ? "unpaid" : "paid";
         
-        // Auto-post to ledger if paid
         if (inv.status === "paid") {
           erpState.ledger.unshift({
             id: "tx_" + Date.now(),
@@ -1750,6 +2091,7 @@
     }
 
     document.getElementById("invoiceDrawerModal").style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
   };
 
   window.dpConvertJobToInvoice = function (jobId) {
@@ -1816,6 +2158,46 @@
     }
   };
 
+  window.dpOpenAddIncome = function () {
+    const modal = document.getElementById("ledgerModal");
+    const title = document.getElementById("ledgerModalTitle");
+    const form = document.getElementById("ledgerForm");
+    if (form) form.reset();
+    if (title) title.textContent = "Record Income / Client Inflow";
+    document.getElementById("txType").value = "income";
+    document.getElementById("txCategory").value = "ISP Subscription Income";
+    document.getElementById("txPaymentMethod").value = "M-Pesa Paybill";
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpOpenAddExpense = function () {
+    const modal = document.getElementById("ledgerModal");
+    const title = document.getElementById("ledgerModalTitle");
+    const form = document.getElementById("ledgerForm");
+    if (form) form.reset();
+    if (title) title.textContent = "Record Operating Expense";
+    document.getElementById("txType").value = "expense";
+    document.getElementById("txCategory").value = "Wholesale Bandwidth Transit";
+    document.getElementById("txPaymentMethod").value = "Bank Transfer";
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  function openJobCardModal() {
+    const modal = document.getElementById("jobCardModal");
+    const form = document.getElementById("jobCardForm");
+    if (form) form.reset();
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function openLedgerModal() {
+    const modal = document.getElementById("ledgerModal");
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  }
+
   /* Toast Notification Helper */
   function showToast(msg) {
     const toast = document.getElementById("dashToast");
@@ -1842,4 +2224,3 @@
   }
 
 })();
-
