@@ -546,7 +546,15 @@
 
         btn.classList.add("active");
         const targetPane = document.getElementById(targetTabId);
-        if (targetPane) targetPane.classList.add("active");
+        if (targetPane) {
+          targetPane.classList.add("active");
+          if (typeof gsap !== "undefined") {
+            gsap.fromTo(targetPane, 
+              { opacity: 0, y: 16 }, 
+              { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
+            );
+          }
+        }
 
         // Dynamic Quick Action Button Label
         if (quickActionLabel) {
