@@ -299,16 +299,16 @@ function initCardTilt() {
   });
 }
 
-/* --- Theme Management (Dark / Light) --- */
+/* --- Theme Management (Light by Default) --- */
 function initTheme() {
-  const savedTheme = localStorage.getItem("dp_theme") || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const savedTheme = localStorage.getItem("dp_theme") || "light";
   setTheme(savedTheme);
 
   const toggleBtns = document.querySelectorAll(".theme-toggle-btn");
   toggleBtns.forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
       const newTheme = currentTheme === "dark" ? "light" : "dark";
       setTheme(newTheme);
     });

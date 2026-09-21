@@ -945,11 +945,11 @@
       const isPaid = invoice && invoice.status === "paid";
       const statusTag = isPaid 
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">Paid</span>`
-        : `<span class="badge" style="background:rgba(255,255,255,0.08); color:#FFFFFF;">Ready to Issue</span>`;
+        : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);">Ready to Issue</span>`;
 
       html += `
         <tr>
-          <td><strong style="color:#FFFFFF;">${sub.name}</strong></td>
+          <td><strong style="color:var(--text-primary);">${sub.name}</strong></td>
           <td><span class="text-muted" style="font-size:0.8rem;">${sub.package}</span></td>
           <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00;">KSh ${rate.toLocaleString()}</td>
           <td style="font-family:var(--font-mono); font-size:0.85rem;">Day ${sub.billingDay}</td>
@@ -1039,12 +1039,12 @@
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;"><i data-lucide="check" style="width:12px;"></i> Paid (${currentPeriod})</span>`
         : isOverdue 
           ? `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;"><i data-lucide="alert-circle" style="width:12px;"></i> Overdue</span>`
-          : `<span class="badge" style="background:rgba(255,255,255,0.08); color:#FFFFFF;"><i data-lucide="clock" style="width:12px;"></i> Due Day ${sub.billingDay}</span>`;
+          : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);"><i data-lucide="clock" style="width:12px;"></i> Due Day ${sub.billingDay}</span>`;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
-          <div style="font-weight:700; color:#FFFFFF; font-size:0.95rem;">${sub.name}</div>
+          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${sub.name}</div>
           <div class="text-muted" style="font-size:0.75rem;">${sub.phone} • ${sub.location || 'Mombasa'}</div>
         </td>
         <td>
@@ -1053,7 +1053,7 @@
         <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00; font-size:0.95rem;">
           KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}
         </td>
-        <td style="font-family:var(--font-mono); font-size:0.875rem; color:#FFFFFF;">
+        <td style="font-family:var(--font-mono); font-size:0.875rem; color:var(--text-primary);">
           Day ${sub.billingDay} of Month
         </td>
         <td style="font-size:0.8rem; font-family:var(--font-mono);">
@@ -1131,7 +1131,7 @@
       if (job.materials && job.materials.length > 0) {
         materialsHtml = `
           <div class="job-materials-summary">
-            <div style="font-weight:700; color:#FFFFFF; margin-bottom:0.25rem;">Itemized Hardware:</div>
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">Itemized Hardware:</div>
             <div class="job-materials-list">
               ${job.materials.map(m => `
                 <div class="job-material-line">
@@ -1250,7 +1250,7 @@
           ${tx.date || '2026-09-18'}
         </td>
         <td>
-          <div style="font-weight:600; color:#FFFFFF;">${tx.description}</div>
+          <div style="font-weight:600; color:var(--text-primary);">${tx.description}</div>
           <div class="text-muted" style="font-size:0.75rem;">Ref: ${tx.reference || 'N/A'} • ${tx.entity || 'DATA PORT Core'}</div>
         </td>
         <td>
@@ -1353,7 +1353,7 @@
       // Expense Bar (White)
       const expHeight = (expenseData[idx] / maxVal) * chartH;
       const expY = padding.top + chartH - expHeight;
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = "var(--text-primary)";
       ctx.fillRect(xCenter - barWidth - 2, expY, barWidth, expHeight);
 
       // Income Bar (#8ACE00 Green)
@@ -1372,12 +1372,12 @@
     // Chart Legend
     ctx.fillStyle = "#8ACE00";
     ctx.fillRect(width - 200, 10, 12, 12);
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = "var(--text-primary)";
     ctx.font = "11px 'Inter', sans-serif";
     ctx.textAlign = "left";
     ctx.fillText("Gross Revenue", width - 180, 20);
 
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = "var(--text-primary)";
     ctx.fillRect(width - 90, 10, 12, 12);
     ctx.fillText("Expenses", width - 70, 20);
   }
@@ -1481,7 +1481,7 @@
       rulesGrid.innerHTML = erpState.rules.map(r => `
         <div class="rule-card" onclick="window.dpToggleRule('${r.id}')" style="cursor:pointer;" title="Click to Toggle Rule">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#FFFFFF;">${r.name}</strong>
+            <strong style="color:var(--text-primary);">${r.name}</strong>
             <span class="badge" style="${r.active ? 'background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;' : 'background:rgba(255,255,255,0.08); color:var(--text-muted);'}">
               ${r.active ? 'Active' : 'Disabled'}
             </span>
@@ -1938,7 +1938,7 @@
         html += `
           <div class="glass-panel" style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
             <div>
-              <strong style="font-size:1rem; color:#FFFFFF;">${sub.name}</strong>
+              <strong style="font-size:1rem; color:var(--text-primary);">${sub.name}</strong>
               <div class="text-muted" style="font-size:0.78rem;">${sub.package} • Phone: ${sub.phone}</div>
               <div style="font-family:var(--font-mono); font-size:0.85rem; color:var(--lime); margin-top:0.2rem;">
                 KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()} • ${statusBadge}

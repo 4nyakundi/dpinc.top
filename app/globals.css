@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #FFFFFF;
+  --background: #FFFFFF;
+  --foreground: #0F172A;
 
-  /* 60-30-10 Design Palette Tokens */
-  --color-black: #000000;
+  /* 60-30-10 Design Palette Tokens (Light Theme) */
+  --color-black: #0F172A;
   --color-white: #FFFFFF;
-  --color-green: #8ACE00;
-  --color-green-hover: #99E600;
+  --color-green: #5C9400;
+  --color-green-hover: #4D7C00;
 
-  --color-cream: #FFFFFF;
-  --color-gold: #FFFFFF;
-  --color-pine: #0A0A0A;
+  --color-cream: #F8FAFC;
+  --color-gold: #0F172A;
+  --color-pine: #F1F5F9;
 
-  --color-neon-cyan: #8ACE00;
-  --color-electric-purple: #EDEDED;
-  --color-deep-charcoal: #050505;
+  --color-neon-cyan: #5C9400;
+  --color-electric-purple: #334155;
+  --color-deep-charcoal: #0F172A;
 
   /* Fonts */
   --font-inter: var(--font-inter);
@@ -27,14 +27,14 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-black: #000000;
+  --color-black: #0F172A;
   --color-white: #FFFFFF;
-  --color-green: #8ACE00;
-  --color-pine: #0A0A0A;
+  --color-green: #5C9400;
+  --color-pine: #F1F5F9;
 
-  --color-cyan-glow: rgba(138, 206, 0, 0.4);
-  --color-purple-glow: rgba(255, 255, 255, 0.2);
-  --color-charcoal: #050505;
+  --color-cyan-glow: rgba(92, 148, 0, 0.25);
+  --color-purple-glow: rgba(15, 23, 42, 0.08);
+  --color-charcoal: #0F172A;
 
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-space-grotesk), sans-serif;
@@ -84,30 +84,30 @@ body::before {
   position: fixed;
   inset: -20px;
   background-image: 
-    radial-gradient(ellipse at 50% 10%, rgba(138, 206, 0, 0.15) 0%, rgba(0, 0, 0, 0.85) 65%, #000000 100%),
+    radial-gradient(ellipse at 50% 10%, rgba(92, 148, 0, 0.08) 0%, rgba(248, 250, 252, 0.92) 55%, #FFFFFF 100%),
     url('/bg-pattern-blurred.jpg');
   background-size: cover, 480px 240px;
   background-repeat: no-repeat, repeat;
   background-position: center top, center center;
   background-attachment: fixed;
-  opacity: 0.28;
-  filter: blur(5px);
+  opacity: 0.22;
+  filter: blur(4px);
   pointer-events: none;
   z-index: -1;
-  transform: scale(1.05);
 }
 
 /* Glass-morphism Utilities */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
 }
 
 .glass-nav {
-  background: rgba(5, 5, 5, 0.7);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid #E2E8F0;
 }
