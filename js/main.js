@@ -63,7 +63,50 @@ function initLenisSmoothScroll() {
 }
 
 /* ==========================================================================
-   2. TYPEWRITER / CYCLING TEXT EFFECT (Jay Dickinson GSAP Effect)
+   2. PARALLAX HERO ENGINE (ScrollTrigger + Lenis Scrub & Depth Layers)
+   ========================================================================== */
+function initHeroAnimations() {
+  const heroWrapper = document.querySelector(".hero-parallax-wrapper");
+  if (!heroWrapper || typeof gsap === "undefined") return;
+
+  // 1. Initial Page Load Entrance Timeline
+  const entranceTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+  entranceTl
+    .from(".hero-layer-content .badge", { opacity: 0, y: 25, duration: 0.8, delay: 0.15 })
+    .from(".hero-title", { opacity: 0, y: 35, duration: 0.9 }, "-=0.55")
+    .from(".hero-subtitle", { opacity: 0, y: 25, duration: 0.8 }, "-=0.6")
+    .from(".hero-buttons", { opacity: 0, y: 20, duration: 0.8 }, "-=0.6")
+    .from(".hero-layer-visual .telemetry-widget", { opacity: 0, y: 40, scale: 0.94, duration: 1.1 }, "-=0.7")
+    .from(".parallax-badge-float", { opacity: 0, scale: 0.75, y: 25, stagger: 0.12, duration: 0.85 }, "-=0.8")
+    .from(".hero-scroll-indicator", { opacity: 0, y: 15, duration: 0.6 }, "-=0.4");
+
+  // 2. Multi-Layer Parallax Scrub with ScrollTrigger
+  if (typeof ScrollTrigger !== "undefined") {
+    const parallaxTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroWrapper,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1.1,
+        invalidateOnRefresh: true,
+      }
+    });
+
+    parallaxTl
+      .to(".hero-layer-bg", { yPercent: 25, scale: 1.08, ease: "none" }, 0)
+      .to(".hero-layer-content", { yPercent: -18, opacity: 0.2, ease: "none" }, 0)
+      .to(".hero-layer-visual .telemetry-widget", { yPercent: -32, scale: 0.95, rotateX: 6, ease: "none" }, 0)
+      .to(".parallax-float-1", { y: -130, x: -15, rotation: -3, ease: "none" }, 0)
+      .to(".parallax-float-2", { y: -65, x: -10, rotation: 2, ease: "none" }, 0)
+      .to(".parallax-float-3", { y: -150, x: 20, rotation: 4, ease: "none" }, 0)
+      .to(".parallax-float-4", { y: -80, x: 12, rotation: -2, ease: "none" }, 0)
+      .to(".hero-scroll-indicator", { opacity: 0, y: -25, ease: "none" }, 0);
+  }
+}
+
+/* ==========================================================================
+   3. TYPEWRITER / CYCLING TEXT EFFECT (Jay Dickinson GSAP Effect)
    ========================================================================== */
 function initTypewriterEffect() {
   const target = document.getElementById("heroDynamicText");

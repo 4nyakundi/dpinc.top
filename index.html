@@ -72,126 +72,160 @@
   </header>
 
   <main>
-    <!-- Hero Section (Modern Bento Layout with Live Telemetry) -->
-    <section class="hero hero-modern">
-      <div class="container">
-        <div class="hero-grid-modern">
-          <!-- Left Column: Dynamic Hero Typography & Actions -->
-          <div>
-            <div class="badge mb-6" style="margin-bottom:1.5rem;">
-              <span class="pulse-dot"></span>
-              <span>System Online • SLA 99.99% Guaranteed</span>
-            </div>
+    <!-- Hero Section (Parallax Architecture with ScrollTrigger + Lenis Depth Layers) -->
+    <div class="hero-parallax-wrapper">
+      <section class="hero hero-modern" id="hero">
+        <!-- Parallax Background Layer (Slow Speed) -->
+        <div class="hero-layer-bg"></div>
 
-            <h1 class="hero-title" style="text-align:left; font-size:clamp(2.5rem, 5vw, 4.25rem); line-height:1.15; margin-bottom:1.5rem;">
-              <span class="hero-typewriter-prefix">Engineering</span>
-              <span id="heroDynamicText" class="hero-dynamic-word">Enterprise Fiber Networks</span>
-            </h1>
+        <!-- Parallax Floating Badges (Dynamic Depth Speeds) -->
+        <div class="parallax-badge-float parallax-float-1" data-parallax-speed="1.3">
+          <i data-lucide="server" class="text-lime" style="width:18px; height:18px;"></i>
+          <span>Fault-Tolerant Enterprise Array</span>
+        </div>
 
-            <p class="hero-subtitle" style="text-align:left; margin:0 0 2.25rem 0; max-width:580px; font-size:1.125rem; line-height:1.7;">
-              Data Port Limited crafts high-resilience <strong>ICT Infrastructure</strong>, <strong>Enterprise Security Networks</strong>, and <strong>High-Retention Digital Media</strong> that accelerate modern industry leaders.
-            </p>
+        <div class="parallax-badge-float parallax-float-2" data-parallax-speed="0.7">
+          <i data-lucide="shield-check" class="text-lime" style="width:18px; height:18px;"></i>
+          <span>4K Live CCTV NOC Matrix</span>
+        </div>
 
-            <div class="hero-buttons" style="justify-content:flex-start;">
-              <a href="quote.html" class="btn btn-primary btn-lg">
-                <span class="roll-text-track">
-                  <span class="roll-text-item">Generate Instant Quote</span>
-                  <span class="roll-text-item">Calculate Project Cost</span>
-                </span>
-                <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
-              </a>
-              <a href="services.html" class="btn btn-secondary btn-lg">
-                <span class="roll-text-track">
-                  <span class="roll-text-item">Explore Solutions</span>
-                  <span class="roll-text-item">View All Services</span>
-                </span>
-                <i data-lucide="layers" style="width:18px; height:18px;"></i>
-              </a>
-            </div>
+        <div class="parallax-badge-float parallax-float-3" data-parallax-speed="1.4">
+          <i data-lucide="code-2" class="text-purple" style="width:18px; height:18px;"></i>
+          <span>Automated Cloud CI/CD</span>
+        </div>
 
-            <div style="display:flex; align-items:center; gap:2rem; margin-top:2.5rem; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
-                <i data-lucide="shield-check" class="text-lime" style="width:18px; height:18px;"></i>
-                <span>NOC Monitored 24/7/365</span>
+        <div class="parallax-badge-float parallax-float-4" data-parallax-speed="0.8">
+          <i data-lucide="film" class="text-pink" style="width:18px; height:18px;"></i>
+          <span>High-Retention Motion Media</span>
+        </div>
+
+        <div class="container" style="position:relative; z-index:5;">
+          <div class="hero-grid-modern">
+            <!-- Left Column: Dynamic Hero Typography & Actions (Medium Speed) -->
+            <div class="hero-layer-content">
+              <div class="badge mb-6" style="margin-bottom:1.5rem;">
+                <span class="pulse-dot"></span>
+                <span>System Online • SLA 99.99% Guaranteed</span>
               </div>
-              <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
-                <i data-lucide="zap" class="text-lime" style="width:18px; height:18px;"></i>
-                <span>Direct Kenya IXP Peering</span>
-              </div>
-            </div>
-          </div>
 
-          <!-- Right Column: Live Telemetry Bento Widget -->
-          <div>
-            <div class="telemetry-widget bento-card">
-              <div class="telemetry-header">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
-                  <span class="pulse-dot"></span>
-                  <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-primary);">
-                    NOC Active Telemetry
+              <h1 class="hero-title" style="text-align:left; font-size:clamp(2.5rem, 5vw, 4.25rem); line-height:1.15; margin-bottom:1.5rem;">
+                <span class="hero-typewriter-prefix">Engineering</span>
+                <span id="heroDynamicText" class="hero-dynamic-word">Enterprise Fiber Networks</span>
+              </h1>
+
+              <p class="hero-subtitle" style="text-align:left; margin:0 0 2.25rem 0; max-width:580px; font-size:1.125rem; line-height:1.7;">
+                Data Port Limited crafts high-resilience <strong>ICT Infrastructure</strong>, <strong>Enterprise Security Networks</strong>, and <strong>High-Retention Digital Media</strong> that accelerate modern industry leaders.
+              </p>
+
+              <div class="hero-buttons" style="justify-content:flex-start;">
+                <a href="quote.html" class="btn btn-primary btn-lg">
+                  <span class="roll-text-track">
+                    <span class="roll-text-item">Generate Instant Quote</span>
+                    <span class="roll-text-item">Calculate Project Cost</span>
                   </span>
-                </div>
-                <span class="bento-pill" style="font-size:0.7rem; color:var(--lime); border-color:rgba(92,148,0,0.3);">NODE #DP-MBA-01</span>
+                  <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+                </a>
+                <a href="services.html" class="btn btn-secondary btn-lg">
+                  <span class="roll-text-track">
+                    <span class="roll-text-item">Explore Solutions</span>
+                    <span class="roll-text-item">View All Services</span>
+                  </span>
+                  <i data-lucide="layers" style="width:18px; height:18px;"></i>
+                </a>
               </div>
 
-              <div class="telemetry-stats-row">
-                <div class="telemetry-stat-mini">
-                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">IXP LATENCY</div>
-                  <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
-                    <span id="telemetryLatency">4.2</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">ms</span>
+              <div style="display:flex; align-items:center; gap:2rem; margin-top:2.5rem; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
+                  <i data-lucide="shield-check" class="text-lime" style="width:18px; height:18px;"></i>
+                  <span>NOC Monitored 24/7/365</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
+                  <i data-lucide="zap" class="text-lime" style="width:18px; height:18px;"></i>
+                  <span>Direct Kenya IXP Peering</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Live Telemetry Bento Widget (3D Visual Layer) -->
+            <div class="hero-layer-visual">
+              <div class="telemetry-widget bento-card">
+                <div class="telemetry-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <span class="pulse-dot"></span>
+                    <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-primary);">
+                      NOC Active Telemetry
+                    </span>
                   </div>
-                  <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Sub-5ms Backbone</div>
+                  <span class="bento-pill" style="font-size:0.7rem; color:var(--lime); border-color:rgba(92,148,0,0.3);">NODE #DP-MBA-01</span>
                 </div>
 
-                <div class="telemetry-stat-mini">
-                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">ACTIVE PIPE</div>
-                  <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
-                    <span id="telemetryThroughput">1.84</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">Gbps</span>
+                <div class="telemetry-stats-row">
+                  <div class="telemetry-stat-mini">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">IXP LATENCY</div>
+                    <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
+                      <span id="telemetryLatency">4.2</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">ms</span>
+                    </div>
+                    <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Sub-5ms Backbone</div>
                   </div>
-                  <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Symmetric Trunk</div>
-                </div>
-              </div>
 
-              <!-- Live dynamic equalizer waveform -->
-              <div style="font-size:0.7rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em; display:flex; justify-content:space-between;">
-                <span>Live Throughput Stream</span>
-                <span style="color:var(--lime);">99.99% Uptime</span>
-              </div>
-              <div class="telemetry-waveform">
-                <div class="wave-bar" style="height:45%;"></div>
-                <div class="wave-bar" style="height:65%;"></div>
-                <div class="wave-bar" style="height:85%;"></div>
-                <div class="wave-bar" style="height:40%;"></div>
-                <div class="wave-bar" style="height:95%;"></div>
-                <div class="wave-bar" style="height:70%;"></div>
-                <div class="wave-bar" style="height:55%;"></div>
-                <div class="wave-bar" style="height:80%;"></div>
-                <div class="wave-bar" style="height:60%;"></div>
-                <div class="wave-bar" style="height:90%;"></div>
-                <div class="wave-bar" style="height:75%;"></div>
-                <div class="wave-bar" style="height:50%;"></div>
-              </div>
+                  <div class="telemetry-stat-mini">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">ACTIVE PIPE</div>
+                    <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
+                      <span id="telemetryThroughput">1.84</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">Gbps</span>
+                    </div>
+                    <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Symmetric Trunk</div>
+                  </div>
+                </div>
 
-              <!-- Active Status Indicators -->
-              <div style="display:flex; flex-direction:column; gap:0.6rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-color); font-size:0.8125rem;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="color:var(--text-secondary);"><i data-lucide="radio" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Mombasa - Nairobi Core Fiber</span>
-                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">OPERATIONAL</span>
+                <!-- Live dynamic equalizer waveform -->
+                <div style="font-size:0.7rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em; display:flex; justify-content:space-between;">
+                  <span>Live Throughput Stream</span>
+                  <span style="color:var(--lime);">99.99% Uptime</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="color:var(--text-secondary);"><i data-lucide="lock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> HD CCTV Security Matrix</span>
-                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">ONLINE (40 FPS)</span>
+                <div class="telemetry-waveform">
+                  <div class="wave-bar" style="height:45%;"></div>
+                  <div class="wave-bar" style="height:65%;"></div>
+                  <div class="wave-bar" style="height:85%;"></div>
+                  <div class="wave-bar" style="height:40%;"></div>
+                  <div class="wave-bar" style="height:95%;"></div>
+                  <div class="wave-bar" style="height:70%;"></div>
+                  <div class="wave-bar" style="height:55%;"></div>
+                  <div class="wave-bar" style="height:80%;"></div>
+                  <div class="wave-bar" style="height:60%;"></div>
+                  <div class="wave-bar" style="height:90%;"></div>
+                  <div class="wave-bar" style="height:75%;"></div>
+                  <div class="wave-bar" style="height:50%;"></div>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="color:var(--text-secondary);"><i data-lucide="cloud" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Cloud DevOps & Automated CI/CD</span>
-                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">SYNCED</span>
+
+                <!-- Active Status Indicators -->
+                <div style="display:flex; flex-direction:column; gap:0.6rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-color); font-size:0.8125rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--text-secondary);"><i data-lucide="radio" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Mombasa - Nairobi Core Fiber</span>
+                    <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">OPERATIONAL</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--text-secondary);"><i data-lucide="lock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> HD CCTV Security Matrix</span>
+                    <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">ONLINE (40 FPS)</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--text-secondary);"><i data-lucide="cloud" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Cloud DevOps & Automated CI/CD</span>
+                    <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">SYNCED</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+
+        <!-- Scroll Depth Indicator -->
+        <div class="hero-scroll-indicator">
+          <div class="mouse-icon">
+            <div class="mouse-wheel"></div>
+          </div>
+          <span>Scroll to Explore</span>
+        </div>
+      </section>
+    </div>
 
     <!-- Scroll Text Highlight Manifesto (Jay Dickinson GSAP Effect) -->
     <section class="scroll-highlight-container" id="manifesto" style="background:var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
