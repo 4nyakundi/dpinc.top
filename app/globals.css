@@ -75,7 +75,26 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
-  /* Prevent horizontal scroll from animations */
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20px;
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(138, 206, 0, 0.15) 0%, rgba(0, 0, 0, 0.85) 65%, #000000 100%),
+    url('/bg-pattern-blurred.jpg');
+  background-size: cover, 480px 240px;
+  background-repeat: no-repeat, repeat;
+  background-position: center top, center center;
+  background-attachment: fixed;
+  opacity: 0.28;
+  filter: blur(5px);
+  pointer-events: none;
+  z-index: -1;
+  transform: scale(1.05);
 }
 
 /* Glass-morphism Utilities */
