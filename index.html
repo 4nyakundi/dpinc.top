@@ -72,68 +72,156 @@
   </header>
 
   <main>
-    <!-- Hero Section -->
-    <section class="hero">
-      <!-- Floating Badges -->
-      <div class="floating-chip chip-1">
-        <i data-lucide="server" class="text-cyan" style="width:24px; height:24px;"></i>
-        <div style="text-align:left;">
-          <div style="font-weight:700; font-size:0.875rem;">Enterprise Cloud</div>
-          <div class="text-muted" style="font-size:0.75rem;">Fault-Tolerant Array</div>
+    <!-- Hero Section (Modern Bento Layout with Live Telemetry) -->
+    <section class="hero hero-modern">
+      <div class="container">
+        <div class="hero-grid-modern">
+          <!-- Left Column: Dynamic Hero Typography & Actions -->
+          <div>
+            <div class="badge mb-6" style="margin-bottom:1.5rem;">
+              <span class="pulse-dot"></span>
+              <span>System Online • SLA 99.99% Guaranteed</span>
+            </div>
+
+            <h1 class="hero-title" style="text-align:left; font-size:clamp(2.5rem, 5vw, 4.25rem); line-height:1.15; margin-bottom:1.5rem;">
+              <span class="hero-typewriter-prefix">Engineering</span>
+              <span id="heroDynamicText" class="hero-dynamic-word">Enterprise Fiber Networks</span>
+            </h1>
+
+            <p class="hero-subtitle" style="text-align:left; margin:0 0 2.25rem 0; max-width:580px; font-size:1.125rem; line-height:1.7;">
+              Data Port Limited crafts high-resilience <strong>ICT Infrastructure</strong>, <strong>Enterprise Security Networks</strong>, and <strong>High-Retention Digital Media</strong> that accelerate modern industry leaders.
+            </p>
+
+            <div class="hero-buttons" style="justify-content:flex-start;">
+              <a href="quote.html" class="btn btn-primary btn-lg">
+                <span class="roll-text-track">
+                  <span class="roll-text-item">Generate Instant Quote</span>
+                  <span class="roll-text-item">Calculate Project Cost</span>
+                </span>
+                <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
+              </a>
+              <a href="services.html" class="btn btn-secondary btn-lg">
+                <span class="roll-text-track">
+                  <span class="roll-text-item">Explore Solutions</span>
+                  <span class="roll-text-item">View All Services</span>
+                </span>
+                <i data-lucide="layers" style="width:18px; height:18px;"></i>
+              </a>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:2rem; margin-top:2.5rem; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
+                <i data-lucide="shield-check" class="text-lime" style="width:18px; height:18px;"></i>
+                <span>NOC Monitored 24/7/365</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--text-secondary);">
+                <i data-lucide="zap" class="text-lime" style="width:18px; height:18px;"></i>
+                <span>Direct Kenya IXP Peering</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Telemetry Bento Widget -->
+          <div>
+            <div class="telemetry-widget bento-card">
+              <div class="telemetry-header">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                  <span class="pulse-dot"></span>
+                  <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-primary);">
+                    NOC Active Telemetry
+                  </span>
+                </div>
+                <span class="bento-pill" style="font-size:0.7rem; color:var(--lime); border-color:rgba(92,148,0,0.3);">NODE #DP-MBA-01</span>
+              </div>
+
+              <div class="telemetry-stats-row">
+                <div class="telemetry-stat-mini">
+                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">IXP LATENCY</div>
+                  <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
+                    <span id="telemetryLatency">4.2</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">ms</span>
+                  </div>
+                  <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Sub-5ms Backbone</div>
+                </div>
+
+                <div class="telemetry-stat-mini">
+                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:0.25rem;">ACTIVE PIPE</div>
+                  <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary);">
+                    <span id="telemetryThroughput">1.84</span> <span style="font-size:0.875rem; color:var(--text-muted); font-weight:500;">Gbps</span>
+                  </div>
+                  <div style="font-size:0.7rem; color:#4D7C00; font-weight:600; margin-top:2px;">● Symmetric Trunk</div>
+                </div>
+              </div>
+
+              <!-- Live dynamic equalizer waveform -->
+              <div style="font-size:0.7rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em; display:flex; justify-content:space-between;">
+                <span>Live Throughput Stream</span>
+                <span style="color:var(--lime);">99.99% Uptime</span>
+              </div>
+              <div class="telemetry-waveform">
+                <div class="wave-bar" style="height:45%;"></div>
+                <div class="wave-bar" style="height:65%;"></div>
+                <div class="wave-bar" style="height:85%;"></div>
+                <div class="wave-bar" style="height:40%;"></div>
+                <div class="wave-bar" style="height:95%;"></div>
+                <div class="wave-bar" style="height:70%;"></div>
+                <div class="wave-bar" style="height:55%;"></div>
+                <div class="wave-bar" style="height:80%;"></div>
+                <div class="wave-bar" style="height:60%;"></div>
+                <div class="wave-bar" style="height:90%;"></div>
+                <div class="wave-bar" style="height:75%;"></div>
+                <div class="wave-bar" style="height:50%;"></div>
+              </div>
+
+              <!-- Active Status Indicators -->
+              <div style="display:flex; flex-direction:column; gap:0.6rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-color); font-size:0.8125rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:var(--text-secondary);"><i data-lucide="radio" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Mombasa - Nairobi Core Fiber</span>
+                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">OPERATIONAL</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:var(--text-secondary);"><i data-lucide="lock" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> HD CCTV Security Matrix</span>
+                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">ONLINE (40 FPS)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:var(--text-secondary);"><i data-lucide="cloud" style="width:14px; height:14px; display:inline; margin-right:4px;" class="text-lime"></i> Cloud DevOps & Automated CI/CD</span>
+                  <span class="badge" style="padding:0.15rem 0.5rem; font-size:0.7rem; color:#4D7C00;">SYNCED</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="floating-chip chip-2">
-        <i data-lucide="shield-check" class="text-purple" style="width:24px; height:24px;"></i>
-        <div style="text-align:left;">
-          <div style="font-weight:700; font-size:0.875rem;">CCTV & Security</div>
-          <div class="text-muted" style="font-size:0.75rem;">HD Remote Live View</div>
+    <!-- Scroll Text Highlight Manifesto (Jay Dickinson GSAP Effect) -->
+    <section class="scroll-highlight-container" id="manifesto" style="background:var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+      <div class="container text-center">
+        <div class="badge" style="margin-bottom:1.5rem;">
+          <i data-lucide="sparkles" class="text-lime" style="width:14px; height:14px;"></i>
+          <span>The Data Port Standard</span>
         </div>
-      </div>
-
-      <div class="floating-chip chip-3">
-        <i data-lucide="code-2" class="text-pink" style="width:24px; height:24px;"></i>
-        <div style="text-align:left;">
-          <div style="font-weight:700; font-size:0.875rem;">Custom DevOps</div>
-          <div class="text-muted" style="font-size:0.75rem;">Automated CI/CD</div>
-        </div>
-      </div>
-
-      <div class="floating-chip chip-4">
-        <i data-lucide="video" class="text-lime" style="width:24px; height:24px;"></i>
-        <div style="text-align:left;">
-          <div style="font-weight:700; font-size:0.875rem;">Motion Graphics</div>
-          <div class="text-muted" style="font-size:0.75rem;">High-Retention Media</div>
-        </div>
-      </div>
-
-      <div class="container" style="position:relative; z-index:2;">
-        <div class="badge mb-6" style="margin-bottom:1.5rem;">
-          <span class="pulse-dot"></span>
-          <span>System Online • DataPort v2.4.0</span>
-        </div>
-
-        <h1 class="hero-title">
-          DATA <span class="text-gradient">PORT</span>
-        </h1>
-
-        <p class="hero-subtitle">
-          High-End <strong class="text-cyan" style="font-weight:600;">ICT Infrastructure</strong> & <strong class="text-purple" style="font-weight:600;">Creative Media</strong> Services. Building the scalable technological backbone for modern enterprises.
-        </p>
-
-        <div class="hero-buttons">
-          <a href="quote.html" class="btn btn-primary btn-lg">
-            Generate Quote <i data-lucide="arrow-right" style="width:18px; height:18px;"></i>
-          </a>
-          <a href="services.html" class="btn btn-secondary btn-lg">
-            Explore Services <i data-lucide="layers" style="width:18px; height:18px;"></i>
-          </a>
+        <div class="scroll-highlight-text font-display">
+          <span class="word-span">We</span>
+          <span class="word-span">engineer</span>
+          <span class="word-span" data-accent="true">resilient</span>
+          <span class="word-span">digital</span>
+          <span class="word-span">infrastructure,</span>
+          <span class="word-span">mission-critical</span>
+          <span class="word-span" data-accent="true">networks,</span>
+          <span class="word-span">and</span>
+          <span class="word-span">high-impact</span>
+          <span class="word-span" data-accent="true">software</span>
+          <span class="word-span">that</span>
+          <span class="word-span">scale</span>
+          <span class="word-span">enterprises</span>
+          <span class="word-span">without</span>
+          <span class="word-span" data-accent="true">compromise.</span>
         </div>
       </div>
     </section>
 
     <!-- Client Logos & Partners -->
-    <section class="section" style="padding-top:3.5rem; padding-bottom:4rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); background: rgba(248, 250, 252, 0.65);">
+    <section class="section" style="padding-top:3.5rem; padding-bottom:4rem; border-bottom: 1px solid var(--border-color); background: #FFFFFF;">
       <div class="container text-center">
         <div class="badge" style="margin-bottom:1rem;">
           <i data-lucide="award" class="text-lime" style="width:14px; height:14px;"></i>
@@ -148,7 +236,7 @@
         
         <div class="clients-grid-modern">
           <!-- Client 1: Equity Afya -->
-          <div class="client-card-modern">
+          <div class="client-card-modern bento-card">
             <div class="client-logo-box">
               <img src="public/clients/equity-afya.jpg" alt="Equity Afya Logo" loading="lazy">
             </div>
@@ -157,7 +245,7 @@
           </div>
 
           <!-- Client 2: Catch Security Links Limited -->
-          <div class="client-card-modern">
+          <div class="client-card-modern bento-card">
             <div class="client-logo-box">
               <img src="public/clients/catch-security-links.png" alt="Catch Security Links Limited Logo" loading="lazy">
             </div>
@@ -166,7 +254,7 @@
           </div>
 
           <!-- Client 3: Star Lash -->
-          <div class="client-card-modern">
+          <div class="client-card-modern bento-card">
             <div class="client-logo-box">
               <img src="public/clients/star-lash.jpg" alt="Star Lash Studio Logo" loading="lazy">
             </div>
@@ -175,7 +263,7 @@
           </div>
 
           <!-- Client 4: Art By Oture -->
-          <div class="client-card-modern">
+          <div class="client-card-modern bento-card">
             <div class="client-logo-box">
               <img src="public/clients/art-by-oture.png" alt="Art By Oture Logo" loading="lazy">
             </div>
@@ -184,7 +272,7 @@
           </div>
 
           <!-- Client 5: Paws & Hooves -->
-          <div class="client-card-modern">
+          <div class="client-card-modern bento-card">
             <div class="client-logo-box">
               <img src="public/clients/paws-and-hooves.jpg" alt="Paws & Hooves by Wangari Logo" loading="lazy">
             </div>
@@ -196,22 +284,22 @@
     </section>
 
     <!-- Stats Grid -->
-    <section class="section" style="padding-top:3rem; padding-bottom:3rem;">
+    <section class="section" style="padding-top:3rem; padding-bottom:3rem; background:var(--bg-secondary);">
       <div class="container">
         <div class="stats-grid">
-          <div class="stat-card">
+          <div class="stat-card bento-card">
             <div class="stat-value text-gradient">99.9%</div>
             <div class="stat-label">Uptime Guarantee</div>
           </div>
-          <div class="stat-card">
+          <div class="stat-card bento-card">
             <div class="stat-value text-gradient">50+</div>
             <div class="stat-label">Enterprise Clients</div>
           </div>
-          <div class="stat-card">
+          <div class="stat-card bento-card">
             <div class="stat-value text-gradient">200+</div>
             <div class="stat-label">Projects Delivered</div>
           </div>
-          <div class="stat-card">
+          <div class="stat-card bento-card">
             <div class="stat-value text-gradient">24/7</div>
             <div class="stat-label">Technical Monitoring</div>
           </div>
@@ -219,52 +307,80 @@
       </div>
     </section>
 
-    <!-- Who We Are & Executive Summary -->
-    <section class="section" id="about">
+    <!-- Engineered Process Rail -->
+    <section class="section">
       <div class="container">
-        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
-          <div style="height:2px; width:40px; background:var(--cyan);"></div>
-          <span class="font-mono text-cyan" style="font-size:0.875rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:600;">Who We Are</span>
+        <div class="text-center" style="margin-bottom:3.5rem;">
+          <div class="badge" style="margin-bottom:1rem;">
+            <i data-lucide="git-branch" class="text-lime" style="width:14px; height:14px;"></i>
+            <span>Systematic Execution</span>
+          </div>
+          <h2 class="section-title">
+            Engineered <span class="text-gradient">Process Rail</span>
+          </h2>
+          <p class="section-subtitle" style="margin:0 auto;">
+            From physical fiber splicing and structured cabling to automated cloud deployment, our 4-step delivery pipeline guarantees zero downtime.
+          </p>
         </div>
 
-        <h2 class="section-title">
-          Engineering the Future of <span class="text-gradient">Intelligent Business</span>
-        </h2>
+        <div class="process-rail-grid">
+          <!-- Step 1 -->
+          <div class="process-step-card bento-card">
+            <span class="step-num-badge">STEP 01</span>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <i data-lucide="compass" class="text-lime" style="width:24px; height:24px;"></i>
+              <h3 style="font-size:1.2rem; font-weight:800; margin:0;">Architecture & Audit</h3>
+            </div>
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin:0;">
+              On-site spectrum analysis, physical cable path design, bandwidth load calculations, and security perimeter mapping.
+            </p>
+          </div>
 
-        <p class="section-subtitle" style="margin-bottom:3rem;">
-          Data Port Limited offers innovative technical solutions and services for the advancement of the human race. Established in 2022, Data Port has built a reputation for delivering exceptional high quality and cost-effective ICT solutions to diverse clients across all sectors.
-        </p>
+          <!-- Step 2 -->
+          <div class="process-step-card bento-card">
+            <span class="step-num-badge">STEP 02</span>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <i data-lucide="cpu" class="text-lime" style="width:24px; height:24px;"></i>
+              <h3 style="font-size:1.2rem; font-weight:800; margin:0;">Hardware & Splicing</h3>
+            </div>
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin:0;">
+              Fusion fiber splicing, Cat6/7 trunk runs, server rack mounting, and high-definition IP camera positioning.
+            </p>
+          </div>
 
-        <!-- Executive Summary Glass Card -->
-        <div class="glass-panel" style="padding: 2.5rem; position:relative; overflow:hidden;">
-          <div style="position:absolute; top:0; right:0; width:150px; height:150px; background:var(--purple-glow); border-bottom-left-radius:100%; pointer-events-none;"></div>
-          
-          <h3 class="text-purple font-display" style="font-size:1.75rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
-            <span>#</span> Executive Summary
-          </h3>
+          <!-- Step 3 -->
+          <div class="process-step-card bento-card">
+            <span class="step-num-badge">STEP 03</span>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <i data-lucide="sliders" class="text-lime" style="width:24px; height:24px;"></i>
+              <h3 style="font-size:1.2rem; font-weight:800; margin:0;">SLA Commissioning</h3>
+            </div>
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin:0;">
+              VLAN segregation, firewall rule enforcement, failover load testing, and encrypted cloud backup sync.
+            </p>
+          </div>
 
-          <p style="font-size:1.0625rem; color:var(--text-secondary); line-height:1.8; margin-bottom:2rem; border-left: 3px solid var(--purple); padding-left:1.25rem;">
-            Data Port Limited is a full-service technology partner dedicated to modernizing businesses through integrated ICT solutions and creative digital media. Unlike traditional IT firms, we blend hard infrastructure (Networks, CCTV) with creative development (Apps, Video Graphics), ensuring your business is not just running, but growing.
-          </p>
-
-          <div style="background:var(--bg-secondary); padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
-            <h4 class="text-cyan font-mono" style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
-              <i data-lucide="target" style="width:18px; height:18px;"></i> Our Mission
-            </h4>
-            <p style="color:var(--text-secondary); font-size:0.95rem; line-height:1.6;">
-              To provide direct, high-impact technical and creative services that drive efficiency and visibility for our clients.
+          <!-- Step 4 -->
+          <div class="process-step-card bento-card">
+            <span class="step-num-badge">STEP 04</span>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <i data-lucide="activity" class="text-lime" style="width:24px; height:24px;"></i>
+              <h3 style="font-size:1.2rem; font-weight:800; margin:0;">24/7 NOC Active Watch</h3>
+            </div>
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin:0;">
+              Continuous ping monitoring, proactive packet loss prevention, scheduled hardware servicing, and instant technician dispatch.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Core Solutions Pillars -->
+    <!-- Core Solutions Bento Showcase -->
     <section class="section" style="background:var(--bg-secondary);">
       <div class="container">
         <div class="text-center" style="margin-bottom:3.5rem;">
           <div class="badge" style="margin-bottom:1rem;">
-            <i data-lucide="layers" class="text-purple" style="width:14px; height:14px;"></i>
+            <i data-lucide="layers" class="text-lime" style="width:14px; height:14px;"></i>
             <span>Three Core Pillars</span>
           </div>
           <h2 class="section-title">
@@ -275,102 +391,78 @@
           </p>
         </div>
 
-        <div class="pillars-grid">
-          <!-- Pillar 1: Infrastructure -->
-          <div class="glass-panel pillar-card cyan">
-            <div class="pillar-icon-box">
-              <i data-lucide="network" style="width:28px; height:28px;"></i>
+        <div class="bento-showcase-grid">
+          <!-- Pillar 1: Infrastructure & Security (Wide) -->
+          <div class="bento-showcase-card bento-wide bento-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+                <span class="bento-pill" style="color:var(--lime); border-color:rgba(92,148,0,0.3);">Core Hardware & Security</span>
+                <i data-lucide="network" class="text-lime" style="width:32px; height:32px;"></i>
+              </div>
+              <h3 style="font-size:1.6rem; font-weight:800; margin-bottom:0.75rem;">Infrastructure & Security</h3>
+              <p style="color:var(--text-secondary); font-size:1rem; line-height:1.7; margin-bottom:1.25rem;">
+                Fault-tolerant networks, high-speed corporate WiFi, fusion fiber splicing, and 4K remote surveillance that keep enterprise operations secure and constantly online.
+              </p>
+              <div class="bento-tag-pills">
+                <span class="bento-pill">Structured Cabling</span>
+                <span class="bento-pill">Enterprise WiFi 6</span>
+                <span class="bento-pill">4K HD CCTV Matrix</span>
+                <span class="bento-pill">Firewall & Disaster Recovery</span>
+              </div>
             </div>
-            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--cyan); border-color:var(--cyan-glow);">Core Hardware</div>
-            <h3 class="pillar-title">Infrastructure & Security</h3>
-            <p class="pillar-desc">
-              Fault-tolerant networks, high-speed WiFi, and remote surveillance that keep enterprise operations secure and constantly online.
-            </p>
-            <div class="service-list">
-              <div class="service-item">
-                <i data-lucide="wifi" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Network Design & Maintenance</strong>
-                  <p>Secure WiFi, firewall setup, and structured cabling.</p>
-                </div>
-              </div>
-              <div class="service-item">
-                <i data-lucide="video" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Surveillance Systems (CCTV)</strong>
-                  <p>HD remote-view cameras and secure storage.</p>
-                </div>
-              </div>
-              <div class="service-item">
-                <i data-lucide="database" class="text-cyan service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Disaster Recovery</strong>
-                  <p>Automated cloud and local data backups.</p>
-                </div>
-              </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary);">Carrier-Grade 99.9% Uptime</span>
+              <a href="services.html" class="btn btn-secondary btn-sm">
+                Explore Specs <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+              </a>
             </div>
           </div>
 
           <!-- Pillar 2: Software & DevOps -->
-          <div class="glass-panel pillar-card purple">
-            <div class="pillar-icon-box">
-              <i data-lucide="code" style="width:28px; height:28px;"></i>
+          <div class="bento-showcase-card bento-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+                <span class="bento-pill" style="color:var(--purple); border-color:rgba(124,58,237,0.3);">Software Systems</span>
+                <i data-lucide="code" class="text-purple" style="width:32px; height:32px;"></i>
+              </div>
+              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.75rem;">Software & DevOps</h3>
+              <p style="color:var(--text-secondary); font-size:0.925rem; line-height:1.6; margin-bottom:1.25rem;">
+                Bespoke cloud applications, automated CI/CD pipelines, and internal ERP platforms engineered to eliminate manual bottlenecks.
+              </p>
+              <div class="bento-tag-pills">
+                <span class="bento-pill">Custom Web Portals</span>
+                <span class="bento-pill">CI/CD Automation</span>
+                <span class="bento-pill">API Integrations</span>
+              </div>
             </div>
-            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--purple); border-color:var(--purple-glow);">Software Systems</div>
-            <h3 class="pillar-title">Software & DevOps</h3>
-            <p class="pillar-desc">
-              Bespoke applications and continuous deployment pipelines engineered to automate operations and scale with business growth.
-            </p>
-            <div class="service-list">
-              <div class="service-item">
-                <i data-lucide="cpu" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Custom App Development</strong>
-                  <p>Tailored portals automating internal workflows.</p>
-                </div>
-              </div>
-              <div class="service-item">
-                <i data-lucide="refresh-cw" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>DevOps & CI/CD Pipelines</strong>
-                  <p>Automated testing, build, and scalable cloud deployments.</p>
-                </div>
-              </div>
-              <div class="service-item">
-                <i data-lucide="globe" class="text-purple service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Advanced Web Development</strong>
-                  <p>High-performance, mobile-responsive web platforms.</p>
-                </div>
-              </div>
+            <div style="padding-top:1.5rem; border-top:1px solid var(--border-color);">
+              <a href="services.html" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center;">
+                View Software <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+              </a>
             </div>
           </div>
 
           <!-- Pillar 3: Creative & Marketing -->
-          <div class="glass-panel pillar-card pink">
-            <div class="pillar-icon-box">
-              <i data-lucide="play-square" style="width:28px; height:28px;"></i>
+          <div class="bento-showcase-card bento-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+                <span class="bento-pill" style="color:var(--pink); border-color:rgba(236,72,153,0.3);">Media & Branding</span>
+                <i data-lucide="play-square" class="text-pink" style="width:32px; height:32px;"></i>
+              </div>
+              <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:0.75rem;">Creative & Marketing</h3>
+              <p style="color:var(--text-secondary); font-size:0.925rem; line-height:1.6; margin-bottom:1.25rem;">
+                High-retention video animations, digital billboard ads, and corporate visual identities designed to engage modern audiences.
+              </p>
+              <div class="bento-tag-pills">
+                <span class="bento-pill">Motion Graphics</span>
+                <span class="bento-pill">3D Visual Ads</span>
+                <span class="bento-pill">Brand Identity</span>
+              </div>
             </div>
-            <div class="badge" style="align-self:flex-start; margin-bottom:1rem; color:var(--pink); border-color:var(--pink-glow);">Media & Branding</div>
-            <h3 class="pillar-title">Creative & Marketing</h3>
-            <p class="pillar-desc">
-              Eye-catching visual media, high-retention video animations, and digital identity strategies designed to engage modern audiences.
-            </p>
-            <div class="service-list">
-              <div class="service-item">
-                <i data-lucide="film" class="text-pink service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Video Motion Graphics</strong>
-                  <p>High-retention social ads & digital billboard videos.</p>
-                </div>
-              </div>
-              <div class="service-item">
-                <i data-lucide="palette" class="text-pink service-item-icon" style="width:18px; height:18px;"></i>
-                <div class="service-item-text">
-                  <strong>Digital Branding Strategy</strong>
-                  <p>Complete visual identity and engaging brand assets.</p>
-                </div>
-              </div>
+            <div style="padding-top:1.5rem; border-top:1px solid var(--border-color);">
+              <a href="services.html" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center;">
+                View Media <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+              </a>
             </div>
           </div>
         </div>

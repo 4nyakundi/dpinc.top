@@ -1,8 +1,7 @@
 /**
- * DATA PORT - Annnimate & GSAP 3 Motion Engine
- * Studio-Grade Motion Components: Magnetic Buttons, Bento Spotlight,
- * Text Scramble Decoder, Dual-Layer Rolling Text, Count-Up Counters & Lenis Scroll
- * Powered by GSAP 3 & ScrollTrigger (Inspired by annnimate.com)
+ * DATA PORT - Modern GSAP 3 Motion Engine
+ * Powered by GreenSock GSAP 3, ScrollTrigger & Lenis Smooth Momentum Scrolling
+ * Inspired by jaydickinson/free-gsap-effects & annnimate.com
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initYear();
   initNavbarScrollEffect();
   initHeroAnimations();
+  initTypewriterEffect();
+  initTelemetrySimulation();
+  initScrollTextHighlight();
   initScrollTriggerSections();
   initCountUpCounters();
   initBentoSpotlight();
@@ -61,7 +63,110 @@ function initLenisSmoothScroll() {
 }
 
 /* ==========================================================================
-   2. ANNNIMATE CUSTOM MAGNETIC STUDIO CURSOR
+   2. TYPEWRITER / CYCLING TEXT EFFECT (Jay Dickinson GSAP Effect)
+   ========================================================================== */
+function initTypewriterEffect() {
+  const target = document.getElementById("heroDynamicText");
+  if (!target) return;
+
+  const words = [
+    "Enterprise Fiber Networks",
+    "4K IP Surveillance NOCs",
+    "Full-Stack Web Architecture",
+    "Cinematic Motion Media",
+    "Cloud DevOps & Splicing"
+  ];
+
+  let wordIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let typingSpeed = 90;
+
+  function type() {
+    const currentWord = words[wordIndex];
+
+    if (isDeleting) {
+      target.textContent = currentWord.substring(0, charIndex - 1);
+      charIndex--;
+      typingSpeed = 45;
+    } else {
+      target.textContent = currentWord.substring(0, charIndex + 1);
+      charIndex++;
+      typingSpeed = 90;
+    }
+
+    if (!isDeleting && charIndex === currentWord.length) {
+      typingSpeed = 2200; // Hold full word
+      isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      wordIndex = (wordIndex + 1) % words.length;
+      typingSpeed = 400; // Pause before new word
+    }
+
+    setTimeout(type, typingSpeed);
+  }
+
+  type();
+}
+
+/* ==========================================================================
+   3. SCROLL TEXT HIGHLIGHT (Jay Dickinson GSAP Effect)
+   ========================================================================== */
+function initScrollTextHighlight() {
+  const textEl = document.querySelector(".scroll-highlight-text");
+  if (!textEl || typeof ScrollTrigger === "undefined") return;
+
+  const words = textEl.querySelectorAll(".word-span");
+  if (!words.length) return;
+
+  ScrollTrigger.create({
+    trigger: textEl,
+    start: "top 80%",
+    end: "bottom 35%",
+    scrub: 1,
+    onUpdate: (self) => {
+      const totalWords = words.length;
+      const activeCount = Math.floor(self.progress * totalWords * 1.15);
+
+      words.forEach((word, index) => {
+        if (index <= activeCount) {
+          if (word.getAttribute("data-accent") === "true") {
+            word.classList.add("highlighted-accent");
+          } else {
+            word.classList.add("highlighted");
+          }
+        } else {
+          word.classList.remove("highlighted", "highlighted-accent");
+        }
+      });
+    }
+  });
+}
+
+/* ==========================================================================
+   4. LIVE TELEMETRY SIMULATION
+   ========================================================================== */
+function initTelemetrySimulation() {
+  const pingEl = document.getElementById("livePingVal");
+  const throughputEl = document.getElementById("liveThroughputVal");
+
+  if (!pingEl && !throughputEl) return;
+
+  setInterval(() => {
+    if (pingEl) {
+      const ping = Math.floor(Math.random() * 4) + 12; // 12ms - 15ms
+      pingEl.textContent = `${ping}ms (Msa IXP)`;
+    }
+    if (throughputEl) {
+      const mbps = (Math.random() * 0.8 + 9.2).toFixed(1); // 9.2 - 10.0 Gbps
+      throughputEl.textContent = `${mbps} Gbps`;
+    }
+  }, 3000);
+}
+
+/* ==========================================================================
+   5. ANNNIMATE CUSTOM MAGNETIC STUDIO CURSOR
    ========================================================================== */
 function initCustomStudioCursor() {
   if (window.innerWidth < 1024 || 'ontouchstart' in window) return;
@@ -93,7 +198,6 @@ function initCustomStudioCursor() {
     dot.style.top = `${mouseY}px`;
   }, { passive: true });
 
-  // Smooth ring lag using GSAP ticker
   if (typeof gsap !== "undefined") {
     gsap.ticker.add(() => {
       ringX += (mouseX - ringX) * 0.18;
@@ -103,9 +207,8 @@ function initCustomStudioCursor() {
     });
   }
 
-  // Hover triggers for interactive elements
   const hoverTargets = document.querySelectorAll(
-    "a, button, input, select, textarea, .stat-card, .pillar-card, .package-card, .project-card, .client-card-modern, .testimonial-card"
+    "a, button, input, select, textarea, .stat-card, .pillar-card, .package-card, .project-card, .client-card-modern, .testimonial-card, .process-step-card, .bento-showcase-card"
   );
 
   hoverTargets.forEach((target) => {
@@ -121,11 +224,11 @@ function initCustomStudioCursor() {
 }
 
 /* ==========================================================================
-   3. ANNNIMATE BENTO SPOTLIGHT (CURSOR LIGHT TRACKING)
+   6. BENTO SPOTLIGHT (CURSOR LIGHT TRACKING)
    ========================================================================== */
 function initBentoSpotlight() {
   const cards = document.querySelectorAll(
-    ".bento-card, .pillar-card, .package-card, .project-card, .stat-card, .client-card-modern, .testimonial-card, .metric-box"
+    ".bento-card, .pillar-card, .package-card, .project-card, .stat-card, .client-card-modern, .testimonial-card, .telemetry-widget, .process-step-card, .bento-showcase-card"
   );
 
   cards.forEach((card) => {
@@ -141,16 +244,14 @@ function initBentoSpotlight() {
 }
 
 /* ==========================================================================
-   4. ANNNIMATE DUAL-LAYER ROLLING TEXT BUTTON EFFECT
+   7. DUAL-LAYER ROLLING TEXT BUTTON EFFECT
    ========================================================================== */
 function initButtonRollingText() {
   const buttons = document.querySelectorAll(".btn-primary, .btn-secondary, .btn-lg");
 
   buttons.forEach((btn) => {
-    // Avoid double wrapping
     if (btn.querySelector(".roll-text-track")) return;
 
-    // Find direct text nodes or first text child
     const childNodes = Array.from(btn.childNodes);
     childNodes.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
@@ -168,11 +269,11 @@ function initButtonRollingText() {
 }
 
 /* ==========================================================================
-   5. ANNNIMATE TEXT SCRAMBLE / CYBER DECODER EFFECT
+   8. ALPHANUMERIC TEXT SCRAMBLE DECODER
    ========================================================================== */
 function initTextScramble() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_#@&%";
-  const scrambleElements = document.querySelectorAll(".badge span:last-child, .dash-tag, .chip-1 div > div:first-child");
+  const scrambleElements = document.querySelectorAll(".badge span:last-child, .dash-tag");
 
   scrambleElements.forEach((el) => {
     const originalText = el.textContent.trim();
@@ -205,10 +306,8 @@ function initTextScramble() {
       }, 25);
     };
 
-    // Trigger scramble on mouseenter
     el.addEventListener("mouseenter", doScramble);
 
-    // Initial trigger when entering viewport
     if (typeof ScrollTrigger !== "undefined") {
       ScrollTrigger.create({
         trigger: el,
@@ -221,7 +320,7 @@ function initTextScramble() {
 }
 
 /* ==========================================================================
-   6. NAVBAR DYNAMIC GLASS ELEVATION ON SCROLL
+   9. NAVBAR DYNAMIC GLASS ELEVATION ON SCROLL
    ========================================================================== */
 function initNavbarScrollEffect() {
   const navbar = document.querySelector(".navbar");
@@ -259,12 +358,11 @@ function initNavbarScrollEffect() {
 }
 
 /* ==========================================================================
-   7. HERO ENTRANCE CINEMATIC TIMELINE
+   10. HERO ENTRANCE CINEMATIC TIMELINE
    ========================================================================== */
 function initHeroAnimations() {
   if (typeof gsap === "undefined") return;
 
-  // Scroll Progress Bar
   const progressBar = document.querySelector(".scroll-progress-bar");
   if (progressBar) {
     window.addEventListener("scroll", () => {
@@ -275,32 +373,32 @@ function initHeroAnimations() {
     }, { passive: true });
   }
 
-  const heroBadge = document.querySelector(".hero .badge");
+  const heroBadge = document.querySelector(".hero-modern .badge");
   const heroTitle = document.querySelector(".hero-title");
   const heroSubtitle = document.querySelector(".hero-subtitle");
   const heroButtons = document.querySelectorAll(".hero-buttons .btn");
-  const floatingChips = document.querySelectorAll(".floating-chip");
+  const telemetryWidget = document.querySelector(".telemetry-widget");
 
   const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
   if (heroBadge) {
     heroTl.fromTo(heroBadge, 
-      { opacity: 0, y: -25, scale: 0.9 }, 
+      { opacity: 0, y: -20, scale: 0.9 }, 
       { opacity: 1, y: 0, scale: 1, duration: 0.75, delay: 0.15 }
     );
   }
 
   if (heroTitle) {
     heroTl.fromTo(heroTitle, 
-      { opacity: 0, y: 35, scale: 0.97 }, 
-      { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.3)" }, 
+      { opacity: 0, y: 30 }, 
+      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 
       "-=0.45"
     );
   }
 
   if (heroSubtitle) {
     heroTl.fromTo(heroSubtitle, 
-      { opacity: 0, y: 25 }, 
+      { opacity: 0, y: 20 }, 
       { opacity: 1, y: 0, duration: 0.8 }, 
       "-=0.55"
     );
@@ -314,33 +412,17 @@ function initHeroAnimations() {
     );
   }
 
-  if (floatingChips.length) {
-    heroTl.fromTo(floatingChips, 
-      { opacity: 0, scale: 0.75, y: 40 }, 
-      { opacity: 1, scale: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "back.out(1.5)" }, 
+  if (telemetryWidget) {
+    heroTl.fromTo(telemetryWidget,
+      { opacity: 0, x: 40, scale: 0.95 },
+      { opacity: 1, x: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" },
       "-=0.6"
     );
-  }
-
-  // Parallax floating chips on scroll
-  if (typeof ScrollTrigger !== "undefined" && floatingChips.length) {
-    floatingChips.forEach((chip, i) => {
-      const speed = (i % 2 === 0 ? 1 : -1) * (35 + i * 15);
-      gsap.to(chip, {
-        y: speed,
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.5,
-        }
-      });
-    });
   }
 }
 
 /* ==========================================================================
-   8. SCROLLTRIGGER SECTION REVEALS & STAGGER
+   11. SCROLLTRIGGER SECTION REVEALS & STAGGER
    ========================================================================== */
 function initScrollTriggerSections() {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
@@ -380,6 +462,46 @@ function initScrollTriggerSections() {
       if (subtitle) tl.fromTo(subtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.65, ease: "power2.out" }, "-=0.4");
     }
   });
+
+  // Process Steps Stagger Reveal
+  if (document.querySelector(".process-rail-grid")) {
+    gsap.fromTo(".process-step-card",
+      { opacity: 0, y: 35, scale: 0.94 },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.75,
+        stagger: 0.12,
+        ease: "back.out(1.3)",
+        scrollTrigger: {
+          trigger: ".process-rail-grid",
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+  }
+
+  // Bento Showcase Cards Reveal
+  if (document.querySelector(".bento-showcase-grid")) {
+    gsap.fromTo(".bento-showcase-card",
+      { opacity: 0, y: 40, scale: 0.95 },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.14,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".bento-showcase-grid",
+          start: "top 82%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+  }
 
   // Modern Client Cards Grid Reveal
   if (document.querySelector(".clients-grid-modern")) {
@@ -421,27 +543,7 @@ function initScrollTriggerSections() {
     );
   }
 
-  // Solution Pillar Cards Stagger Reveal
-  if (document.querySelector(".pillars-grid")) {
-    gsap.fromTo(".pillar-card",
-      { opacity: 0, y: 40, scale: 0.96 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        stagger: 0.14,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".pillars-grid",
-          start: "top 82%",
-          toggleActions: "play none none none"
-        }
-      }
-    );
-  }
-
-  // Commercial Packages Grid Reveal
+  // Package Cards Reveal
   if (document.querySelector(".packages-grid")) {
     gsap.fromTo(".package-card",
       { opacity: 0, y: 45, scale: 0.95 },
@@ -523,7 +625,7 @@ function initScrollTriggerSections() {
 }
 
 /* ==========================================================================
-   9. DYNAMIC NUMERIC COUNT-UP ANIMATION (GSAP Counter)
+   12. DYNAMIC NUMERIC COUNT-UP ANIMATION
    ========================================================================== */
 function initCountUpCounters() {
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
@@ -568,7 +670,7 @@ function initCountUpCounters() {
 }
 
 /* ==========================================================================
-   10. ANNNIMATE MAGNETIC BUTTONS (PHYSICS SPRING)
+   13. MAGNETIC BUTTONS (PHYSICS SPRING)
    ========================================================================== */
 function initMagneticButtons() {
   if (typeof gsap === "undefined" || window.innerWidth < 768) return;
@@ -603,13 +705,13 @@ function initMagneticButtons() {
 }
 
 /* ==========================================================================
-   11. 3D CARD TILT & INTERACTIVE PERSPECTIVE
+   14. 3D CARD TILT & INTERACTIVE PERSPECTIVE
    ========================================================================== */
 function initCardTiltAndGlare() {
   if (typeof gsap === "undefined" || window.innerWidth < 768) return;
 
   const tiltElements = document.querySelectorAll(
-    ".package-card, .pillar-card, .project-card, .stat-card, .client-card-modern, .testimonial-card"
+    ".package-card, .pillar-card, .project-card, .stat-card, .client-card-modern, .testimonial-card, .process-step-card, .bento-showcase-card, .telemetry-widget"
   );
 
   tiltElements.forEach((el) => {
@@ -622,7 +724,7 @@ function initCardTiltAndGlare() {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      const rotateX = ((y - centerY) / centerY) * -5.5; // max 5.5 deg
+      const rotateX = ((y - centerY) / centerY) * -5.5;
       const rotateY = ((x - centerX) / centerX) * 5.5;
 
       gsap.to(el, {
@@ -650,7 +752,7 @@ function initCardTiltAndGlare() {
 }
 
 /* ==========================================================================
-   12. MOBILE NAVIGATION DRAWER
+   15. MOBILE NAVIGATION DRAWER
    ========================================================================== */
 function initMobileNav() {
   const menuBtn = document.querySelector(".mobile-menu-btn");
@@ -676,7 +778,6 @@ function initMobileNav() {
     }
   });
 
-  // Close on outside click
   document.addEventListener("click", (e) => {
     if (!menuBtn.contains(e.target) && !mobileNav.contains(e.target)) {
       mobileNav.classList.remove("open");
@@ -690,7 +791,7 @@ function initMobileNav() {
 }
 
 /* ==========================================================================
-   13. LUCIDE ICONS & FOOTER YEAR
+   16. LUCIDE ICONS & FOOTER YEAR
    ========================================================================== */
 function initLucideIcons() {
   if (window.lucide) {
@@ -705,7 +806,7 @@ function initYear() {
 }
 
 /* ==========================================================================
-   14. OFFICE LIVE STATUS INDICATOR
+   17. OFFICE LIVE STATUS INDICATOR
    ========================================================================== */
 function initStatusIndicator() {
   const statusEl = document.querySelector(".office-status-badge");
@@ -739,7 +840,7 @@ function initStatusIndicator() {
 }
 
 /* ==========================================================================
-   15. PORTFOLIO CATEGORY FILTER WITH GSAP ANIMATION
+   18. PORTFOLIO CATEGORY FILTER WITH GSAP ANIMATION
    ========================================================================== */
 function initPortfolioFilters() {
   const filterBtns = document.querySelectorAll(".filter-btn");
@@ -773,7 +874,7 @@ function initPortfolioFilters() {
 }
 
 /* ==========================================================================
-   16. CONTACT FORM TRANSMISSION & TOAST
+   19. CONTACT FORM TRANSMISSION & TOAST
    ========================================================================== */
 function initContactForm() {
   const form = document.getElementById("contactForm");
@@ -803,7 +904,7 @@ function initContactForm() {
 }
 
 /* ==========================================================================
-   17. GLOBAL TOAST MESSAGE
+   20. GLOBAL TOAST MESSAGE
    ========================================================================== */
 function showToast(msg) {
   let toast = document.getElementById("globalToast");
