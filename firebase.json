@@ -6,10 +6,17 @@
     "public": ".",
     "ignore": [
       "firebase.json",
-      "**/.*",
+      ".firebaserc",
+      ".gitignore",
+      "**/.git/**",
+      "**/.next/**",
       "**/node_modules/**",
       "app/**",
-      "components/**"
+      "components/**",
+      "src/**",
+      "prisma/**",
+      "*.ts",
+      "*.mjs"
     ]
   }
 }
