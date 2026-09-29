@@ -15,7 +15,8 @@
   const STORAGE_KEYS = {
     SESSION: "dp_erp_session",
     VAULT_UNLOCKED: "dp_vault_unlocked",
-    ERP_DATA: "dp_erp_master_data_v2"
+    ERP_DATA: "dp_erp_master_data_v2",
+    TARIFFS: "dataport_custom_tariffs"
   };
 
   const PACKAGE_RATES = {
@@ -482,6 +483,7 @@
     setupVaultKeypad();
     setupDirectoryFilters();
     setupLedgerFilters();
+    initTariffManager();
     renderAll();
   }
 
@@ -568,6 +570,8 @@
             quickActionLabel.textContent = "Print Report";
           } else if (targetTabId === "vaultTab") {
             quickActionLabel.textContent = "Allocate Treasury";
+          } else if (targetTabId === "tariffsTab") {
+            quickActionLabel.textContent = "Save Tariffs";
           }
         }
 
@@ -584,6 +588,8 @@
           renderCalendar();
         } else if (targetTabId === "vaultTab") {
           renderVaultDetails();
+        } else if (targetTabId === "tariffsTab") {
+          renderTariffManager();
         }
       });
     });
@@ -601,6 +607,8 @@
           window.print();
         } else if (activeTab === "vaultTab") {
           openVaultAllocationModal();
+        } else if (activeTab === "tariffsTab") {
+          saveAllTariffs();
         }
       });
     }
@@ -2219,6 +2227,323 @@
   }
 
   /* =========================================================================
+     13B. SERVICE PRICING & TARIFF MANAGER (BACKEND CHARGE EDITOR)
+     ========================================================================= */
+  const DEFAULT_COMMERCIAL_TARIFFS = {
+    essentials: [
+      {
+        id: "pkg-secure-office",
+        name: "Secure Office Starter",
+        badge: "Best for Small Business",
+        price: 35000,
+        period: "One-Off Investment",
+        description: "18-Camera CCTV Setup & Configuration, Secure Dual WiFi Config, Hardware Firewall Setup."
+      },
+      {
+        id: "pkg-digital-launchpad",
+        name: "Digital Launchpad",
+        badge: "High Growth Package",
+        price: 30000,
+        period: "One-Off Investment",
+        description: "Dynamic Responsive Website (5 Custom Pages), 1 Year Cloud Hosting & SSL, 30s Motion Graphic Ad."
+      }
+    ],
+    hardware: [
+      {
+        id: "itm-01",
+        name: "Small Business Firewall & Configuration",
+        category: "Network",
+        price: 10000,
+        unit: "One-Off Service",
+        description: "Port filtering, VPN configuration, staff bandwidth management, and intrusion prevention."
+      },
+      {
+        id: "itm-02",
+        name: "Long-Range WiFi Access Point (Installation Included)",
+        category: "Network",
+        price: 35000,
+        unit: "Per Unit / Setup",
+        description: "High-density enterprise wireless AP installation, structured cabling, and signal heatmap tuning."
+      },
+      {
+        id: "itm-05",
+        name: "Windows Server Setup + Domain Controller",
+        category: "Server",
+        price: 45000,
+        unit: "Service Only",
+        description: "Active Directory, user permission hierarchies, group policies, centralized file sharing, and automated backup."
+      }
+    ],
+    software: [
+      {
+        id: "itm-03",
+        name: "Motion Graphics Ad (Social Media Creative Direction)",
+        category: "Creative",
+        price: 20000,
+        unit: "Per 30s Video",
+        description: "Full storyboard, custom animation, voiceover sync, and format exports for Instagram, TikTok, and web displays."
+      },
+      {
+        id: "itm-04",
+        name: "Custom Web App / System (Billing Automation Software)",
+        category: "Dev",
+        price: 40000,
+        unit: "Starting Price",
+        description: "Bespoke database-backed software to automate invoicing, billing workflows, and client management."
+      }
+    ],
+    amc: [
+      {
+        id: "amc-01",
+        name: "Standard Plan Retainer (Mass Market)",
+        category: "Retainer",
+        price: 70000,
+        unit: "/ year",
+        description: "Mon-Fri (8:30 - 18:00), 4h SLA, 1 preventive visit/month, network & PC support."
+      },
+      {
+        id: "amc-02",
+        name: "Premium Corporate Plan (24/7 SLA)",
+        category: "Retainer",
+        price: 90000,
+        unit: "/ year",
+        description: "24/7 remote support, 1h SLA priority, unlimited remote + 2 site visits/month, DevOps."
+      },
+      {
+        id: "adh-01",
+        name: "On-Demand Engineering Support",
+        category: "Hourly",
+        price: 2500,
+        unit: "/ hour (Min 2 hrs)",
+        description: "Emergency on-site and remote ad-hoc troubleshooting and repair (Minimum 2 hours per dispatch)."
+      }
+    ]
+  };
+
+  function getSavedTariffs() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.TARIFFS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object" && parsed.essentials) {
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.warn("Error reading saved tariffs, falling back to defaults", err);
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_COMMERCIAL_TARIFFS));
+  }
+
+  function initTariffManager() {
+    const saveBtn = document.getElementById("saveAllTariffsBtn");
+    const resetBtn = document.getElementById("resetTariffsBtn");
+    const addBtn = document.getElementById("addCustomTariffBtn");
+
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => saveAllTariffs());
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => resetTariffsToDefault());
+    }
+    if (addBtn) {
+      addBtn.addEventListener("click", () => addCustomTariff());
+    }
+  }
+
+  function renderTariffManager() {
+    const tariffs = getSavedTariffs();
+
+    const essentialsContainer = document.getElementById("essentialsTariffsList");
+    const hardwareContainer = document.getElementById("hardwareTariffsList");
+    const softwareContainer = document.getElementById("softwareTariffsList");
+    const amcContainer = document.getElementById("amcTariffsList");
+
+    if (!essentialsContainer || !hardwareContainer || !softwareContainer || !amcContainer) return;
+
+    // Render Essentials
+    essentialsContainer.innerHTML = tariffs.essentials.map(pkg => `
+      <div class="tariff-edit-row" data-tariff-group="essentials" data-id="${pkg.id}">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Package Name</label>
+          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(pkg.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
+        </div>
+        <div style="width:160px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Billing Period</label>
+          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(pkg.period || 'One-Off Investment')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
+        </div>
+        <div style="width:180px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Price (KSh)</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
+            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${pkg.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    // Render Hardware
+    hardwareContainer.innerHTML = tariffs.hardware.map((item, idx) => `
+      <div class="tariff-edit-row" data-tariff-group="hardware" data-id="${item.id}" data-idx="${idx}">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Service / Item</label>
+          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
+        </div>
+        <div style="width:150px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
+          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Per Setup')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
+        </div>
+        <div style="width:180px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
+            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+          </div>
+        </div>
+        ${item.isCustom ? `
+          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('hardware', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
+            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+          </button>
+        ` : ''}
+      </div>
+    `).join("");
+
+    // Render Software
+    softwareContainer.innerHTML = tariffs.software.map((item, idx) => `
+      <div class="tariff-edit-row" data-tariff-group="software" data-id="${item.id}" data-idx="${idx}">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Software / Creative Service</label>
+          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
+        </div>
+        <div style="width:150px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
+          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Starting Price')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
+        </div>
+        <div style="width:180px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
+            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+          </div>
+        </div>
+        ${item.isCustom ? `
+          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('software', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
+            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+          </button>
+        ` : ''}
+      </div>
+    `).join("");
+
+    // Render AMC
+    amcContainer.innerHTML = tariffs.amc.map((item, idx) => `
+      <div class="tariff-edit-row" data-tariff-group="amc" data-id="${item.id}" data-idx="${idx}">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">SLA Retainer / Support Plan</label>
+          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
+        </div>
+        <div style="width:150px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Period / Unit</label>
+          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ year')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
+        </div>
+        <div style="width:180px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Rate (KSh)</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
+            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function saveAllTariffs() {
+    const current = getSavedTariffs();
+    const rows = document.querySelectorAll(".tariff-edit-row");
+
+    rows.forEach(row => {
+      const group = row.getAttribute("data-tariff-group");
+      const id = row.getAttribute("data-id");
+      const nameInput = row.querySelector(".tariff-name-input");
+      const unitInput = row.querySelector(".tariff-unit-input");
+      const priceInput = row.querySelector(".tariff-price-input");
+
+      if (group && id && current[group]) {
+        const item = current[group].find(i => i.id === id);
+        if (item) {
+          if (nameInput) item.name = nameInput.value.trim();
+          if (unitInput) {
+            if (group === "essentials") item.period = unitInput.value.trim();
+            else item.unit = unitInput.value.trim();
+          }
+          if (priceInput) item.price = Math.max(0, parseFloat(priceInput.value) || 0);
+        }
+      }
+    });
+
+    try {
+      localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+      showToast("✓ Commercial Tariffs successfully saved and synchronized live!");
+    } catch (err) {
+      console.error("Failed to save tariffs to localStorage:", err);
+      showToast("Error saving tariffs. Check browser storage permissions.");
+    }
+  }
+
+  function resetTariffsToDefault() {
+    if (confirm("Are you sure you want to reset all service charges to default factory pricing?")) {
+      localStorage.removeItem(STORAGE_KEYS.TARIFFS);
+      renderTariffManager();
+      showToast("✓ Tariffs reset to factory default rates.");
+    }
+  }
+
+  function addCustomTariff() {
+    const name = prompt("Enter new service or item name:");
+    if (!name || !name.trim()) return;
+
+    const priceStr = prompt("Enter service rate / price in KSh (e.g. 15000):", "15000");
+    const price = parseFloat(priceStr) || 0;
+
+    const current = getSavedTariffs();
+    const newId = "itm-custom-" + Date.now().toString(36);
+
+    current.hardware.push({
+      id: newId,
+      name: name.trim(),
+      category: "Custom",
+      price: price,
+      unit: "Per Unit / Setup",
+      description: "Custom commercial service added via NOC dashboard.",
+      isCustom: true
+    });
+
+    try {
+      localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+      renderTariffManager();
+      showToast(`✓ Added custom item: "${name.trim()}"`);
+    } catch (err) {
+      console.error("Failed to add custom tariff:", err);
+    }
+  }
+
+  window.dpRemoveCustomTariff = function(group, id) {
+    if (!confirm("Are you sure you want to remove this service item?")) return;
+    const current = getSavedTariffs();
+    if (current[group]) {
+      current[group] = current[group].filter(i => i.id !== id);
+      try {
+        localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+        renderTariffManager();
+        showToast("✓ Service item removed.");
+      } catch (err) {
+        console.error("Failed to remove item:", err);
+      }
+    }
+  };
+
+  /* =========================================================================
      14. MASTER RENDER ALL
      ========================================================================= */
   function renderAll() {
@@ -2229,6 +2554,7 @@
     renderLedgerTable();
     if (activeTab === "analyticsTab") renderAnalytics();
     if (activeTab === "vaultTab") renderVaultDetails();
+    if (activeTab === "tariffsTab") renderTariffManager();
   }
 
 })();

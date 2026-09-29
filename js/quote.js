@@ -24,7 +24,6 @@ async function loadCatalogData() {
     if (res.ok) {
       const data = await res.json();
       catalogItems = data.catalog || [];
-      renderCatalogOptions();
     }
   } catch (err) {
     console.warn("Using fallback catalog items", err);
@@ -40,8 +39,57 @@ async function loadCatalogData() {
       { id: "amc-02", name: "[AMC Annual] Premium Corporate Plan (24/7, 1h SLA, DevOps)", price: 90000 },
       { id: "adh-01", name: "On-Demand Engineering Support (2 Hours Min)", price: 5000 }
     ];
-    renderCatalogOptions();
   }
+
+  // Overlay custom pricing saved from dashboard tariff manager if available
+  try {
+    const saved = localStorage.getItem("dataport_custom_tariffs");
+    if (saved) {
+      const tariffs = JSON.parse(saved);
+      if (tariffs && typeof tariffs === "object") {
+        const idMap = {
+          "pkg-secure-office": "pkg-01",
+          "pkg-digital-launchpad": "pkg-02",
+          "itm-01": "itm-01",
+          "itm-02": "itm-02",
+          "itm-03": "itm-03",
+          "itm-04": "itm-04",
+          "itm-05": "itm-05",
+          "amc-01": "amc-01",
+          "amc-02": "amc-02",
+          "adh-01": "adh-01"
+        };
+
+        const allItems = [
+          ...(tariffs.essentials || []),
+          ...(tariffs.hardware || []),
+          ...(tariffs.software || []),
+          ...(tariffs.amc || [])
+        ];
+
+        allItems.forEach(item => {
+          const targetCatalogId = idMap[item.id] || item.id;
+          const match = catalogItems.find(c => c.id === targetCatalogId);
+          if (match) {
+            match.price = item.price;
+            if (item.name && !item.name.includes("[Package]") && !item.name.includes("[AMC")) {
+              match.name = item.name;
+            }
+          } else if (item.isCustom) {
+            catalogItems.push({
+              id: item.id,
+              name: `[Custom] ${item.name}`,
+              price: item.price
+            });
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.warn("Error applying custom tariffs to quote catalog", e);
+  }
+
+  renderCatalogOptions();
 }
 
 function renderCatalogOptions() {
@@ -57,6 +105,11 @@ function renderCatalogOptions() {
   });
 }
 
+function getPriceForPreset(id, fallbackPrice) {
+  const match = catalogItems.find(c => c.id === id);
+  return match ? match.price : fallbackPrice;
+}
+
 function checkUrlParamsForPresets() {
   const urlParams = new URLSearchParams(window.location.search);
   const pkg = urlParams.get("pkg");
@@ -67,25 +120,25 @@ function checkUrlParamsForPresets() {
       id: "pkg_office_" + Date.now(),
       service: "Secure Office Starter Package (18-CCTV Setup, Dual WiFi Config, Firewall Setup)",
       qty: 1,
-      price: 35000
+      price: getPriceForPreset("pkg-01", 35000)
     });
   } else if (pkg === "digital-launchpad") {
     lineItems.push({
       id: "pkg_launchpad_" + Date.now(),
       service: "Digital Launchpad Package (5-Page Dynamic Website, 1 Year Hosting & SSL, 30s Motion Graphic Ad)",
       qty: 1,
-      price: 30000
+      price: getPriceForPreset("pkg-02", 30000)
     });
   } else if (item === "firewall") {
-    lineItems.push({ id: "itm_fw_" + Date.now(), service: "Small Business Firewall & Configuration", qty: 1, price: 10000 });
+    lineItems.push({ id: "itm_fw_" + Date.now(), service: "Small Business Firewall & Configuration", qty: 1, price: getPriceForPreset("itm-01", 10000) });
   } else if (item === "wifi-ap") {
-    lineItems.push({ id: "itm_wifi_" + Date.now(), service: "Long-Range WiFi Access Point (Installation Included)", qty: 1, price: 35000 });
+    lineItems.push({ id: "itm_wifi_" + Date.now(), service: "Long-Range WiFi Access Point (Installation Included)", qty: 1, price: getPriceForPreset("itm-02", 35000) });
   } else if (item === "motion-ad") {
-    lineItems.push({ id: "itm_motion_" + Date.now(), service: "Motion Graphics Ad Video (Social Media Creative Direction)", qty: 1, price: 20000 });
+    lineItems.push({ id: "itm_motion_" + Date.now(), service: "Motion Graphics Ad Video (Social Media Creative Direction)", qty: 1, price: getPriceForPreset("itm-03", 20000) });
   } else if (item === "custom-app") {
-    lineItems.push({ id: "itm_app_" + Date.now(), service: "Custom Web App / System (Billing Automation Starter)", qty: 1, price: 40000 });
+    lineItems.push({ id: "itm_app_" + Date.now(), service: "Custom Web App / System (Billing Automation Starter)", qty: 1, price: getPriceForPreset("itm-04", 40000) });
   } else if (item === "windows-server") {
-    lineItems.push({ id: "itm_srv_" + Date.now(), service: "Windows Server Setup + Domain Controller (Service Only)", qty: 1, price: 45000 });
+    lineItems.push({ id: "itm_srv_" + Date.now(), service: "Windows Server Setup + Domain Controller (Service Only)", qty: 1, price: getPriceForPreset("itm-05", 45000) });
   }
 
   if (lineItems.length > 0) {

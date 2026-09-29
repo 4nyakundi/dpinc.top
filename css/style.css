@@ -3194,3 +3194,130 @@ img, svg {
     display: block !important;
   }
 }
+
+/* --- Tariff & Pricing Manager Styles --- */
+.tariffs-manager-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .tariffs-manager-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tariff-group-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tariff-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tariffs-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tariff-edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  transition: all var(--transition-fast);
+}
+
+.tariff-edit-row:hover {
+  border-color: #5C9400;
+  background: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.tariff-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.tariff-name-input {
+  font-weight: 700;
+  font-size: 0.925rem;
+  color: var(--text-primary);
+  border: none;
+  background: transparent;
+  width: 100%;
+  padding: 0;
+}
+
+.tariff-name-input:focus {
+  outline: none;
+  border-bottom: 1px solid #5C9400;
+}
+
+.tariff-desc-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.tariff-price-col {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tariff-price-input {
+  width: 110px;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #3E6300;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: var(--radius-sm);
+  text-align: right;
+}
+
+.tariff-price-input:focus {
+  outline: none;
+  border-color: #5C9400;
+  box-shadow: 0 0 0 2px rgba(92, 148, 0, 0.2);
+}
+
+.tariff-action-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tariff-action-btn:hover {
+  color: #EF4444;
+  background: #FEE2E2;
+}

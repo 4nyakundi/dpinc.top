@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPortfolioFilters();
   initContactForm();
   initStatusIndicator();
+  initDynamicTariffSync();
 });
 
 /* ==========================================================================
@@ -1041,3 +1042,49 @@ function showToast(msg) {
     }
   }, 4000);
 }
+
+/* ==========================================================================
+   21. DYNAMIC COMMERCIAL TARIFF SYNCHRONIZER
+   ========================================================================== */
+function initDynamicTariffSync() {
+  try {
+    const saved = localStorage.getItem("dataport_custom_tariffs");
+    if (!saved) return;
+    const tariffs = JSON.parse(saved);
+    if (!tariffs || typeof tariffs !== "object") return;
+
+    // Lookup map of all tariffs by ID
+    const tariffMap = {};
+    if (Array.isArray(tariffs.essentials)) {
+      tariffs.essentials.forEach(item => { tariffMap[item.id] = item; });
+    }
+    if (Array.isArray(tariffs.hardware)) {
+      tariffs.hardware.forEach(item => { tariffMap[item.id] = item; });
+    }
+    if (Array.isArray(tariffs.software)) {
+      tariffs.software.forEach(item => { tariffMap[item.id] = item; });
+    }
+    if (Array.isArray(tariffs.amc)) {
+      tariffs.amc.forEach(item => { tariffMap[item.id] = item; });
+    }
+
+    const priceElements = document.querySelectorAll("[data-tariff-id]");
+    priceElements.forEach(el => {
+      const id = el.getAttribute("data-tariff-id");
+      const item = tariffMap[id];
+      if (item && item.price !== undefined) {
+        const formatted = "KSh " + Number(item.price).toLocaleString("en-KE");
+        if (id.startsWith("amc-")) {
+          el.textContent = `${formatted} / year`;
+        } else if (id === "adh-01") {
+          el.textContent = `${formatted} / hour`;
+        } else {
+          el.textContent = formatted;
+        }
+      }
+    });
+  } catch (err) {
+    console.warn("Failed to synchronize public pricing from storage:", err);
+  }
+}
+

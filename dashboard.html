@@ -178,6 +178,9 @@
             <button class="dash-tab" data-tab="analyticsTab">
               <i data-lucide="bar-chart-3" style="width:16px; height:16px;"></i> P&L Analytics
             </button>
+            <button class="dash-tab" data-tab="tariffsTab">
+              <i data-lucide="tags" style="width:16px; height:16px;"></i> Pricing & Tariffs
+            </button>
             <button class="dash-tab" data-tab="vaultTab">
               <i data-lucide="lock" style="width:16px; height:16px;"></i> Executive Vault
             </button>
@@ -556,6 +559,101 @@
             </div>
           </div>
 
+        </section>
+
+        <!-- =====================================================================
+             TAB 7: SERVICE PRICING & TARIFF MANAGER (LIVE CHARGE EDITOR)
+             ===================================================================== -->
+        <section id="tariffsTab" class="dash-tab-pane">
+          <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
+            
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; flex-wrap:wrap; gap:1.25rem;">
+              <div>
+                <div class="badge" style="margin-bottom:0.6rem;">
+                  <i data-lucide="tags" class="text-lime" style="width:14px; height:14px;"></i>
+                  <span>Live Commercial Tariff Engine</span>
+                </div>
+                <h3 class="font-display" style="font-size:1.6rem; font-weight:800; margin:0 0 0.4rem 0;">
+                  Service Rates & Commercial Charges
+                </h3>
+                <p class="text-muted" style="font-size:0.875rem; margin:0; max-width:650px;">
+                  Edit, update, and manage your commercial packages, itemized rates, labor, and maintenance retainers. Changes save instantly and synchronize live to the public website and quote generator.
+                </p>
+              </div>
+
+              <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <button id="resetTariffsBtn" class="btn btn-secondary btn-sm" title="Restore factory default prices">
+                  <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i> Reset Defaults
+                </button>
+                <button id="addCustomTariffBtn" class="btn btn-secondary btn-sm" title="Add new itemized service rate">
+                  <i data-lucide="plus" style="width:14px; height:14px; color:var(--lime);"></i> Add Service Item
+                </button>
+                <button id="saveAllTariffsBtn" class="btn btn-primary btn-sm">
+                  <i data-lucide="save" style="width:14px; height:14px;"></i> Save All Charges
+                </button>
+              </div>
+            </div>
+
+            <!-- Pricing Grid Groups -->
+            <div class="tariffs-manager-grid">
+              <!-- Group 1: Essentials Commercial Bundles -->
+              <div class="tariff-group-card">
+                <div class="tariff-group-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <i data-lucide="package" class="text-lime" style="width:20px; height:20px;"></i>
+                    <h4 style="font-size:1.15rem; font-weight:800; margin:0;">Essentials Fixed Bundles</h4>
+                  </div>
+                  <span class="badge" style="font-size:0.7rem;">Turnkey Packages</span>
+                </div>
+                <div id="essentialsTariffsList" class="tariffs-items-container">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- Group 2: Hardware & Infrastructure Engineering -->
+              <div class="tariff-group-card">
+                <div class="tariff-group-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <i data-lucide="network" class="text-lime" style="width:20px; height:20px;"></i>
+                    <h4 style="font-size:1.15rem; font-weight:800; margin:0;">Itemized Hardware & Network</h4>
+                  </div>
+                  <span class="badge" style="font-size:0.7rem;">Unit Rates</span>
+                </div>
+                <div id="hardwareTariffsList" class="tariffs-items-container">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- Group 3: Software, DevOps & Creative Media -->
+              <div class="tariff-group-card">
+                <div class="tariff-group-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <i data-lucide="code-2" class="text-purple" style="width:20px; height:20px;"></i>
+                    <h4 style="font-size:1.15rem; font-weight:800; margin:0;">Software & Digital Media</h4>
+                  </div>
+                  <span class="badge" style="font-size:0.7rem;">Development</span>
+                </div>
+                <div id="softwareTariffsList" class="tariffs-items-container">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- Group 4: Annual Maintenance Contracts (AMC) & On-Demand Support -->
+              <div class="tariff-group-card">
+                <div class="tariff-group-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <i data-lucide="shield" class="text-lime" style="width:20px; height:20px;"></i>
+                    <h4 style="font-size:1.15rem; font-weight:800; margin:0;">Retainers & SLA Support</h4>
+                  </div>
+                  <span class="badge" style="font-size:0.7rem;">Annual / Hourly</span>
+                </div>
+                <div id="amcTariffsList" class="tariffs-items-container">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+          </div>
         </section>
 
       </div>
