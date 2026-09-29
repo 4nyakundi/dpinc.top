@@ -41,23 +41,102 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="dashboard.html" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.9rem;" title="NOC Staff Portal">
+        <a href="dashboard.html" class="btn btn-secondary btn-sm nav-noc-btn" style="padding:0.45rem 0.9rem;" title="NOC Staff Portal">
           <i data-lucide="shield-check" style="width:14px; height:14px; color:var(--lime);"></i> NOC Portal
         </a>
-        <button class="mobile-menu-btn" aria-label="Open Mobile Menu">
-          <i data-lucide="menu" style="width:24px; height:24px;"></i>
+        <button class="mobile-menu-btn glass-burger-btn" aria-label="Toggle Navigation Menu" aria-expanded="false">
+          <span class="burger-box">
+            <span class="burger-line line-1"></span>
+            <span class="burger-line line-2"></span>
+            <span class="burger-line line-3"></span>
+          </span>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Drawer -->
-    <div class="mobile-nav">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="services.html" class="nav-link active">Services & Pricing</a>
-      <a href="portfolio.html" class="nav-link">Portfolio</a>
-      <a href="quote.html" class="nav-link">Quote Generator</a>
-      <a href="contact.html" class="nav-link">Contact</a>
-      <a href="dashboard.html" class="nav-link" style="color:var(--lime); font-weight:700;"><i data-lucide="shield-check" style="width:14px; height:14px; display:inline;"></i> NOC Staff Portal</a>
+    <!-- Mobile Nav Backdrop Overlay -->
+    <div class="mobile-nav-backdrop"></div>
+
+    <!-- High-Tech Glassmorphic Mobile Drawer (Floating Pod) -->
+    <div class="mobile-nav glass-nav-pod">
+      <!-- Pod Header -->
+      <div class="mobile-nav-header">
+        <div class="mobile-nav-status">
+          <span class="pulse-dot"></span>
+          <span>NOC ONLINE • SYSTEM READY</span>
+        </div>
+        <span class="mobile-nav-node">DP-MBA-01</span>
+      </div>
+
+      <!-- Navigation Links List with Icons & Tech Micro-Labels -->
+      <div class="mobile-nav-links-list">
+        <a href="index.html" class="mobile-nav-item">
+          <div class="mobile-nav-icon-box">
+            <i data-lucide="home" style="width:18px; height:18px;"></i>
+          </div>
+          <div class="mobile-nav-text-col">
+            <span class="mobile-nav-title">Home</span>
+            <span class="mobile-nav-sub">Core Overview & Telemetry</span>
+          </div>
+          <i data-lucide="chevron-right" class="mobile-nav-arrow" style="width:16px; height:16px;"></i>
+        </a>
+
+        <a href="services.html" class="mobile-nav-item active">
+          <div class="mobile-nav-icon-box">
+            <i data-lucide="layers" style="width:18px; height:18px;"></i>
+          </div>
+          <div class="mobile-nav-text-col">
+            <span class="mobile-nav-title">Services & Pricing</span>
+            <span class="mobile-nav-sub">Networks, CCTV & Dev</span>
+          </div>
+          <i data-lucide="chevron-right" class="mobile-nav-arrow" style="width:16px; height:16px;"></i>
+        </a>
+
+        <a href="portfolio.html" class="mobile-nav-item">
+          <div class="mobile-nav-icon-box">
+            <i data-lucide="briefcase" style="width:18px; height:18px;"></i>
+          </div>
+          <div class="mobile-nav-text-col">
+            <span class="mobile-nav-title">Portfolio</span>
+            <span class="mobile-nav-sub">Proven Deployments & Results</span>
+          </div>
+          <i data-lucide="chevron-right" class="mobile-nav-arrow" style="width:16px; height:16px;"></i>
+        </a>
+
+        <a href="quote.html" class="mobile-nav-item">
+          <div class="mobile-nav-icon-box">
+            <i data-lucide="calculator" style="width:18px; height:18px;"></i>
+          </div>
+          <div class="mobile-nav-text-col">
+            <span class="mobile-nav-title">Quote Generator</span>
+            <span class="mobile-nav-sub">Instant Commercial Estimator</span>
+          </div>
+          <i data-lucide="chevron-right" class="mobile-nav-arrow" style="width:16px; height:16px;"></i>
+        </a>
+
+        <a href="contact.html" class="mobile-nav-item">
+          <div class="mobile-nav-icon-box">
+            <i data-lucide="phone-call" style="width:18px; height:18px;"></i>
+          </div>
+          <div class="mobile-nav-text-col">
+            <span class="mobile-nav-title">Contact & HQ</span>
+            <span class="mobile-nav-sub">Mombasa Office & 24/7 SLA</span>
+          </div>
+          <i data-lucide="chevron-right" class="mobile-nav-arrow" style="width:16px; height:16px;"></i>
+        </a>
+      </div>
+
+      <!-- Pod Action Footer -->
+      <div class="mobile-nav-footer">
+        <a href="quote.html" class="btn btn-primary btn-sm mobile-cta-btn" style="width:100%; justify-content:center;">
+          <span>Generate Project Quote</span>
+          <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+        </a>
+        <a href="dashboard.html" class="mobile-portal-link">
+          <i data-lucide="shield-check" class="text-lime" style="width:15px; height:15px;"></i>
+          <span>NOC Staff Portal Access</span>
+        </a>
+      </div>
     </div>
   </header>
 
