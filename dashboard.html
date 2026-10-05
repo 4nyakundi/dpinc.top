@@ -187,6 +187,9 @@
           </div>
 
           <div class="dash-action-buttons">
+            <button id="openCreateInvoiceBtn" class="btn btn-secondary btn-sm" title="Create & Print Internet Invoice">
+              <i data-lucide="receipt" style="width:16px; height:16px; color:var(--lime);"></i> Create Invoice
+            </button>
             <button id="batchGenerateBtn" class="btn btn-secondary btn-sm" title="Generate proformas for all active subscribers for the selected month">
               <i data-lucide="zap" style="width:16px; height:16px; color:var(--lime);"></i> Batch Invoices
             </button>
@@ -661,6 +664,225 @@
   </div>
 
   <!-- =========================================================================
+       MODAL: CREATE & PRINT INTERNET SERVICE INVOICE
+       ========================================================================= -->
+  <div id="createInvoiceModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:840px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="position:sticky; top:0; background:var(--bg-card); z-index:10; padding-bottom:1rem; border-bottom:1px solid var(--border-color);">
+        <div>
+          <span class="badge mb-2"><i data-lucide="receipt" class="text-lime" style="width:14px; height:14px;"></i> Internet Billing & Accounting Engine</span>
+          <h3 style="font-size:1.4rem; font-weight:800; margin:0;">Create Client Invoice & Bill</h3>
+        </div>
+        <button class="modal-close-btn" data-close="createInvoiceModal">&times;</button>
+      </div>
+
+      <form id="createInvoiceForm" style="margin-top:1.25rem;">
+        <input type="hidden" id="invSelectedSubId" value="">
+
+        <!-- Client Selection Row -->
+        <div class="glass-panel" style="padding:1.25rem; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="font-size:0.8125rem; font-weight:700; color:var(--lime); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">
+            1. Client & Account Selection
+          </div>
+          <div class="grid-2col" style="gap:1rem;">
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Select Registered Subscriber</label>
+              <select id="invSelectSubscriber" class="form-select">
+                <option value="">-- Choose Active Subscriber or Custom --</option>
+                <option value="__custom__">+ New / Custom Client</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Client Name / Organization *</label>
+              <input type="text" id="invClientName" class="form-input" placeholder="e.g. Mombasa Ocean View Suites" required>
+            </div>
+          </div>
+          <div class="grid-2col" style="gap:1rem;">
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Phone Number (WhatsApp / M-Pesa) *</label>
+              <input type="tel" id="invClientPhone" class="form-input" placeholder="e.g. 0712345678" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="invClientEmail" class="form-input" placeholder="e.g. accounts@oceanview.co.ke">
+            </div>
+          </div>
+          <div class="grid-2col" style="gap:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Installation Location / Address</label>
+              <input type="text" id="invClientLocation" class="form-input" placeholder="e.g. Nyali Beach Road, Mombasa">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Account Ref / PPPoE Identifier</label>
+              <input type="text" id="invClientAccountRef" class="form-input" placeholder="e.g. oceanview_resort">
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Document Config -->
+        <div class="glass-panel" style="padding:1.25rem; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="font-size:0.8125rem; font-weight:700; color:var(--lime); text-transform:uppercase; margin-bottom:0.75rem; letter-spacing:0.05em;">
+            2. Document Details & Dates
+          </div>
+          <div class="grid-3col" style="gap:1rem;">
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Document Type *</label>
+              <select id="invDocType" class="form-select">
+                <option value="PROFORMA INVOICE" selected>Proforma Invoice (Renewal Request)</option>
+                <option value="TAX INVOICE">Official Tax Invoice</option>
+                <option value="INTERNET SERVICE BILL">Internet Service Bill</option>
+                <option value="OFFICIAL PAYMENT RECEIPT">Official Payment Receipt (Paid)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Invoice Number *</label>
+              <input type="text" id="invInvoiceNumber" class="form-input" style="font-family:var(--font-mono); font-weight:700;" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem;">
+              <label class="form-label">Billing Cycle / Period *</label>
+              <input type="text" id="invBillingPeriod" class="form-input" placeholder="e.g. October 2026" required>
+            </div>
+          </div>
+          <div class="grid-3col" style="gap:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Issue Date *</label>
+              <input type="date" id="invIssueDate" class="form-input" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Payment Due Date *</label>
+              <input type="date" id="invDueDate" class="form-input" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Payment Status *</label>
+              <select id="invPaymentStatus" class="form-select">
+                <option value="unpaid" selected>UNPAID / PAYMENT DUE</option>
+                <option value="paid">PAID IN FULL</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Line Items Builder -->
+        <div class="glass-panel" style="padding:1.25rem; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div style="font-size:0.8125rem; font-weight:700; color:var(--lime); text-transform:uppercase; letter-spacing:0.05em;">
+              3. Service Items & Internet Charges
+            </div>
+            <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddPlan" title="Add Monthly Bandwidth Package" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                + Bandwidth Plan
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddSetup" title="Add Installation Fee" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                + Installation Fee
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddRouter" title="Add Router Equipment" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                + Router ONT
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddIp" title="Add Static IP" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                + Public IP
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" id="invAddNewRowBtn" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                <i data-lucide="plus" style="width:12px; height:12px;"></i> Add Row
+              </button>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <div class="proposal-table-wrapper" style="overflow-x:auto;">
+            <table class="proposal-table" id="invLineItemsTable" style="margin-bottom:0.5rem; width:100%;">
+              <thead>
+                <tr>
+                  <th style="width:48%;">Service Item / Technical Scope</th>
+                  <th style="width:14%; text-align:center;">Qty / Unit</th>
+                  <th style="width:18%; text-align:right;">Rate (KSh)</th>
+                  <th style="width:14%; text-align:right;">Total (KSh)</th>
+                  <th style="width:6%; text-align:center;"></th>
+                </tr>
+              </thead>
+              <tbody id="invLineItemsBody">
+                <!-- Dynamically rendered rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Total Calculation Bar -->
+          <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+            <div style="min-width:300px; display:flex; flex-direction:column; gap:0.5rem; background:var(--bg-secondary); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+              <div style="display:flex; justify-content:space-between; font-size:0.875rem;">
+                <span class="text-muted">Subtotal:</span>
+                <strong id="invSubtotalDisplay" style="font-family:var(--font-mono);">KSh 0</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+                <div style="display:flex; align-items:center; gap:0.35rem;">
+                  <span class="text-muted">Tax / VAT:</span>
+                  <select id="invVatMode" class="form-select" style="padding:0.2rem 0.4rem; font-size:0.75rem; width:auto;">
+                    <option value="zero" selected>0% (VAT Exempt)</option>
+                    <option value="exclusive">16% Exclusive (+VAT)</option>
+                    <option value="inclusive">16% Inclusive</option>
+                  </select>
+                </div>
+                <strong id="invVatAmountDisplay" style="font-family:var(--font-mono);">KSh 0</strong>
+              </div>
+              <div style="border-top:2px solid var(--border-color); padding-top:0.6rem; display:flex; justify-content:space-between; align-items:baseline;">
+                <span style="font-weight:700; font-size:1rem; color:var(--text-primary);">Total Amount:</span>
+                <span id="invGrandTotalDisplay" style="font-family:var(--font-mono); font-size:1.35rem; font-weight:900; color:var(--lime-dark);">KSh 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Instructions Callout (Editable) -->
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label class="form-label">Official Payment Instructions & Terms (Appears on Printed Invoice)</label>
+          <textarea id="invPaymentTerms" class="form-textarea" rows="2" style="font-size:0.825rem;">M-PESA Paybill: 247247 | Account No: [Client Phone] | Direct M-Pesa: 0790 964 002 (Emmanuel Nyakundi) | Standard Chartered Bank (Acc: 0100499055400). Payment due within 5 days to ensure continuous uninterrupted fiber SLA.</textarea>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; flex-wrap:wrap; border-top:1px solid var(--border-color); padding-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close="createInvoiceModal">Cancel</button>
+          
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button type="button" id="invWhatsAppBtn" class="btn btn-secondary" style="color:#25D366; border-color:rgba(37,211,102,0.35);" title="Send invoice details to client WhatsApp">
+              <i data-lucide="message-square" style="width:15px; height:15px;"></i> WhatsApp Bill
+            </button>
+            <button type="button" id="invLivePreviewBtn" class="btn btn-secondary" title="View formatted A4 document on screen">
+              <i data-lucide="eye" style="width:15px; height:15px;"></i> Preview Invoice
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="printer" style="width:15px; height:15px;"></i> Save & Print Invoice
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: LIVE INVOICE PREVIEW (Screen & Print Dispatch)
+       ========================================================================= -->
+  <div id="invoicePreviewModal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog glass-panel" style="max-width:880px; max-height:94vh; overflow-y:auto; padding:clamp(1rem, 2.5vw, 2rem);">
+      <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div class="badge"><i data-lucide="file-text" class="text-lime" style="width:14px; height:14px;"></i> A4 Document Preview</div>
+          <h3 style="font-size:1.25rem; font-weight:800; margin:0;">Invoice Document Ready</h3>
+        </div>
+        <div style="display:flex; gap:0.6rem; align-items:center;">
+          <button id="previewPrintTriggerBtn" class="btn btn-primary btn-sm">
+            <i data-lucide="printer" style="width:14px; height:14px;"></i> Print / Save PDF
+          </button>
+          <button class="modal-close-btn" data-close="invoicePreviewModal">&times;</button>
+        </div>
+      </div>
+
+      <!-- Live A4 Card Rendering Container -->
+      <div id="previewCardViewport" style="background:#FFFFFF; color:#0F172A; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.15); padding:2.5rem; border:1px solid #CBD5E1;">
+        <!-- Populated on the fly from createInvoiceModal data -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        MODAL: ADD / EDIT SUBSCRIBER
        ========================================================================= -->
   <div id="subscriberModal" class="modal-overlay" style="display:none;">
@@ -1059,6 +1281,9 @@
           <button id="openReceivePaymentFromDrawerBtn" class="btn btn-primary" style="flex:1;">
             <i data-lucide="check-circle-2"></i> Receive Payment (Settle Invoice)
           </button>
+          <button id="drawerOpenFullBuilderBtn" class="btn btn-secondary btn-sm" title="Open Custom Invoice Builder">
+            <i data-lucide="file-text"></i> Invoice Builder
+          </button>
           <button id="togglePaidBtn" class="btn btn-secondary btn-sm" title="Toggle status without modal">
             <i data-lucide="rotate-cw"></i> Toggle
           </button>
@@ -1210,85 +1435,150 @@
        PRINTABLE A4 INVOICE SHEET (Formatted for window.print())
        ========================================================================= -->
   <div id="printableInvoiceSheet" class="printable-invoice">
-    <div class="invoice-letterhead">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div class="invoice-letterhead" style="margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:2rem;">
         <div>
-          <h1 style="font-size:1.75rem; font-weight:900; color:#000000; margin-bottom:4px;">DATA PORT LIMITED</h1>
-          <p style="font-size:0.85rem; color:#475569;">High-End ICT Infrastructure & Dedicated ISP Networks</p>
-          <p style="font-size:0.8125rem; color:#475569;">Along Jomo Kenyatta Avenue, Mombasa Mall, Mombasa, Kenya</p>
-          <p style="font-size:0.8125rem; color:#475569;">Phone: +254 790 964 002 // +254 118 228 000 | Email: accounts@dpinc.top</p>
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:6px;">
+            <div style="width:14px; height:14px; background:#5C9400; border-radius:3px;"></div>
+            <h1 style="font-size:1.85rem; font-weight:900; color:#0F172A; margin:0; letter-spacing:-0.02em; font-family:'Cabinet Grotesk', sans-serif;">
+              DATA PORT LIMITED
+            </h1>
+          </div>
+          <p style="font-size:0.875rem; font-weight:700; color:#5C9400; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.04em;">
+            High-End ICT Infrastructure & Dedicated ISP Networks
+          </p>
+          <p style="font-size:0.8125rem; color:#475569; margin:0 0 2px 0;">
+            Along Jomo Kenyatta Avenue, Mombasa Mall, Mombasa, Kenya
+          </p>
+          <p style="font-size:0.8125rem; color:#475569; margin:0;">
+            Phone: <strong>+254 790 964 002</strong> / <strong>+254 118 228 000</strong> | Email: <strong>billing@dpinc.top</strong> | Web: <strong>dpinc.top</strong>
+          </p>
         </div>
-        <div style="text-align:right;">
-          <h2 id="printDocType" style="font-size:1.5rem; color:#8ACE00; font-weight:800; text-transform:uppercase;">PROFORMA INVOICE</h2>
-          <div id="printInvoiceNo" style="font-family:monospace; font-weight:700; font-size:1.1rem;">PROF-2026-0000</div>
-          <div style="font-size:0.85rem; color:#475569; margin-top:4px;">Date: <span id="printIssueDate">--/--/----</span></div>
-          <div style="font-size:0.85rem; color:#b91c1c; font-weight:700;">Due Date: <span id="printDueDate">--/--/----</span></div>
+        <div style="text-align:right; min-width:240px;">
+          <h2 id="printDocType" style="font-size:1.45rem; color:#0F172A; font-weight:900; text-transform:uppercase; margin:0 0 4px 0; letter-spacing:0.02em;">
+            PROFORMA INVOICE
+          </h2>
+          <div id="printInvoiceNo" style="font-family:'JetBrains Mono', monospace; font-weight:800; font-size:1.15rem; color:#5C9400;">
+            DP-INV-2026-0000
+          </div>
+          <div style="font-size:0.8125rem; color:#475569; margin-top:6px;">
+            Date of Issue: <strong id="printIssueDate" style="color:#0F172A;">--/--/----</strong>
+          </div>
+          <div style="font-size:0.8125rem; color:#b91c1c; margin-top:2px;">
+            Payment Due Date: <strong id="printDueDate">--/--/----</strong>
+          </div>
         </div>
       </div>
     </div>
 
-    <hr style="border:none; border-top:2px solid #000000; margin:1.5rem 0;">
-
-    <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
-      <div>
-        <h4 style="font-size:0.8125rem; text-transform:uppercase; color:#64748b; margin-bottom:4px;">Billed To:</h4>
-        <h3 id="printClientName" style="font-size:1.15rem; font-weight:700; color:#0f172a;">Client Business Name</h3>
-        <p id="printClientPhone" style="font-size:0.875rem; color:#334155;">Phone: +254 700 000 000</p>
-        <p id="printClientEmail" style="font-size:0.875rem; color:#334155;">Email: client@domain.com</p>
-        <p id="printClientLocation" style="font-size:0.875rem; color:#334155;">Location: Mombasa</p>
+    <div style="border-top:2px solid #0F172A; border-bottom:1px solid #E2E8F0; padding:1rem 0; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1.5rem;">
+      <div style="flex:1;">
+        <h4 style="font-size:0.75rem; text-transform:uppercase; color:#64748B; margin:0 0 4px 0; font-weight:700; letter-spacing:0.06em;">
+          BILLED TO (CLIENT / SUBSCRIBER):
+        </h4>
+        <h3 id="printClientName" style="font-size:1.2rem; font-weight:800; color:#0F172A; margin:0 0 4px 0;">
+          Client Business Name
+        </h3>
+        <p id="printClientPhone" style="font-size:0.825rem; color:#334155; margin:0 0 2px 0;">
+          Phone: +254 700 000 000
+        </p>
+        <p id="printClientEmail" style="font-size:0.825rem; color:#334155; margin:0 0 2px 0;">
+          Email: client@domain.com
+        </p>
+        <p id="printClientLocation" style="font-size:0.825rem; color:#334155; margin:0;">
+          Premises: Mombasa
+        </p>
       </div>
-      <div style="text-align:right;">
-        <h4 style="font-size:0.8125rem; text-transform:uppercase; color:#64748b; margin-bottom:4px;">Service Period:</h4>
-        <h4 id="printPeriod" style="font-size:1.05rem; font-weight:700; color:#0f172a;">Monthly Billing Cycle</h4>
-        <div id="printPaymentStatus" style="display:inline-block; padding:4px 12px; border-radius:4px; font-weight:700; font-size:0.85rem; margin-top:6px; background:#fee2e2; color:#b91c1c;">
-          UNPAID / DUE
+
+      <div style="text-align:right; min-width:220px;">
+        <h4 style="font-size:0.75rem; text-transform:uppercase; color:#64748B; margin:0 0 4px 0; font-weight:700; letter-spacing:0.06em;">
+          BILLING CYCLE & SPECS:
+        </h4>
+        <div id="printPeriod" style="font-size:1rem; font-weight:700; color:#0F172A; margin-bottom:4px;">
+          Monthly Billing Cycle
+        </div>
+        <div id="printAccountRefDisplay" style="font-size:0.8rem; font-family:'JetBrains Mono', monospace; color:#475569; margin-bottom:6px;">
+          Account: user_client
+        </div>
+        <div id="printPaymentStatus" style="display:inline-block; padding:4px 14px; border-radius:4px; font-weight:800; font-size:0.8rem; text-transform:uppercase; border:1px solid #EF4444; background:#FEE2E2; color:#B91C1C;">
+          UNPAID / PAYMENT DUE
         </div>
       </div>
     </div>
 
-    <table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+    <!-- Line Items Table -->
+    <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.875rem;">
       <thead>
-        <tr style="background:#f1f5f9; border-bottom:2px solid #cbd5e1;">
-          <th style="padding:10px; text-align:left; font-size:0.85rem;">Description</th>
-          <th style="padding:10px; text-align:center; font-size:0.85rem;">Qty</th>
-          <th style="padding:10px; text-align:right; font-size:0.85rem;">Rate (KSh)</th>
-          <th style="padding:10px; text-align:right; font-size:0.85rem;">Total (KSh)</th>
+        <tr style="background:#F1F5F9; border-top:1px solid #CBD5E1; border-bottom:2px solid #0F172A;">
+          <th style="padding:10px 12px; text-align:left; font-size:0.8rem; font-weight:800; text-transform:uppercase; color:#0F172A;">
+            Item & Technical Service Scope
+          </th>
+          <th style="padding:10px 12px; text-align:center; font-size:0.8rem; font-weight:800; text-transform:uppercase; color:#0F172A; width:12%;">
+            Qty / Unit
+          </th>
+          <th style="padding:10px 12px; text-align:right; font-size:0.8rem; font-weight:800; text-transform:uppercase; color:#0F172A; width:18%;">
+            Unit Rate (KSh)
+          </th>
+          <th style="padding:10px 12px; text-align:right; font-size:0.8rem; font-weight:800; text-transform:uppercase; color:#0F172A; width:20%;">
+            Amount (KSh)
+          </th>
         </tr>
       </thead>
       <tbody id="printLineItemsBody">
-        <tr style="border-bottom:1px solid #e2e8f0;">
-          <td style="padding:12px 10px;">
-            <strong id="printItemTitle">Monthly Dedicated High-Speed Internet Subscription</strong>
-            <div id="printItemDesc" style="font-size:0.8rem; color:#64748b;">Unlimited SLA Bandwidth + Static Routing</div>
+        <tr style="border-bottom:1px solid #E2E8F0;">
+          <td style="padding:12px 12px;">
+            <strong id="printItemTitle" style="color:#0F172A; font-size:0.925rem;">Monthly Dedicated High-Speed Internet Subscription</strong>
+            <div id="printItemDesc" style="font-size:0.8rem; color:#64748B; margin-top:2px;">Unlimited SLA Bandwidth + Dedicated Static Gateway</div>
           </td>
-          <td style="padding:12px 10px; text-align:center;">1 Month</td>
-          <td id="printItemRate" style="padding:12px 10px; text-align:right; font-family:monospace;">3,500.00</td>
-          <td id="printItemTotal" style="padding:12px 10px; text-align:right; font-family:monospace; font-weight:700;">3,500.00</td>
+          <td id="printItemQty" style="padding:12px 12px; text-align:center; color:#334155;">1 Month</td>
+          <td id="printItemRate" style="padding:12px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:#334155;">3,500.00</td>
+          <td id="printItemTotal" style="padding:12px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:#0F172A;">3,500.00</td>
         </tr>
       </tbody>
       <tfoot>
-        <tr>
-          <td colspan="3" style="padding:10px; text-align:right; font-weight:700;">Total Amount Due:</td>
-          <td id="printGrandTotal" style="padding:10px; text-align:right; font-family:monospace; font-size:1.2rem; font-weight:800; color:#000000;">KSh 3,500.00</td>
+        <tr id="printSubtotalRow" style="border-top:1px solid #CBD5E1;">
+          <td colspan="3" style="padding:8px 12px; text-align:right; font-weight:600; color:#475569;">Subtotal:</td>
+          <td id="printSubtotal" style="padding:8px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:#0F172A;">3,500.00</td>
+        </tr>
+        <tr id="printVatRow" style="display:none;">
+          <td colspan="3" style="padding:6px 12px; text-align:right; font-weight:600; color:#475569;" id="printVatLabel">VAT (16%):</td>
+          <td id="printVatAmount" style="padding:6px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:#0F172A;">0.00</td>
+        </tr>
+        <tr style="border-top:2px solid #0F172A; border-bottom:2px solid #0F172A; background:#F8FAFC;">
+          <td colspan="3" style="padding:10px 12px; text-align:right; font-weight:900; font-size:1rem; color:#0F172A; text-transform:uppercase;">
+            Total Amount Due:
+          </td>
+          <td id="printGrandTotal" style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:1.25rem; font-weight:900; color:#5C9400;">
+            KSh 3,500.00
+          </td>
         </tr>
       </tfoot>
     </table>
 
-    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1.25rem; margin-top:2rem;">
-      <h4 style="font-size:0.9rem; font-weight:700; color:#0f172a; margin-bottom:8px;">Official Payment Instructions:</h4>
-      <div style="font-size:0.85rem; color:#334155; line-height:1.6;">
-        <p>• <strong>M-PESA Paybill / Send Money:</strong> 0790964002 / Paybill: <strong>247247</strong> (Acc: <span id="printAccNo">Client Phone/ID</span>)</p>
-        <p>• <strong>Bank Transfer:</strong> Standard Chartered / KCB Bank | Acc Name: <strong>DATA PORT LIMITED</strong></p>
-        <p>• <strong>Payment Terms:</strong> Invoices are due within 5 days of issue. Prompt settlement ensures uninterrupted fiber SLA.</p>
+    <!-- Payment Channels Callout -->
+    <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-left:4px solid #5C9400; border-radius:6px; padding:1.25rem; margin-top:1.5rem;">
+      <h4 style="font-size:0.875rem; font-weight:800; color:#0F172A; margin:0 0 8px 0; text-transform:uppercase; letter-spacing:0.04em;">
+        Official Settlement & M-PESA Payment Channels:
+      </h4>
+      <div style="font-size:0.825rem; color:#334155; line-height:1.65;" id="printPaymentInstructionsText">
+        <p style="margin:0 0 4px 0;">• <strong>Lipa Na M-PESA (Paybill):</strong> Business No: <strong>247247</strong> | Account No: <strong id="printAccNo">0790964002</strong></p>
+        <p style="margin:0 0 4px 0;">• <strong>Direct M-PESA / Send Money:</strong> <strong>0790 964 002</strong> (Emmanuel Nyakundi)</p>
+        <p style="margin:0 0 4px 0;">• <strong>Bank Wire:</strong> Standard Chartered Bank | Account No: <strong>0100499055400</strong> | Name: <strong>DATA PORT LIMITED</strong></p>
+        <p style="margin:0; font-style:italic; color:#64748B;">• Terms: Payment is due within 5 calendar days of invoice date to prevent automated SLA bandwidth throttling.</p>
       </div>
     </div>
 
-    <div style="margin-top:3rem; display:flex; justify-content:space-between; align-items:flex-end;">
+    <!-- Sign-off & Corporate Stamp Footer -->
+    <div style="margin-top:2.5rem; display:flex; justify-content:space-between; align-items:flex-end;">
       <div>
-        <p style="font-size:0.8rem; color:#64748b;">Thank you for partnering with Data Port Limited.</p>
+        <p style="font-size:0.8rem; font-weight:700; color:#0F172A; margin:0 0 2px 0;">Data Port Limited — Mombasa NOC</p>
+        <p style="font-size:0.75rem; color:#64748B; margin:0;">Thank you for your valued business and partnership.</p>
       </div>
-      <div style="text-align:center; border-top:1px dashed #94a3b8; width:200px; padding-top:6px;">
-        <p style="font-size:0.8rem; font-weight:700; color:#334155;">Authorized Signature / Stamp</p>
+      <div style="text-align:center; min-width:210px;">
+        <div style="border-bottom:1px dashed #64748B; margin-bottom:6px; height:32px;"></div>
+        <p style="font-size:0.75rem; font-weight:800; color:#0F172A; margin:0; text-transform:uppercase;">
+          Authorized Signature & Stamp
+        </p>
       </div>
     </div>
   </div>

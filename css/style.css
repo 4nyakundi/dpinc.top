@@ -3178,20 +3178,64 @@ img, svg {
 .printable-invoice {
   display: none;
   background: #FFFFFF;
-  color: #000000;
+  color: #0F172A;
   padding: 2.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm 12mm 10mm 12mm;
 }
 
 @media print {
-  .no-print, .dash-navbar, .dash-controls-bar, .modal-overlay, .login-gate-overlay {
-    display: none !important;
-  }
-  body, .dashboard-body {
+  html, body, .dashboard-body {
     background: #FFFFFF !important;
-    color: #000000 !important;
+    color: #0F172A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  .no-print, 
+  .dash-navbar, 
+  .dash-controls-bar, 
+  .modal-overlay, 
+  .login-gate-overlay,
+  .dash-toast,
+  .toast-msg,
+  #dashboardApp,
+  header, 
+  nav {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
   .printable-invoice {
     display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  .printable-invoice table {
+    page-break-inside: auto;
+  }
+
+  .printable-invoice tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
 }
 

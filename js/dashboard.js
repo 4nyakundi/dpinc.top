@@ -479,6 +479,7 @@
     setupTabNavigation();
     setupCalendarNavigation();
     setupBatchInvoicing();
+    setupInvoiceBuilderEvents();
     setupModalsAndEvents();
     setupVaultKeypad();
     setupDirectoryFilters();
@@ -983,6 +984,655 @@
   }
 
   /* =========================================================================
+     6B. DYNAMIC INVOICE BUILDER & PRINT ENGINE
+     ========================================================================= */
+  let activeInvoiceLineItems = [];
+
+  function setupInvoiceBuilderEvents() {
+    const openBtn = document.getElementById("openCreateInvoiceBtn");
+    if (openBtn) {
+      openBtn.addEventListener("click", () => {
+        window.dpOpenCreateInvoice();
+      });
+    }
+
+    const subSelect = document.getElementById("invSelectSubscriber");
+    if (subSelect) {
+      subSelect.addEventListener("change", (e) => {
+        const val = e.target.value;
+        if (!val || val === "__custom__") {
+          document.getElementById("invSelectedSubId").value = "";
+          document.getElementById("invClientName").value = "";
+          document.getElementById("invClientPhone").value = "";
+          document.getElementById("invClientEmail").value = "";
+          document.getElementById("invClientLocation").value = "";
+          document.getElementById("invClientAccountRef").value = "";
+        } else {
+          const sub = (erpState.subscribers || []).find(s => s.id === val);
+          if (sub) {
+            document.getElementById("invSelectedSubId").value = sub.id;
+            document.getElementById("invClientName").value = sub.name || "";
+            document.getElementById("invClientPhone").value = sub.phone || "";
+            document.getElementById("invClientEmail").value = sub.email || "";
+            document.getElementById("invClientLocation").value = sub.location || "Mombasa";
+            document.getElementById("invClientAccountRef").value = sub.pppoeUser || `client_${sub.id}`;
+            
+            // Set payment terms phone reference
+            const termsEl = document.getElementById("invPaymentTerms");
+            if (termsEl) {
+              termsEl.value = `M-PESA Paybill: 247247 | Account No: ${sub.phone || sub.name} | Direct M-Pesa: 0790 964 002 (Emmanuel Nyakundi) | Standard Chartered Bank (Acc: 0100499055400). Payment due within 5 days to ensure continuous uninterrupted fiber SLA.`;
+            }
+
+            // Populate default line item for their package if empty
+            if (activeInvoiceLineItems.length === 0) {
+              activeInvoiceLineItems.push({
+                id: "item_" + Date.now(),
+                title: `${sub.package} — Monthly Dedicated High-Speed Internet`,
+                qty: "1 Month",
+                rate: sub.monthlyRate || sub.price || 3500
+              });
+              renderInvoiceLineItemsTable();
+            }
+          }
+        }
+      });
+    }
+
+    // Quick Add Buttons
+    const quickAddPlan = document.getElementById("invQuickAddPlan");
+    if (quickAddPlan) {
+      quickAddPlan.addEventListener("click", () => {
+        const subId = document.getElementById("invSelectedSubId").value;
+        const sub = (erpState.subscribers || []).find(s => s.id === subId);
+        const pkgName = sub ? sub.package : "10 Mbps Standard Business";
+        const pkgRate = sub ? (sub.monthlyRate || sub.price || 3500) : 3500;
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: `${pkgName} — Monthly Dedicated High-Speed Internet Subscription`,
+          qty: "1 Month",
+          rate: pkgRate
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const quickAddSetup = document.getElementById("invQuickAddSetup");
+    if (quickAddSetup) {
+      quickAddSetup.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Fiber Drop Cable & Optical Installation Setup (Civil & Splicing)",
+          qty: "1 Setup",
+          rate: 3500
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const quickAddRouter = document.getElementById("invQuickAddRouter");
+    if (quickAddRouter) {
+      quickAddRouter.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Huawei / ZTE Dual-Band Gigabit ONT Optical WiFi Router",
+          qty: "1 Unit",
+          rate: 4500
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const quickAddIp = document.getElementById("invQuickAddIp");
+    if (quickAddIp) {
+      quickAddIp.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Dedicated Static Public IPv4 Address Allocation (1 Month)",
+          qty: "1 IP",
+          rate: 1500
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const addNewRowBtn = document.getElementById("invAddNewRowBtn");
+    if (addNewRowBtn) {
+      addNewRowBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Network Engineering / Custom Service",
+          qty: "1",
+          rate: 1000
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    // VAT Mode change
+    const vatModeSelect = document.getElementById("invVatMode");
+    if (vatModeSelect) {
+      vatModeSelect.addEventListener("change", calculateInvoiceTotals);
+    }
+
+    // Live Preview Button
+    const livePreviewBtn = document.getElementById("invLivePreviewBtn");
+    if (livePreviewBtn) {
+      livePreviewBtn.addEventListener("click", () => {
+        const invData = collectInvoiceFormData();
+        if (!invData.clientName) {
+          alert("Please enter or select a client name first.");
+          return;
+        }
+        renderLiveInvoicePreviewCard(invData);
+        document.getElementById("invoicePreviewModal").style.display = "flex";
+      });
+    }
+
+    // WhatsApp Dispatch Button
+    const invWhatsAppBtn = document.getElementById("invWhatsAppBtn");
+    if (invWhatsAppBtn) {
+      invWhatsAppBtn.addEventListener("click", () => {
+        const invData = collectInvoiceFormData();
+        if (!invData.clientName) {
+          alert("Please enter a client name first.");
+          return;
+        }
+        dispatchInvoiceViaWhatsApp(invData);
+      });
+    }
+
+    // Form Submit (Save & Print)
+    const form = document.getElementById("createInvoiceForm");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const invData = collectInvoiceFormData();
+        
+        // Save to invoices array
+        const existingIdx = (erpState.invoices || []).findIndex(i => i.invoiceNo === invData.invoiceNo || i.id === invData.id);
+        if (existingIdx >= 0) {
+          erpState.invoices[existingIdx] = invData;
+        } else {
+          if (!erpState.invoices) erpState.invoices = [];
+          erpState.invoices.unshift(invData);
+        }
+
+        // If marked paid, credit to ledger if not already credited
+        if (invData.status === "paid") {
+          const alreadyInLedger = (erpState.ledger || []).some(t => t.reference === invData.invoiceNo);
+          if (!alreadyInLedger) {
+            erpState.ledger.unshift({
+              id: "tx_" + Date.now(),
+              date: invData.issueDate,
+              description: `Payment Received - ${invData.clientName} (${invData.invoiceNo})`,
+              type: "income",
+              amount: Number(invData.grandTotal),
+              category: "ISP Subscription Income",
+              paymentMethod: "M-Pesa Paybill",
+              reference: invData.invoiceNo,
+              entity: "DATA PORT Core"
+            });
+          }
+        }
+
+        saveDatabase();
+        renderAll();
+
+        // Populate printable sheet & print
+        populatePrintableInvoice(invData);
+        document.getElementById("createInvoiceModal").style.display = "none";
+        
+        setTimeout(() => {
+          window.print();
+        }, 300);
+
+        showToast(`Invoice ${invData.invoiceNo} saved & sent to printer!`);
+      });
+    }
+
+    // Trigger Print from Preview Modal
+    const previewPrintTriggerBtn = document.getElementById("previewPrintTriggerBtn");
+    if (previewPrintTriggerBtn) {
+      previewPrintTriggerBtn.addEventListener("click", () => {
+        const invData = collectInvoiceFormData();
+        populatePrintableInvoice(invData);
+        document.getElementById("invoicePreviewModal").style.display = "none";
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      });
+    }
+  }
+
+  function renderInvoiceLineItemsTable() {
+    const tbody = document.getElementById("invLineItemsBody");
+    if (!tbody) return;
+
+    if (activeInvoiceLineItems.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:1.5rem;">No items added yet. Click "+ Bandwidth Plan" or "+ Add Row" above.</td></tr>`;
+      calculateInvoiceTotals();
+      return;
+    }
+
+    tbody.innerHTML = activeInvoiceLineItems.map((item, idx) => `
+      <tr style="border-bottom:1px solid var(--border-color);">
+        <td>
+          <input type="text" class="form-input inv-item-title" data-idx="${idx}" value="${escapeHtml(item.title)}" placeholder="Description of service..." style="font-size:0.875rem; font-weight:600; padding:0.4rem 0.6rem;">
+        </td>
+        <td style="text-align:center;">
+          <input type="text" class="form-input inv-item-qty" data-idx="${idx}" value="${escapeHtml(item.qty)}" style="font-size:0.85rem; text-align:center; padding:0.4rem 0.4rem;">
+        </td>
+        <td style="text-align:right;">
+          <input type="number" step="100" min="0" class="form-input inv-item-rate" data-idx="${idx}" value="${item.rate}" style="font-size:0.875rem; font-family:var(--font-mono); font-weight:700; text-align:right; padding:0.4rem 0.6rem; color:var(--lime-dark);">
+        </td>
+        <td style="text-align:right; font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary);">
+          KSh ${(Number(item.rate) || 0).toLocaleString()}
+        </td>
+        <td style="text-align:center;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpRemoveInvoiceLineItem(${idx})" style="padding:0.35rem; color:#ef4444; border-color:rgba(239,68,68,0.2);">
+            <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
+          </button>
+        </td>
+      </tr>
+    `).join("");
+
+    // Bind real-time input update
+    tbody.querySelectorAll(".inv-item-title").forEach(input => {
+      input.addEventListener("input", (e) => {
+        const idx = e.target.getAttribute("data-idx");
+        if (activeInvoiceLineItems[idx]) activeInvoiceLineItems[idx].title = e.target.value;
+      });
+    });
+
+    tbody.querySelectorAll(".inv-item-qty").forEach(input => {
+      input.addEventListener("input", (e) => {
+        const idx = e.target.getAttribute("data-idx");
+        if (activeInvoiceLineItems[idx]) activeInvoiceLineItems[idx].qty = e.target.value;
+      });
+    });
+
+    tbody.querySelectorAll(".inv-item-rate").forEach(input => {
+      input.addEventListener("input", (e) => {
+        const idx = e.target.getAttribute("data-idx");
+        if (activeInvoiceLineItems[idx]) {
+          activeInvoiceLineItems[idx].rate = parseFloat(e.target.value) || 0;
+          calculateInvoiceTotals();
+          // Update row total cell
+          const tr = e.target.closest("tr");
+          if (tr) {
+            const totalCell = tr.children[3];
+            if (totalCell) totalCell.textContent = `KSh ${activeInvoiceLineItems[idx].rate.toLocaleString()}`;
+          }
+        }
+      });
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+    calculateInvoiceTotals();
+  }
+
+  window.dpRemoveInvoiceLineItem = function(idx) {
+    activeInvoiceLineItems.splice(idx, 1);
+    renderInvoiceLineItemsTable();
+  };
+
+  function calculateInvoiceTotals() {
+    let subtotal = 0;
+    activeInvoiceLineItems.forEach(item => {
+      subtotal += (Number(item.rate) || 0);
+    });
+
+    const vatMode = document.getElementById("invVatMode")?.value || "zero";
+    let vatAmount = 0;
+    let grandTotal = subtotal;
+
+    if (vatMode === "exclusive") {
+      vatAmount = subtotal * 0.16;
+      grandTotal = subtotal + vatAmount;
+    } else if (vatMode === "inclusive") {
+      vatAmount = subtotal - (subtotal / 1.16);
+      grandTotal = subtotal;
+    }
+
+    const subEl = document.getElementById("invSubtotalDisplay");
+    const vatEl = document.getElementById("invVatAmountDisplay");
+    const grandEl = document.getElementById("invGrandTotalDisplay");
+
+    if (subEl) subEl.textContent = `KSh ${subtotal.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (vatEl) vatEl.textContent = `KSh ${vatAmount.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (grandEl) grandEl.textContent = `KSh ${grandTotal.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    return { subtotal, vatAmount, grandTotal, vatMode };
+  }
+
+  function collectInvoiceFormData() {
+    const totals = calculateInvoiceTotals();
+    const subId = document.getElementById("invSelectedSubId")?.value || "";
+    const clientName = document.getElementById("invClientName")?.value.trim() || "";
+    const phone = document.getElementById("invClientPhone")?.value.trim() || "";
+    const email = document.getElementById("invClientEmail")?.value.trim() || "";
+    const location = document.getElementById("invClientLocation")?.value.trim() || "Mombasa";
+    const accountRef = document.getElementById("invClientAccountRef")?.value.trim() || phone;
+    const docType = document.getElementById("invDocType")?.value || "PROFORMA INVOICE";
+    const invoiceNo = document.getElementById("invInvoiceNumber")?.value.trim() || `DP-INV-2026-${Math.floor(Math.random() * 8999 + 1000)}`;
+    const billingPeriod = document.getElementById("invBillingPeriod")?.value.trim() || `${monthNames[currentMonth]} ${currentYear}`;
+    const issueDate = document.getElementById("invIssueDate")?.value || new Date().toISOString().split("T")[0];
+    const dueDate = document.getElementById("invDueDate")?.value || new Date().toISOString().split("T")[0];
+    const status = document.getElementById("invPaymentStatus")?.value || "unpaid";
+    const paymentTerms = document.getElementById("invPaymentTerms")?.value || "";
+
+    return {
+      id: "inv_" + invoiceNo.replace(/[^a-zA-Z0-9]/g, "_"),
+      subId,
+      clientName,
+      phone,
+      email,
+      location,
+      accountRef,
+      docType,
+      invoiceNo,
+      period: billingPeriod,
+      issueDate,
+      dueDate,
+      status,
+      items: JSON.parse(JSON.stringify(activeInvoiceLineItems)),
+      subtotal: totals.subtotal,
+      vatAmount: totals.vatAmount,
+      grandTotal: totals.grandTotal,
+      vatMode: totals.vatMode,
+      paymentTerms
+    };
+  }
+
+  function populatePrintableInvoice(data) {
+    const docTypeEl = document.getElementById("printDocType");
+    const invNoEl = document.getElementById("printInvoiceNo");
+    const issueDateEl = document.getElementById("printIssueDate");
+    const dueDateEl = document.getElementById("printDueDate");
+    const clientNameEl = document.getElementById("printClientName");
+    const clientPhoneEl = document.getElementById("printClientPhone");
+    const clientEmailEl = document.getElementById("printClientEmail");
+    const clientLocationEl = document.getElementById("printClientLocation");
+    const periodEl = document.getElementById("printPeriod");
+    const accountRefEl = document.getElementById("printAccountRefDisplay");
+    const statusBadgeEl = document.getElementById("printPaymentStatus");
+    const tbody = document.getElementById("printLineItemsBody");
+    const subtotalEl = document.getElementById("printSubtotal");
+    const vatRow = document.getElementById("printVatRow");
+    const vatAmountEl = document.getElementById("printVatAmount");
+    const grandTotalEl = document.getElementById("printGrandTotal");
+    const accNoEl = document.getElementById("printAccNo");
+
+    if (docTypeEl) docTypeEl.textContent = data.docType;
+    if (invNoEl) invNoEl.textContent = data.invoiceNo;
+    if (issueDateEl) issueDateEl.textContent = formatDateDisplay(data.issueDate);
+    if (dueDateEl) dueDateEl.textContent = formatDateDisplay(data.dueDate);
+    if (clientNameEl) clientNameEl.textContent = data.clientName;
+    if (clientPhoneEl) clientPhoneEl.textContent = `Phone: ${data.phone}`;
+    if (clientEmailEl) clientEmailEl.textContent = data.email ? `Email: ${data.email}` : `Email: billing@dpinc.top`;
+    if (clientLocationEl) clientLocationEl.textContent = `Premises: ${data.location || 'Mombasa'}`;
+    if (periodEl) periodEl.textContent = data.period;
+    if (accountRefEl) accountRefEl.textContent = `Account / PPPoE: ${data.accountRef || data.phone}`;
+    if (accNoEl) accNoEl.textContent = data.phone || data.accountRef || "0790964002";
+
+    if (statusBadgeEl) {
+      if (data.status === "paid") {
+        statusBadgeEl.textContent = "PAID IN FULL";
+        statusBadgeEl.style.borderColor = "#5C9400";
+        statusBadgeEl.style.background = "#DCFCE7";
+        statusBadgeEl.style.color = "#166534";
+      } else {
+        statusBadgeEl.textContent = "UNPAID / PAYMENT DUE";
+        statusBadgeEl.style.borderColor = "#EF4444";
+        statusBadgeEl.style.background = "#FEE2E2";
+        statusBadgeEl.style.color = "#B91C1C";
+      }
+    }
+
+    // Render Table Rows
+    if (tbody) {
+      const items = (data.items && data.items.length > 0) ? data.items : [
+        { title: "Monthly Dedicated Internet Subscription", qty: "1 Month", rate: data.grandTotal }
+      ];
+
+      tbody.innerHTML = items.map(item => `
+        <tr style="border-bottom:1px solid #E2E8F0;">
+          <td style="padding:10px 12px;">
+            <strong style="color:#0F172A; font-size:0.925rem;">${escapeHtml(item.title)}</strong>
+          </td>
+          <td style="padding:10px 12px; text-align:center; color:#334155;">${escapeHtml(item.qty || '1')}</td>
+          <td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:#334155;">
+            ${(Number(item.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </td>
+          <td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:#0F172A;">
+            ${(Number(item.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    if (subtotalEl) subtotalEl.textContent = (Number(data.subtotal) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    if (vatRow) {
+      if (data.vatMode && data.vatMode !== "zero" && data.vatAmount > 0) {
+        vatRow.style.display = "table-row";
+        if (vatAmountEl) vatAmountEl.textContent = Number(data.vatAmount).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else {
+        vatRow.style.display = "none";
+      }
+    }
+
+    if (grandTotalEl) grandTotalEl.textContent = `KSh ${(Number(data.grandTotal) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  function renderLiveInvoicePreviewCard(data) {
+    const container = document.getElementById("previewCardViewport");
+    if (!container) return;
+
+    const items = (data.items && data.items.length > 0) ? data.items : [
+      { title: "Monthly Dedicated Internet Subscription", qty: "1 Month", rate: data.grandTotal }
+    ];
+
+    const isPaid = data.status === "paid";
+    const statusBadge = isPaid
+      ? `<span style="display:inline-block; padding:4px 14px; border-radius:4px; font-weight:800; font-size:0.8rem; text-transform:uppercase; border:1px solid #5C9400; background:#DCFCE7; color:#166534;">PAID IN FULL</span>`
+      : `<span style="display:inline-block; padding:4px 14px; border-radius:4px; font-weight:800; font-size:0.8rem; text-transform:uppercase; border:1px solid #EF4444; background:#FEE2E2; color:#B91C1C;">UNPAID / PAYMENT DUE</span>`;
+
+    container.innerHTML = `
+      <div style="font-family:'Inter', sans-serif;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1.5rem; margin-bottom:1.5rem;">
+          <div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:4px;">
+              <div style="width:14px; height:14px; background:#5C9400; border-radius:3px;"></div>
+              <h2 style="font-size:1.6rem; font-weight:900; color:#0F172A; margin:0;">DATA PORT LIMITED</h2>
+            </div>
+            <p style="font-size:0.85rem; font-weight:700; color:#5C9400; margin:0 0 3px 0; text-transform:uppercase;">High-End ICT Infrastructure & Dedicated ISP Networks</p>
+            <p style="font-size:0.8rem; color:#475569; margin:0 0 2px 0;">Along Jomo Kenyatta Avenue, Mombasa Mall, Mombasa, Kenya</p>
+            <p style="font-size:0.8rem; color:#475569; margin:0;">Phone: +254 790 964 002 | Email: billing@dpinc.top | Web: dpinc.top</p>
+          </div>
+          <div style="text-align:right;">
+            <h3 style="font-size:1.35rem; font-weight:900; color:#0F172A; text-transform:uppercase; margin:0 0 4px 0;">${escapeHtml(data.docType)}</h3>
+            <div style="font-family:'JetBrains Mono', monospace; font-weight:800; font-size:1.1rem; color:#5C9400;">${escapeHtml(data.invoiceNo)}</div>
+            <div style="font-size:0.8rem; color:#475569; margin-top:4px;">Date of Issue: <strong>${formatDateDisplay(data.issueDate)}</strong></div>
+            <div style="font-size:0.8rem; color:#B91C1C; margin-top:2px;">Due Date: <strong>${formatDateDisplay(data.dueDate)}</strong></div>
+          </div>
+        </div>
+
+        <!-- Client & Period Strip -->
+        <div style="border-top:2px solid #0F172A; border-bottom:1px solid #CBD5E1; padding:1rem 0; margin-bottom:1.5rem; display:flex; justify-content:space-between; gap:1.5rem;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748B; font-weight:700; margin-bottom:3px;">BILLED TO:</div>
+            <h4 style="font-size:1.15rem; font-weight:800; color:#0F172A; margin:0 0 3px 0;">${escapeHtml(data.clientName)}</h4>
+            <div style="font-size:0.825rem; color:#334155;">Phone: ${escapeHtml(data.phone)}</div>
+            <div style="font-size:0.825rem; color:#334155;">Email: ${escapeHtml(data.email || 'N/A')}</div>
+            <div style="font-size:0.825rem; color:#334155;">Location: ${escapeHtml(data.location || 'Mombasa')}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748B; font-weight:700; margin-bottom:3px;">BILLING CYCLE:</div>
+            <div style="font-size:1rem; font-weight:700; color:#0F172A; margin-bottom:3px;">${escapeHtml(data.period)}</div>
+            <div style="font-size:0.8rem; font-family:'JetBrains Mono', monospace; color:#475569; margin-bottom:6px;">Acc: ${escapeHtml(data.accountRef || data.phone)}</div>
+            ${statusBadge}
+          </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.875rem;">
+          <thead>
+            <tr style="background:#F1F5F9; border-top:1px solid #CBD5E1; border-bottom:2px solid #0F172A;">
+              <th style="padding:8px 10px; text-align:left; font-size:0.8rem; font-weight:800; color:#0F172A;">Description</th>
+              <th style="padding:8px 10px; text-align:center; font-size:0.8rem; font-weight:800; color:#0F172A; width:12%;">Qty</th>
+              <th style="padding:8px 10px; text-align:right; font-size:0.8rem; font-weight:800; color:#0F172A; width:18%;">Unit Rate (KSh)</th>
+              <th style="padding:8px 10px; text-align:right; font-size:0.8rem; font-weight:800; color:#0F172A; width:20%;">Amount (KSh)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(i => `
+              <tr style="border-bottom:1px solid #E2E8F0;">
+                <td style="padding:10px;"><strong>${escapeHtml(i.title)}</strong></td>
+                <td style="padding:10px; text-align:center;">${escapeHtml(i.qty || '1')}</td>
+                <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace;">${(Number(i.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+                <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${(Number(i.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+          <tfoot>
+            <tr style="border-top:1px solid #CBD5E1;">
+              <td colspan="3" style="padding:8px 10px; text-align:right; font-weight:600; color:#475569;">Subtotal:</td>
+              <td style="padding:8px 10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${Number(data.subtotal).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+            </tr>
+            ${(data.vatMode !== "zero" && data.vatAmount > 0) ? `
+              <tr>
+                <td colspan="3" style="padding:6px 10px; text-align:right; font-weight:600; color:#475569;">VAT (16%):</td>
+                <td style="padding:6px 10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${Number(data.vatAmount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+              </tr>
+            ` : ''}
+            <tr style="border-top:2px solid #0F172A; border-bottom:2px solid #0F172A; background:#F8FAFC;">
+              <td colspan="3" style="padding:10px; text-align:right; font-weight:900; font-size:1rem; color:#0F172A;">TOTAL AMOUNT:</td>
+              <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:1.2rem; font-weight:900; color:#5C9400;">KSh ${Number(data.grandTotal).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Payment Callout -->
+        <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-left:4px solid #5C9400; border-radius:6px; padding:1rem; font-size:0.825rem; color:#334155;">
+          <strong style="color:#0F172A; display:block; margin-bottom:4px;">Official Settlement Channels:</strong>
+          <p style="margin:0 0 3px 0;">• <strong>M-PESA Paybill:</strong> Business No: <strong>247247</strong> | Account No: <strong>${escapeHtml(data.phone || data.accountRef)}</strong></p>
+          <p style="margin:0 0 3px 0;">• <strong>Direct M-PESA:</strong> <strong>0790 964 002</strong> (Emmanuel Nyakundi)</p>
+          <p style="margin:0;">• <strong>Bank:</strong> Standard Chartered Bank (Acc: <strong>0100499055400</strong> | Data Port Limited)</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function dispatchInvoiceViaWhatsApp(data) {
+    const cleanPhone = (data.phone || "").replace(/[^0-9]/g, "");
+    const formattedPhone = cleanPhone.startsWith("0") ? "254" + cleanPhone.substring(1) : cleanPhone;
+    
+    let itemsText = "";
+    if (data.items && data.items.length > 0) {
+      data.items.forEach(i => {
+        itemsText += `  • ${i.title} (${i.qty}): KSh ${Number(i.rate).toLocaleString()}\n`;
+      });
+    }
+
+    const msg = `*DATA PORT LIMITED — OFFICIAL INVOICE NOTICE*\n\n` +
+      `Dear *${data.clientName}*,\n\n` +
+      `Your *${data.docType}* for *${data.period}* is ready.\n\n` +
+      `*Invoice Ref:* ${data.invoiceNo}\n` +
+      `*Billing Cycle:* ${data.period}\n` +
+      `*Due Date:* ${formatDateDisplay(data.dueDate)}\n\n` +
+      `*Service Breakdown:*\n${itemsText}\n` +
+      `*TOTAL DUE:* *KSh ${Number(data.grandTotal).toLocaleString()}*\n\n` +
+      `*Official Payment Channel:*\n` +
+      `👉 M-PESA Paybill: *247247*\n` +
+      `👉 Account No: *${data.phone || data.accountRef}*\n` +
+      `👉 Direct M-Pesa: *0790 964 002* (Emmanuel Nyakundi)\n\n` +
+      `Thank you for choosing Data Port Limited. Dedicated internet SLA is active.`;
+
+    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+    showToast(`WhatsApp invoice dispatched for ${data.clientName}.`);
+  }
+
+  function formatDateDisplay(dateStr) {
+    if (!dateStr) return "--/--/----";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  window.dpOpenCreateInvoice = function(subId, invId) {
+    const modal = document.getElementById("createInvoiceModal");
+    if (!modal) return;
+
+    // Refresh subscriber dropdown
+    const select = document.getElementById("invSelectSubscriber");
+    if (select) {
+      let optionsHtml = `<option value="">-- Choose Active Subscriber or Custom --</option>`;
+      (erpState.subscribers || []).forEach(sub => {
+        optionsHtml += `<option value="${sub.id}">${sub.name} (${sub.package} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
+      });
+      optionsHtml += `<option value="__custom__">+ New / Custom Client</option>`;
+      select.innerHTML = optionsHtml;
+    }
+
+    activeInvoiceLineItems = [];
+
+    // Set Defaults
+    const now = new Date();
+    const issueDateStr = now.toISOString().split("T")[0];
+    const dueDateObj = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    const dueDateStr = dueDateObj.toISOString().split("T")[0];
+
+    document.getElementById("invIssueDate").value = issueDateStr;
+    document.getElementById("invDueDate").value = dueDateStr;
+    document.getElementById("invBillingPeriod").value = `${monthNames[currentMonth]} ${currentYear}`;
+    document.getElementById("invPaymentStatus").value = "unpaid";
+    document.getElementById("invDocType").value = "PROFORMA INVOICE";
+    document.getElementById("invInvoiceNumber").value = `DP-INV-${currentYear}-${Math.floor(Math.random() * 8999 + 1000)}`;
+
+    if (subId) {
+      if (select) select.value = subId;
+      const sub = (erpState.subscribers || []).find(s => s.id === subId);
+      if (sub) {
+        document.getElementById("invSelectedSubId").value = sub.id;
+        document.getElementById("invClientName").value = sub.name || "";
+        document.getElementById("invClientPhone").value = sub.phone || "";
+        document.getElementById("invClientEmail").value = sub.email || "";
+        document.getElementById("invClientLocation").value = sub.location || "Mombasa";
+        document.getElementById("invClientAccountRef").value = sub.pppoeUser || `client_${sub.id}`;
+        
+        // Add default line item
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: `${sub.package} — Monthly Dedicated High-Speed Internet`,
+          qty: "1 Month",
+          rate: sub.monthlyRate || sub.price || 3500
+        });
+      }
+    } else {
+      if (select) select.value = "";
+      document.getElementById("invSelectedSubId").value = "";
+      document.getElementById("invClientName").value = "";
+      document.getElementById("invClientPhone").value = "";
+      document.getElementById("invClientEmail").value = "";
+      document.getElementById("invClientLocation").value = "";
+      document.getElementById("invClientAccountRef").value = "";
+
+      activeInvoiceLineItems.push({
+        id: "item_" + Date.now(),
+        title: "10 Mbps Standard Business — Monthly Dedicated Internet Subscription",
+        qty: "1 Month",
+        rate: 3500
+      });
+    }
+
+    renderInvoiceLineItemsTable();
+    modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  /* =========================================================================
      7. SUBSCRIBERS DIRECTORY & PROFILES
      ========================================================================= */
   function setupDirectoryFilters() {
@@ -1081,6 +1731,9 @@
         </td>
         <td style="text-align:right;">
           <div style="display:flex; justify-content:flex-end; gap:0.4rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" title="Generate / Print Official Invoice" onclick="window.dpOpenCreateInvoice('${sub.id}')">
+              <i data-lucide="printer" style="width:13px; height:13px;"></i> Invoice
+            </button>
             <button class="btn btn-secondary btn-sm" title="Dispatch Proforma / WhatsApp" onclick="window.dpOpenDrawerForSub('${sub.id}')">
               <i data-lucide="receipt" style="width:13px; height:13px;"></i> Bill
             </button>
@@ -2061,6 +2714,15 @@
       };
     }
 
+    // Open in Full Invoice Builder
+    const fullBuilderBtn = document.getElementById("drawerOpenFullBuilderBtn");
+    if (fullBuilderBtn) {
+      fullBuilderBtn.onclick = () => {
+        document.getElementById("invoiceDrawerModal").style.display = "none";
+        window.dpOpenCreateInvoice(sub.id);
+      };
+    }
+
     // Toggle Payment Status Button
     const togglePaidBtn = document.getElementById("togglePaidBtn");
     if (togglePaidBtn) {
@@ -2094,14 +2756,30 @@
     const printBtn = document.getElementById("printInvoiceBtn");
     if (printBtn) {
       printBtn.onclick = () => {
-        document.getElementById("printInvoiceNo").textContent = inv.invoiceNo;
-        document.getElementById("printClientName").textContent = sub.name;
-        document.getElementById("printClientPhone").textContent = `Phone: ${sub.phone}`;
-        document.getElementById("printItemTitle").textContent = `${sub.package} - ${inv.period}`;
-        document.getElementById("printGrandTotal").textContent = `KSh ${Number(inv.amount).toLocaleString()}`;
-        document.getElementById("printIssueDate").textContent = new Date().toLocaleDateString("en-GB");
-        document.getElementById("printDueDate").textContent = inv.dueDate;
-        document.getElementById("printAccNo").textContent = sub.phone;
+        populatePrintableInvoice({
+          docType: "PROFORMA INVOICE",
+          invoiceNo: inv.invoiceNo,
+          issueDate: new Date().toISOString().split("T")[0],
+          dueDate: inv.dueDate,
+          clientName: sub.name,
+          phone: sub.phone,
+          email: sub.email || "billing@dpinc.top",
+          location: sub.location || "Mombasa",
+          accountRef: sub.pppoeUser || `client_${sub.id}`,
+          period: inv.period,
+          status: inv.status || "unpaid",
+          items: [
+            {
+              title: `${sub.package} — Monthly Dedicated Internet Subscription`,
+              qty: "1 Month",
+              rate: Number(inv.amount) || sub.monthlyRate || sub.price || 3500
+            }
+          ],
+          subtotal: Number(inv.amount) || sub.monthlyRate || sub.price || 3500,
+          vatAmount: 0,
+          vatMode: "zero",
+          grandTotal: Number(inv.amount) || sub.monthlyRate || sub.price || 3500
+        });
         window.print();
       };
     }
