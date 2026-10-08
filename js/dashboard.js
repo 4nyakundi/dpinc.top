@@ -12,6 +12,17 @@
   const AUTH_PASS = "admin4all2";
   const VAULT_DEFAULT_PIN = "4422";
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+  window.escapeHtml = escapeHtml;
+
   const STORAGE_KEYS = {
     SESSION: "dp_erp_session",
     VAULT_UNLOCKED: "dp_vault_unlocked",
@@ -136,6 +147,24 @@
         routerModel: "Huawei ONT Dual-Band",
         status: "active",
         joinedDate: "2025-02-18"
+      },
+      {
+        id: "sub-107",
+        name: "Shani Chai",
+        company: "Shani Chai Operations",
+        phone: "0795 917 066",
+        email: "shanichai@dpinc.co.ke",
+        package: "DataPort NET Public IP (25 mbps)",
+        speed: "25 mbps",
+        monthlyRate: 3000,
+        billingDay: 9,
+        location: "VOK Bombolulu",
+        ipAddress: "197.232.44.60",
+        pppoeUser: "shani_chai_vok",
+        pppoePass: "dp@shani#2026",
+        routerModel: "Huawei ONT Dual-Band",
+        status: "active",
+        joinedDate: "2026-02-09"
       }
     ],
     jobCards: [
@@ -378,6 +407,65 @@
         status: "unpaid",
         paidAt: null,
         jobCardId: null
+      },
+      {
+        id: "inv-007",
+        invoiceNo: "#007/26",
+        docType: "Invoice",
+        clientType: "subscriber",
+        subId: "sub-107",
+        clientName: "Shani Chai",
+        phone: "0795 917 066",
+        email: "shanichai@dpinc.co.ke",
+        location: "VOK Bombolulu",
+        items: [
+          { title: "DataPort NET Public IP", qty: "25 mbps", rate: 3000 }
+        ],
+        subtotal: 3000,
+        amount: 3000,
+        grandTotal: 3000,
+        totalPaid: 3000,
+        balanceDue: 0,
+        period: "February 2026",
+        issueDate: "2026-02-09",
+        dueDate: "2026-02-14",
+        status: "paid",
+        paidAt: "2026-02-09T10:00:00.000Z",
+        hasPaymentPlan: false,
+        validityNote: "Thank you!"
+      },
+      {
+        id: "inv-008",
+        invoiceNo: "10.23/26",
+        docType: "Proforma Invoice",
+        clientType: "general",
+        subId: null,
+        clientName: "Tracy Wangari",
+        phone: "0722 000 111",
+        email: "tracy.wangari@domain.com",
+        location: "Mombasa",
+        items: [
+          { title: "Domain Name Registaration. (Company).", qty: "1 Year", rate: 2500 },
+          { title: "Domain Hosting (TrueHost Silver).", qty: "1 Year", rate: 4300 },
+          { title: "Web Security & Debugging & SSL Security (Ask SSL)", qty: "1 Year", rate: 1800 },
+          { title: "Web Creation & Design - Full Stacks Creation (JSON/CSS)", qty: "Lifetime", rate: 10000 }
+        ],
+        subtotal: 18600,
+        amount: 18600,
+        grandTotal: 18600,
+        totalPaid: 5000,
+        balanceDue: 13600,
+        hasPaymentPlan: true,
+        depositAmount: 5000,
+        depositLabel: "1 ST Installment",
+        installments: [
+          { label: "1 ST Installment", amount: 5000, date: "2025-01-16" }
+        ],
+        period: "January 2025",
+        issueDate: "2025-01-16",
+        dueDate: "2025-01-30",
+        status: "partial",
+        validityNote: "Please Note: Valid for 14 days from date."
       }
     ],
     vault: {
@@ -495,6 +583,19 @@
         const parsed = JSON.parse(cached);
         if (parsed && Array.isArray(parsed.subscribers) && parsed.subscribers.length > 0) {
           erpState = parsed;
+          if (!Array.isArray(erpState.invoices)) erpState.invoices = [];
+          // Ensure seed subscribers & invoices from INITIAL_ERP_DATA are populated if missing
+          INITIAL_ERP_DATA.subscribers.forEach(sub => {
+            if (!erpState.subscribers.some(s => s.id === sub.id)) {
+              erpState.subscribers.push(sub);
+            }
+          });
+          INITIAL_ERP_DATA.invoices.forEach(inv => {
+            if (!erpState.invoices.some(i => i.id === inv.id)) {
+              erpState.invoices.push(inv);
+            }
+          });
+          saveDatabase();
         } else {
           erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
           saveDatabase();
@@ -561,7 +662,9 @@
 
         // Dynamic Quick Action Button Label
         if (quickActionLabel) {
-          if (targetTabId === "calendarTab" || targetTabId === "subscribersTab") {
+          if (targetTabId === "invoicesTab") {
+            quickActionLabel.textContent = "New Invoice";
+          } else if (targetTabId === "calendarTab" || targetTabId === "subscribersTab") {
             quickActionLabel.textContent = "Add Client";
           } else if (targetTabId === "jobCardsTab") {
             quickActionLabel.textContent = "Create Job Card";
@@ -576,7 +679,9 @@
           }
         }
 
-        if (targetTabId === "analyticsTab") {
+        if (targetTabId === "invoicesTab") {
+          renderInvoicesHub();
+        } else if (targetTabId === "analyticsTab") {
           renderAnalytics();
         } else if (targetTabId === "subscribersTab") {
           renderSubscribersTable();
@@ -598,7 +703,9 @@
     const quickActionBtn = document.getElementById("quickActionBtn");
     if (quickActionBtn) {
       quickActionBtn.addEventListener("click", () => {
-        if (activeTab === "calendarTab" || activeTab === "subscribersTab") {
+        if (activeTab === "invoicesTab") {
+          window.dpOpenCreateInvoice();
+        } else if (activeTab === "calendarTab" || activeTab === "subscribersTab") {
           window.dpOpenAddSubscriber();
         } else if (activeTab === "jobCardsTab") {
           openJobCardModal();
@@ -680,8 +787,10 @@
     // Update Tab Counts
     const tabSubs = document.getElementById("tabSubsCount");
     const tabJobs = document.getElementById("tabJobsCount");
+    const tabInvoices = document.getElementById("tabInvoicesCount");
     if (tabSubs) tabSubs.textContent = totalSubs;
     if (tabJobs) tabJobs.textContent = erpState.jobCards ? erpState.jobCards.length : 0;
+    if (tabInvoices) tabInvoices.textContent = erpState.invoices ? erpState.invoices.length : 0;
 
     // Update Breakdown Progress Bars
     const transitPct = totalIncome > 0 ? Math.min(100, Math.round((transitCost / totalIncome) * 100)) : 25;
@@ -984,84 +1093,98 @@
   }
 
   /* =========================================================================
-     6B. DYNAMIC INVOICE BUILDER & PRINT ENGINE
+     6B. MASTER INVOICING & ACCOUNTS RECEIVABLE ENGINE
      ========================================================================= */
   let activeInvoiceLineItems = [];
+  let currentInvoiceFilter = "all";
+  let currentInvoiceTypeFilter = "all";
+  let currentInvoiceSearchTerm = "";
 
   function setupInvoiceBuilderEvents() {
+    // Open create invoice button in top control bar
     const openBtn = document.getElementById("openCreateInvoiceBtn");
     if (openBtn) {
-      openBtn.addEventListener("click", () => {
-        window.dpOpenCreateInvoice();
+      openBtn.addEventListener("click", () => window.dpOpenCreateInvoice());
+    }
+    const hubCreateBtn = document.getElementById("invHubCreateBtn");
+    if (hubCreateBtn) {
+      hubCreateBtn.addEventListener("click", () => window.dpOpenCreateInvoice());
+    }
+    const hubBatchBtn = document.getElementById("invHubBatchBtn");
+    if (hubBatchBtn) {
+      hubBatchBtn.addEventListener("click", () => window.dpOpenBatchInvoices());
+    }
+
+    // Client Type Radio Switch: subscriber vs general
+    const radSubscriber = document.getElementById("invTypeSubscriber");
+    const radGeneral = document.getElementById("invTypeGeneral");
+    const subSelectRow = document.getElementById("invSubscriberSelectRow");
+
+    function updateClientTypeUI() {
+      const isSub = radSubscriber && radSubscriber.checked;
+      if (subSelectRow) {
+        subSelectRow.style.display = isSub ? "block" : "none";
+      }
+    }
+
+    if (radSubscriber) radSubscriber.addEventListener("change", updateClientTypeUI);
+    if (radGeneral) {
+      radGeneral.addEventListener("change", () => {
+        updateClientTypeUI();
+        document.getElementById("invSelectedSubId").value = "";
       });
     }
 
+    // Subscriber Dropdown Selection
     const subSelect = document.getElementById("invSelectSubscriber");
     if (subSelect) {
       subSelect.addEventListener("change", (e) => {
         const val = e.target.value;
-        if (!val || val === "__custom__") {
-          document.getElementById("invSelectedSubId").value = "";
-          document.getElementById("invClientName").value = "";
-          document.getElementById("invClientPhone").value = "";
-          document.getElementById("invClientEmail").value = "";
-          document.getElementById("invClientLocation").value = "";
-          document.getElementById("invClientAccountRef").value = "";
-        } else {
-          const sub = (erpState.subscribers || []).find(s => s.id === val);
-          if (sub) {
-            document.getElementById("invSelectedSubId").value = sub.id;
-            document.getElementById("invClientName").value = sub.name || "";
-            document.getElementById("invClientPhone").value = sub.phone || "";
-            document.getElementById("invClientEmail").value = sub.email || "";
-            document.getElementById("invClientLocation").value = sub.location || "Mombasa";
-            document.getElementById("invClientAccountRef").value = sub.pppoeUser || `client_${sub.id}`;
-            
-            // Set payment terms phone reference
-            const termsEl = document.getElementById("invPaymentTerms");
-            if (termsEl) {
-              termsEl.value = `M-PESA Paybill: 247247 | Account No: ${sub.phone || sub.name} | Direct M-Pesa: 0790 964 002 (Emmanuel Nyakundi) | Standard Chartered Bank (Acc: 0100499055400). Payment due within 5 days to ensure continuous uninterrupted fiber SLA.`;
-            }
+        if (!val) return;
+        const sub = (erpState.subscribers || []).find(s => s.id === val);
+        if (sub) {
+          document.getElementById("invSelectedSubId").value = sub.id;
+          document.getElementById("invClientName").value = sub.name || "";
+          document.getElementById("invClientPhone").value = sub.phone || "";
+          document.getElementById("invClientEmail").value = sub.email || "";
+          document.getElementById("invClientLocation").value = sub.location || "Mombasa";
 
-            // Populate default line item for their package if empty
-            if (activeInvoiceLineItems.length === 0) {
-              activeInvoiceLineItems.push({
-                id: "item_" + Date.now(),
-                title: `${sub.package} — Monthly Dedicated High-Speed Internet`,
-                qty: "1 Month",
-                rate: sub.monthlyRate || sub.price || 3500
-              });
-              renderInvoiceLineItemsTable();
-            }
-          }
+          // Pre-populate with subscriber internet bandwidth package matching PDF 1
+          activeInvoiceLineItems = [{
+            id: "item_" + Date.now(),
+            title: `DataPort NET Public IP`,
+            qty: sub.speed || (sub.package && sub.package.includes("Mbps") ? sub.package.match(/\d+\s*mbps/i)?.[0].toLowerCase() : "25 mbps") || "25 mbps",
+            rate: Number(sub.monthlyRate || sub.price) || 3000
+          }];
+          renderInvoiceLineItemsTable();
         }
       });
     }
 
-    // Quick Add Buttons
-    const quickAddPlan = document.getElementById("invQuickAddPlan");
-    if (quickAddPlan) {
-      quickAddPlan.addEventListener("click", () => {
+    // ISP Quick Add Presets
+    const quickPlanBtn = document.getElementById("invQuickAddPlan");
+    if (quickPlanBtn) {
+      quickPlanBtn.addEventListener("click", () => {
         const subId = document.getElementById("invSelectedSubId").value;
         const sub = (erpState.subscribers || []).find(s => s.id === subId);
-        const pkgName = sub ? sub.package : "10 Mbps Standard Business";
-        const pkgRate = sub ? (sub.monthlyRate || sub.price || 3500) : 3500;
+        const pkgRate = sub ? (Number(sub.monthlyRate || sub.price) || 3000) : 3000;
+        const pkgQty = sub ? (sub.speed || "25 mbps") : "25 mbps";
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
-          title: `${pkgName} — Monthly Dedicated High-Speed Internet Subscription`,
-          qty: "1 Month",
+          title: "DataPort NET Public IP",
+          qty: pkgQty,
           rate: pkgRate
         });
         renderInvoiceLineItemsTable();
       });
     }
 
-    const quickAddSetup = document.getElementById("invQuickAddSetup");
-    if (quickAddSetup) {
-      quickAddSetup.addEventListener("click", () => {
+    const quickSetupBtn = document.getElementById("invQuickAddSetup");
+    if (quickSetupBtn) {
+      quickSetupBtn.addEventListener("click", () => {
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
-          title: "Fiber Drop Cable & Optical Installation Setup (Civil & Splicing)",
+          title: "Optical Fiber Drop Cable Splicing & NOC Installation Setup",
           qty: "1 Setup",
           rate: 3500
         });
@@ -1069,9 +1192,9 @@
       });
     }
 
-    const quickAddRouter = document.getElementById("invQuickAddRouter");
-    if (quickAddRouter) {
-      quickAddRouter.addEventListener("click", () => {
+    const quickRouterBtn = document.getElementById("invQuickAddRouter");
+    if (quickRouterBtn) {
+      quickRouterBtn.addEventListener("click", () => {
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
           title: "Huawei / ZTE Dual-Band Gigabit ONT Optical WiFi Router",
@@ -1082,9 +1205,9 @@
       });
     }
 
-    const quickAddIp = document.getElementById("invQuickAddIp");
-    if (quickAddIp) {
-      quickAddIp.addEventListener("click", () => {
+    const quickIpBtn = document.getElementById("invQuickAddIp");
+    if (quickIpBtn) {
+      quickIpBtn.addEventListener("click", () => {
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
           title: "Dedicated Static Public IPv4 Address Allocation (1 Month)",
@@ -1095,46 +1218,138 @@
       });
     }
 
-    const addNewRowBtn = document.getElementById("invAddNewRowBtn");
-    if (addNewRowBtn) {
-      addNewRowBtn.addEventListener("click", () => {
+    // General ICT Presets (matching PDF 2)
+    const quickDomainBtn = document.getElementById("invQuickAddDomain");
+    if (quickDomainBtn) {
+      quickDomainBtn.addEventListener("click", () => {
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
-          title: "Network Engineering / Custom Service",
-          qty: "1",
-          rate: 1000
+          title: "Domain Name Registaration. (Company).",
+          qty: "1 Year",
+          rate: 2500
         });
         renderInvoiceLineItemsTable();
       });
     }
 
-    // VAT Mode change
-    const vatModeSelect = document.getElementById("invVatMode");
-    if (vatModeSelect) {
-      vatModeSelect.addEventListener("change", calculateInvoiceTotals);
+    const quickHostingBtn = document.getElementById("invQuickAddHosting");
+    if (quickHostingBtn) {
+      quickHostingBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Domain Hosting (TrueHost Silver).",
+          qty: "1 Year",
+          rate: 4300
+        });
+        renderInvoiceLineItemsTable();
+      });
     }
 
-    // Live Preview Button
+    const quickSecurityBtn = document.getElementById("invQuickAddSecurity");
+    if (quickSecurityBtn) {
+      quickSecurityBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Web Security & Debugging & SSL Security (Ask SSL)",
+          qty: "1 Year",
+          rate: 1800
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const quickDesignBtn = document.getElementById("invQuickAddDesign");
+    if (quickDesignBtn) {
+      quickDesignBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Web Creation & Design - Full Stacks Creation (JSON/CSS)",
+          qty: "Lifetime",
+          rate: 10000
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const quickCctvBtn = document.getElementById("invQuickAddCctv");
+    if (quickCctvBtn) {
+      quickCctvBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "HD IP CCTV Surveillance Camera Installation & NVR Setup",
+          qty: "1 Setup",
+          rate: 15000
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    const addNewRowBtn = document.getElementById("invAddNewRowBtn");
+    if (addNewRowBtn) {
+      addNewRowBtn.addEventListener("click", () => {
+        activeInvoiceLineItems.push({
+          id: "item_" + Date.now(),
+          title: "Custom Technical Service / Deliverable",
+          qty: "1",
+          rate: 2500
+        });
+        renderInvoiceLineItemsTable();
+      });
+    }
+
+    // Payment Plan Checkbox Toggle
+    const enablePlanCheckbox = document.getElementById("invEnablePaymentPlan");
+    const planFields = document.getElementById("invPaymentPlanFields");
+    if (enablePlanCheckbox && planFields) {
+      enablePlanCheckbox.addEventListener("change", (e) => {
+        planFields.style.display = e.target.checked ? "block" : "none";
+        calculateInvoiceTotals();
+      });
+    }
+
+    // Deposit Amount input listener
+    const depositInput = document.getElementById("invDepositAmount");
+    if (depositInput) {
+      depositInput.addEventListener("input", calculateInvoiceTotals);
+    }
+
+    // Live Preview Button on Create Form
     const livePreviewBtn = document.getElementById("invLivePreviewBtn");
     if (livePreviewBtn) {
       livePreviewBtn.addEventListener("click", () => {
         const invData = collectInvoiceFormData();
         if (!invData.clientName) {
-          alert("Please enter or select a client name first.");
+          alert("Please enter client / organization name.");
           return;
         }
+        window.__currentPreviewInvoice = invData;
         renderLiveInvoicePreviewCard(invData);
         document.getElementById("invoicePreviewModal").style.display = "flex";
       });
     }
 
-    // WhatsApp Dispatch Button
+    // Save Draft Button on Create Form
+    const saveDraftBtn = document.getElementById("invSaveDraftBtn");
+    if (saveDraftBtn) {
+      saveDraftBtn.addEventListener("click", () => {
+        const invData = collectInvoiceFormData();
+        if (!invData.clientName) {
+          alert("Please enter client / organization name.");
+          return;
+        }
+        saveInvoiceToState(invData);
+        document.getElementById("createInvoiceModal").style.display = "none";
+        showToast(`Invoice ${invData.invoiceNo} saved successfully!`);
+      });
+    }
+
+    // WhatsApp Dispatch Button on Create Form
     const invWhatsAppBtn = document.getElementById("invWhatsAppBtn");
     if (invWhatsAppBtn) {
       invWhatsAppBtn.addEventListener("click", () => {
         const invData = collectInvoiceFormData();
         if (!invData.clientName) {
-          alert("Please enter a client name first.");
+          alert("Please enter client / organization name.");
           return;
         }
         dispatchInvoiceViaWhatsApp(invData);
@@ -1147,44 +1362,18 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const invData = collectInvoiceFormData();
-        
-        // Save to invoices array
-        const existingIdx = (erpState.invoices || []).findIndex(i => i.invoiceNo === invData.invoiceNo || i.id === invData.id);
-        if (existingIdx >= 0) {
-          erpState.invoices[existingIdx] = invData;
-        } else {
-          if (!erpState.invoices) erpState.invoices = [];
-          erpState.invoices.unshift(invData);
+        if (!invData.clientName) {
+          alert("Please enter client / organization name.");
+          return;
         }
 
-        // If marked paid, credit to ledger if not already credited
-        if (invData.status === "paid") {
-          const alreadyInLedger = (erpState.ledger || []).some(t => t.reference === invData.invoiceNo);
-          if (!alreadyInLedger) {
-            erpState.ledger.unshift({
-              id: "tx_" + Date.now(),
-              date: invData.issueDate,
-              description: `Payment Received - ${invData.clientName} (${invData.invoiceNo})`,
-              type: "income",
-              amount: Number(invData.grandTotal),
-              category: "ISP Subscription Income",
-              paymentMethod: "M-Pesa Paybill",
-              reference: invData.invoiceNo,
-              entity: "DATA PORT Core"
-            });
-          }
-        }
-
-        saveDatabase();
-        renderAll();
-
-        // Populate printable sheet & print
+        saveInvoiceToState(invData);
         populatePrintableInvoice(invData);
         document.getElementById("createInvoiceModal").style.display = "none";
         
         setTimeout(() => {
           window.print();
-        }, 300);
+        }, 250);
 
         showToast(`Invoice ${invData.invoiceNo} saved & sent to printer!`);
       });
@@ -1194,12 +1383,50 @@
     const previewPrintTriggerBtn = document.getElementById("previewPrintTriggerBtn");
     if (previewPrintTriggerBtn) {
       previewPrintTriggerBtn.addEventListener("click", () => {
-        const invData = collectInvoiceFormData();
+        const invData = window.__currentPreviewInvoice || collectInvoiceFormData();
         populatePrintableInvoice(invData);
-        document.getElementById("invoicePreviewModal").style.display = "none";
         setTimeout(() => {
           window.print();
-        }, 300);
+        }, 200);
+      });
+    }
+
+    // Trigger WhatsApp from Preview Modal
+    const previewWhatsAppTriggerBtn = document.getElementById("previewWhatsAppTriggerBtn");
+    if (previewWhatsAppTriggerBtn) {
+      previewWhatsAppTriggerBtn.addEventListener("click", () => {
+        const invData = window.__currentPreviewInvoice || collectInvoiceFormData();
+        dispatchInvoiceViaWhatsApp(invData);
+      });
+    }
+
+    // Invoices Hub Status Filter Pills
+    const filterGroup = document.getElementById("invoicesStatusFilterGroup");
+    if (filterGroup) {
+      filterGroup.querySelectorAll(".cal-filter-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          filterGroup.querySelectorAll(".cal-filter-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          currentInvoiceFilter = pill.getAttribute("data-inv-status") || "all";
+          renderInvoicesHub();
+        });
+      });
+    }
+
+    // Invoices Hub Client Type Filter & Search
+    const typeFilter = document.getElementById("invTypeFilter");
+    if (typeFilter) {
+      typeFilter.addEventListener("change", (e) => {
+        currentInvoiceTypeFilter = e.target.value;
+        renderInvoicesHub();
+      });
+    }
+
+    const searchInput = document.getElementById("invSearchInput");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        currentInvoiceSearchTerm = e.target.value.toLowerCase().trim();
+        renderInvoicesHub();
       });
     }
   }
@@ -1209,7 +1436,7 @@
     if (!tbody) return;
 
     if (activeInvoiceLineItems.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:1.5rem;">No items added yet. Click "+ Bandwidth Plan" or "+ Add Row" above.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:1.5rem;">No line items added yet. Click a quick add button above or "+ Add Custom Item".</td></tr>`;
       calculateInvoiceTotals();
       return;
     }
@@ -1217,26 +1444,25 @@
     tbody.innerHTML = activeInvoiceLineItems.map((item, idx) => `
       <tr style="border-bottom:1px solid var(--border-color);">
         <td>
-          <input type="text" class="form-input inv-item-title" data-idx="${idx}" value="${escapeHtml(item.title)}" placeholder="Description of service..." style="font-size:0.875rem; font-weight:600; padding:0.4rem 0.6rem;">
+          <input type="text" class="form-input inv-item-title" data-idx="${idx}" value="${escapeHtml(item.title || '')}" placeholder="Description of service..." style="font-size:0.875rem; font-weight:600; padding:0.4rem 0.6rem;">
         </td>
         <td style="text-align:center;">
-          <input type="text" class="form-input inv-item-qty" data-idx="${idx}" value="${escapeHtml(item.qty)}" style="font-size:0.85rem; text-align:center; padding:0.4rem 0.4rem;">
+          <input type="text" class="form-input inv-item-qty" data-idx="${idx}" value="${escapeHtml(item.qty || '1')}" placeholder="e.g. 25 mbps / 1 Year" style="font-size:0.85rem; text-align:center; padding:0.4rem 0.4rem;">
         </td>
         <td style="text-align:right;">
-          <input type="number" step="100" min="0" class="form-input inv-item-rate" data-idx="${idx}" value="${item.rate}" style="font-size:0.875rem; font-family:var(--font-mono); font-weight:700; text-align:right; padding:0.4rem 0.6rem; color:var(--lime-dark);">
+          <input type="number" step="100" min="0" class="form-input inv-item-rate" data-idx="${idx}" value="${item.rate || 0}" style="font-size:0.875rem; font-family:var(--font-mono); font-weight:700; text-align:right; padding:0.4rem 0.6rem; color:var(--lime-dark);">
         </td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary);">
+        <td style="text-align:right; font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary); vertical-align:middle;">
           KSh ${(Number(item.rate) || 0).toLocaleString()}
         </td>
-        <td style="text-align:center;">
-          <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpRemoveInvoiceLineItem(${idx})" style="padding:0.35rem; color:#ef4444; border-color:rgba(239,68,68,0.2);">
+        <td style="text-align:center; vertical-align:middle;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpRemoveInvoiceLineItem(${idx})" style="padding:0.35rem; color:#ef4444; border-color:rgba(239,68,68,0.2);" title="Remove Row">
             <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
           </button>
         </td>
       </tr>
     `).join("");
 
-    // Bind real-time input update
     tbody.querySelectorAll(".inv-item-title").forEach(input => {
       input.addEventListener("input", (e) => {
         const idx = e.target.getAttribute("data-idx");
@@ -1257,11 +1483,9 @@
         if (activeInvoiceLineItems[idx]) {
           activeInvoiceLineItems[idx].rate = parseFloat(e.target.value) || 0;
           calculateInvoiceTotals();
-          // Update row total cell
           const tr = e.target.closest("tr");
-          if (tr) {
-            const totalCell = tr.children[3];
-            if (totalCell) totalCell.textContent = `KSh ${activeInvoiceLineItems[idx].rate.toLocaleString()}`;
+          if (tr && tr.children[3]) {
+            tr.children[3].textContent = `KSh ${activeInvoiceLineItems[idx].rate.toLocaleString()}`;
           }
         }
       });
@@ -1282,247 +1506,581 @@
       subtotal += (Number(item.rate) || 0);
     });
 
-    const vatMode = document.getElementById("invVatMode")?.value || "zero";
-    let vatAmount = 0;
-    let grandTotal = subtotal;
-
-    if (vatMode === "exclusive") {
-      vatAmount = subtotal * 0.16;
-      grandTotal = subtotal + vatAmount;
-    } else if (vatMode === "inclusive") {
-      vatAmount = subtotal - (subtotal / 1.16);
-      grandTotal = subtotal;
+    const grandTotal = subtotal;
+    const isPlanEnabled = document.getElementById("invEnablePaymentPlan")?.checked || false;
+    let deposit = 0;
+    if (isPlanEnabled) {
+      deposit = parseFloat(document.getElementById("invDepositAmount")?.value) || 0;
     }
+    const balanceDue = Math.max(0, grandTotal - deposit);
 
     const subEl = document.getElementById("invSubtotalDisplay");
-    const vatEl = document.getElementById("invVatAmountDisplay");
     const grandEl = document.getElementById("invGrandTotalDisplay");
+    if (subEl) subEl.textContent = `KSh ${subtotal.toLocaleString("en-KE")}`;
+    if (grandEl) grandEl.textContent = `KSh ${grandTotal.toLocaleString("en-KE")}`;
 
-    if (subEl) subEl.textContent = `KSh ${subtotal.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (vatEl) vatEl.textContent = `KSh ${vatAmount.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (grandEl) grandEl.textContent = `KSh ${grandTotal.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const planTotalEl = document.getElementById("invPlanTotalDisplay");
+    const planPaidEl = document.getElementById("invPlanPaidDisplay");
+    const planBalEl = document.getElementById("invPlanBalanceDisplay");
+    if (planTotalEl) planTotalEl.textContent = `KSh ${grandTotal.toLocaleString("en-KE")}`;
+    if (planPaidEl) planPaidEl.textContent = `KSh ${deposit.toLocaleString("en-KE")}`;
+    if (planBalEl) planBalEl.textContent = `KSh ${balanceDue.toLocaleString("en-KE")}`;
 
-    return { subtotal, vatAmount, grandTotal, vatMode };
+    return { subtotal, grandTotal, deposit, balanceDue, isPlanEnabled };
   }
 
   function collectInvoiceFormData() {
     const totals = calculateInvoiceTotals();
+    const editingId = document.getElementById("invEditingId")?.value || "";
     const subId = document.getElementById("invSelectedSubId")?.value || "";
+    const clientType = document.getElementById("invTypeSubscriber")?.checked ? "subscriber" : "general";
     const clientName = document.getElementById("invClientName")?.value.trim() || "";
     const phone = document.getElementById("invClientPhone")?.value.trim() || "";
     const email = document.getElementById("invClientEmail")?.value.trim() || "";
     const location = document.getElementById("invClientLocation")?.value.trim() || "Mombasa";
-    const accountRef = document.getElementById("invClientAccountRef")?.value.trim() || phone;
-    const docType = document.getElementById("invDocType")?.value || "PROFORMA INVOICE";
-    const invoiceNo = document.getElementById("invInvoiceNumber")?.value.trim() || `DP-INV-2026-${Math.floor(Math.random() * 8999 + 1000)}`;
-    const billingPeriod = document.getElementById("invBillingPeriod")?.value.trim() || `${monthNames[currentMonth]} ${currentYear}`;
+    const docType = document.getElementById("invDocType")?.value || "Proforma Invoice";
+    const invoiceNo = document.getElementById("invInvoiceNumber")?.value.trim() || `#${String(Math.floor(Math.random() * 899 + 1)).padStart(3, '0')}/${currentYear.toString().slice(-2)}`;
     const issueDate = document.getElementById("invIssueDate")?.value || new Date().toISOString().split("T")[0];
     const dueDate = document.getElementById("invDueDate")?.value || new Date().toISOString().split("T")[0];
-    const status = document.getElementById("invPaymentStatus")?.value || "unpaid";
-    const paymentTerms = document.getElementById("invPaymentTerms")?.value || "";
+    const billingPeriod = document.getElementById("invBillingPeriod")?.value.trim() || `${monthNames[currentMonth]} ${currentYear}`;
+    const validityNote = document.getElementById("invValidityNote")?.value.trim() || "Please Note: Valid for 14 days from date.";
+
+    let status = "unpaid";
+    if (totals.isPlanEnabled) {
+      if (totals.deposit >= totals.grandTotal && totals.grandTotal > 0) {
+        status = "paid";
+      } else if (totals.deposit > 0) {
+        status = "partial";
+      } else {
+        status = "unpaid";
+      }
+    } else {
+      status = totals.grandTotal === 0 ? "paid" : "unpaid";
+    }
+
+    const depositLabel = document.getElementById("invDepositLabel")?.value.trim() || "1 ST Installment";
+
+    const installments = [];
+    if (totals.isPlanEnabled && totals.deposit > 0) {
+      installments.push({
+        label: depositLabel,
+        amount: totals.deposit,
+        date: issueDate
+      });
+    }
 
     return {
-      id: "inv_" + invoiceNo.replace(/[^a-zA-Z0-9]/g, "_"),
+      id: editingId || ("inv_" + Date.now()),
+      invoiceNo,
+      docType,
+      clientType,
       subId,
       clientName,
       phone,
       email,
       location,
-      accountRef,
-      docType,
-      invoiceNo,
       period: billingPeriod,
       issueDate,
       dueDate,
-      status,
+      validityNote,
       items: JSON.parse(JSON.stringify(activeInvoiceLineItems)),
       subtotal: totals.subtotal,
-      vatAmount: totals.vatAmount,
+      amount: totals.grandTotal,
       grandTotal: totals.grandTotal,
-      vatMode: totals.vatMode,
-      paymentTerms
+      hasPaymentPlan: totals.isPlanEnabled,
+      depositAmount: totals.deposit,
+      depositLabel,
+      installments,
+      totalPaid: totals.deposit,
+      balanceDue: totals.balanceDue,
+      status,
+      paymentMethod: "Direct M-Pesa & Bank Transfer"
     };
   }
 
-  function populatePrintableInvoice(data) {
-    const docTypeEl = document.getElementById("printDocType");
-    const invNoEl = document.getElementById("printInvoiceNo");
-    const issueDateEl = document.getElementById("printIssueDate");
-    const dueDateEl = document.getElementById("printDueDate");
-    const clientNameEl = document.getElementById("printClientName");
-    const clientPhoneEl = document.getElementById("printClientPhone");
-    const clientEmailEl = document.getElementById("printClientEmail");
-    const clientLocationEl = document.getElementById("printClientLocation");
-    const periodEl = document.getElementById("printPeriod");
-    const accountRefEl = document.getElementById("printAccountRefDisplay");
-    const statusBadgeEl = document.getElementById("printPaymentStatus");
-    const tbody = document.getElementById("printLineItemsBody");
-    const subtotalEl = document.getElementById("printSubtotal");
-    const vatRow = document.getElementById("printVatRow");
-    const vatAmountEl = document.getElementById("printVatAmount");
-    const grandTotalEl = document.getElementById("printGrandTotal");
-    const accNoEl = document.getElementById("printAccNo");
+  function saveInvoiceToState(invData) {
+    if (!erpState.invoices) erpState.invoices = [];
+    const idx = erpState.invoices.findIndex(i => i.id === invData.id || i.invoiceNo === invData.invoiceNo);
+    if (idx >= 0) {
+      erpState.invoices[idx] = invData;
+    } else {
+      erpState.invoices.unshift(invData);
+    }
 
-    if (docTypeEl) docTypeEl.textContent = data.docType;
-    if (invNoEl) invNoEl.textContent = data.invoiceNo;
-    if (issueDateEl) issueDateEl.textContent = formatDateDisplay(data.issueDate);
-    if (dueDateEl) dueDateEl.textContent = formatDateDisplay(data.dueDate);
-    if (clientNameEl) clientNameEl.textContent = data.clientName;
-    if (clientPhoneEl) clientPhoneEl.textContent = `Phone: ${data.phone}`;
-    if (clientEmailEl) clientEmailEl.textContent = data.email ? `Email: ${data.email}` : `Email: billing@dpinc.top`;
-    if (clientLocationEl) clientLocationEl.textContent = `Premises: ${data.location || 'Mombasa'}`;
-    if (periodEl) periodEl.textContent = data.period;
-    if (accountRefEl) accountRefEl.textContent = `Account / PPPoE: ${data.accountRef || data.phone}`;
-    if (accNoEl) accNoEl.textContent = data.phone || data.accountRef || "0790964002";
-
-    if (statusBadgeEl) {
-      if (data.status === "paid") {
-        statusBadgeEl.textContent = "PAID IN FULL";
-        statusBadgeEl.style.borderColor = "#5C9400";
-        statusBadgeEl.style.background = "#DCFCE7";
-        statusBadgeEl.style.color = "#166534";
-      } else {
-        statusBadgeEl.textContent = "UNPAID / PAYMENT DUE";
-        statusBadgeEl.style.borderColor = "#EF4444";
-        statusBadgeEl.style.background = "#FEE2E2";
-        statusBadgeEl.style.color = "#B91C1C";
+    // Auto-record in ledger if paid or partial deposit received
+    if (invData.totalPaid > 0) {
+      const alreadyInLedger = (erpState.ledger || []).some(t => t.reference === invData.invoiceNo && Number(t.amount) === Number(invData.totalPaid));
+      if (!alreadyInLedger) {
+        erpState.ledger.unshift({
+          id: "tx_" + Date.now(),
+          date: invData.issueDate || new Date().toISOString().split("T")[0],
+          description: `Settlement / Deposit - ${invData.clientName} (${invData.invoiceNo})`,
+          type: "income",
+          amount: Number(invData.totalPaid),
+          category: invData.clientType === "subscriber" ? "ISP Subscription Income" : "ICT Projects & Services",
+          paymentMethod: "Direct M-Pesa / Bank",
+          reference: invData.invoiceNo,
+          entity: "DATA PORT Core"
+        });
       }
     }
 
-    // Render Table Rows
-    if (tbody) {
-      const items = (data.items && data.items.length > 0) ? data.items : [
-        { title: "Monthly Dedicated Internet Subscription", qty: "1 Month", rate: data.grandTotal }
-      ];
-
-      tbody.innerHTML = items.map(item => `
-        <tr style="border-bottom:1px solid #E2E8F0;">
-          <td style="padding:10px 12px;">
-            <strong style="color:#0F172A; font-size:0.925rem;">${escapeHtml(item.title)}</strong>
-          </td>
-          <td style="padding:10px 12px; text-align:center; color:#334155;">${escapeHtml(item.qty || '1')}</td>
-          <td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:#334155;">
-            ${(Number(item.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </td>
-          <td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:#0F172A;">
-            ${(Number(item.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </td>
-        </tr>
-      `).join("");
-    }
-
-    if (subtotalEl) subtotalEl.textContent = (Number(data.subtotal) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    saveDatabase();
     
-    if (vatRow) {
-      if (data.vatMode && data.vatMode !== "zero" && data.vatAmount > 0) {
-        vatRow.style.display = "table-row";
-        if (vatAmountEl) vatAmountEl.textContent = Number(data.vatAmount).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Background sync to SQL database backend
+    fetch("/api/invoices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" },
+      body: JSON.stringify(invData)
+    }).catch(err => console.warn("SQL Invoice Sync:", err));
+
+    renderAll();
+  }
+
+  function formatOrdinalDate(dateStr) {
+    if (!dateStr) return "--/--/----";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const day = d.getDate();
+    let suffix = "th";
+    if (day === 1 || day === 21 || day === 31) suffix = "st";
+    else if (day === 2 || day === 22) suffix = "nd";
+    else if (day === 3 || day === 23) suffix = "rd";
+    const month = d.toLocaleDateString("en-GB", { month: "long" });
+    const year = d.getFullYear();
+    return `${day}<sup>${suffix}</sup> ${month} ${year}`;
+  }
+
+  /* =========================================================================
+     MASTER A4 INVOICE TEMPLATE ENGINE (Matching Attached PDFs Exactly)
+     ========================================================================= */
+  function generateInvoiceDocumentHTML(data) {
+    const isProforma = (data.docType || "").toLowerCase().includes("proforma");
+    const items = (data.items && data.items.length > 0) ? data.items : [
+      { title: "DataPort NET Public IP", qty: "25 mbps", rate: data.grandTotal || data.amount || 3000 }
+    ];
+
+    const grandTotal = Number(data.grandTotal || data.amount) || 0;
+    const totalPaid = Number(data.totalPaid || data.depositAmount) || 0;
+    const balanceDue = Number(data.balanceDue !== undefined ? data.balanceDue : (grandTotal - totalPaid)) || 0;
+    const hasPlan = data.hasPaymentPlan || totalPaid > 0 || (data.installments && data.installments.length > 0);
+
+    // Format numbers
+    const formatKsh = (num) => (Number(num) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formatIntKsh = (num) => (Number(num) || 0).toLocaleString("en-KE");
+
+    // Line items HTML
+    const itemsHtml = items.map(item => `
+      <tr style="border-bottom:1px solid #E2E8F0;">
+        <td style="padding:10px 8px; text-align:left; font-size:0.925rem; color:#0F172A; vertical-align:middle;">
+          ${escapeHtml(item.title || '')}
+        </td>
+        <td style="padding:10px 8px; text-align:center; font-size:0.9rem; color:#334155; vertical-align:middle;">
+          ${escapeHtml(item.qty || '1')}
+        </td>
+        <td style="padding:10px 8px; text-align:right; font-size:0.925rem; font-family:'Inter', sans-serif; color:#0F172A; vertical-align:middle;">
+          ${isProforma ? formatKsh(item.rate) : formatIntKsh(item.rate)}
+        </td>
+        <td style="padding:10px 8px; text-align:right; font-size:0.925rem; font-family:'Inter', sans-serif; font-weight:700; color:#0F172A; vertical-align:middle;">
+          ${isProforma ? formatKsh(item.rate) : formatIntKsh(item.rate)}
+        </td>
+      </tr>
+    `).join("");
+
+    // Payment structure rows (PDF 2 format)
+    let paymentStructureHtml = "";
+    if (hasPlan) {
+      let instRows = "";
+      if (data.installments && data.installments.length > 0) {
+        instRows = data.installments.map(inst => `
+          <tr>
+            <td style="padding:6px 8px; color:#0F172A; font-weight:600;">${escapeHtml(inst.label || '1 ST Installment')}</td>
+            <td style="padding:6px 8px; text-align:right; font-weight:600;">Ksh ${formatKsh(inst.amount)}</td>
+          </tr>
+        `).join("");
       } else {
-        vatRow.style.display = "none";
+        instRows = `
+          <tr>
+            <td style="padding:6px 8px; color:#0F172A; font-weight:600;">${escapeHtml(data.depositLabel || '1 ST Installment')}</td>
+            <td style="padding:6px 8px; text-align:right; font-weight:600;">Ksh ${formatKsh(totalPaid)}</td>
+          </tr>
+        `;
       }
+
+      paymentStructureHtml = `
+        <div style="margin:24px 0 20px 0;">
+          <div style="text-align:center; font-weight:800; font-size:0.95rem; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #CBD5E1; padding-bottom:6px; color:#0F172A;">
+            PAYMENT STRUCTURE  -
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:0.925rem;">
+            <tbody>
+              ${instRows}
+              <tr style="border-top:1px solid #000000;">
+                <td style="padding:8px 8px; font-weight:800; text-transform:uppercase; color:#0F172A;">TOTAL</td>
+                <td style="padding:8px 8px; text-align:right; font-weight:800; color:#0F172A;">Ksh ${formatKsh(totalPaid)}</td>
+              </tr>
+              <tr style="border-bottom:1.5px solid #000000;">
+                <td style="padding:8px 8px; font-weight:800; text-transform:uppercase; color:#0F172A;">BALANCE</td>
+                <td style="padding:8px 8px; text-align:right; font-weight:800; color:${balanceDue > 0 ? '#B91C1C' : '#15803D'};">Ksh ${formatKsh(balanceDue)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 
-    if (grandTotalEl) grandTotalEl.textContent = `KSh ${(Number(data.grandTotal) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Top Header: Proforma vs Standard Invoice
+    const headerRightHtml = isProforma ? `
+      <div style="text-align:right;">
+        <h2 style="font-size:1.65rem; font-weight:900; color:#0F172A; margin:0 0 4px 0; letter-spacing:-0.01em;">
+          Proforma Invoice
+        </h2>
+        <div style="font-size:0.95rem; color:#0F172A; font-weight:700;">Inv No. ${escapeHtml(data.invoiceNo || '')}</div>
+        <div style="font-size:0.875rem; color:#475569; margin-top:2px;">${formatOrdinalDate(data.issueDate)}</div>
+        <div style="font-size:0.95rem; font-weight:700; color:#0F172A; margin-top:12px;">Billed to: <span>${escapeHtml(data.clientName || '')}</span></div>
+      </div>
+    ` : `
+      <div style="text-align:right;">
+        <div style="font-size:1.15rem; font-weight:900; color:#0F172A;">Invoice No. <span>${escapeHtml(data.invoiceNo || '')}</span></div>
+        <div style="font-size:0.9rem; color:#475569; margin-top:3px;">${formatOrdinalDate(data.issueDate)}</div>
+      </div>
+    `;
+
+    // Billed To row (shown prominently for PDF 1 format)
+    const billedToHtml = (!isProforma || data.phone || data.location) ? `
+      <div style="margin:20px 0 16px 0;">
+        <div style="font-size:0.8rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#0F172A; margin-bottom:4px;">
+          BILLED TO:
+        </div>
+        <div style="font-size:1.15rem; font-weight:800; color:#0F172A;">
+          ${escapeHtml(data.clientName || 'Valued Client')}
+        </div>
+        ${data.phone ? `<div style="font-size:0.875rem; color:#334155; margin-top:2px;">Mpesa: <strong>${escapeHtml(data.phone)}</strong></div>` : ''}
+        ${data.location ? `<div style="font-size:0.875rem; color:#334155; margin-top:2px;">Location: <strong>${escapeHtml(data.location)}</strong></div>` : ''}
+      </div>
+    ` : '';
+
+    return `
+      <div class="a4-document-sheet" style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background:#FFFFFF; color:#0F172A; line-height:1.45;">
+        
+        <!-- Header Top: Brandmark & Inv Number -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
+          <div>
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <img src="public/logo-icon.png" alt="DataPort" style="height:62px; width:auto; display:block;" onerror="this.style.display='none'">
+              <div>
+                <div style="font-size:1.6rem; font-weight:900; color:#0F172A; letter-spacing:-0.03em;">
+                  DataPort<span style="color:#5C9400; font-size:1.2em;">.</span><span style="font-size:0.65em; font-weight:800;">INC</span>
+                </div>
+                <div style="font-size:0.8rem; font-weight:900; color:#0F172A; text-transform:uppercase; letter-spacing:0.04em;">
+                  EXCEL ENTERPRISE LIMITED
+                </div>
+              </div>
+            </div>
+          </div>
+          ${headerRightHtml}
+        </div>
+
+        ${billedToHtml}
+
+        <!-- Line Items Table -->
+        <table style="width:100%; border-collapse:collapse; margin-top:16px; margin-bottom:12px; font-size:0.925rem;">
+          <thead>
+            <tr style="border-top:1.5px solid #000000; border-bottom:1.5px solid #000000;">
+              <th style="padding:10px 8px; text-align:left; font-weight:700; text-transform:uppercase; font-size:0.825rem; letter-spacing:0.04em; color:#0F172A;">
+                ${isProforma ? 'DESCRIPTION' : 'Item'}
+              </th>
+              <th style="padding:10px 8px; text-align:center; font-weight:700; text-transform:uppercase; font-size:0.825rem; letter-spacing:0.04em; width:18%; color:#0F172A;">
+                ${isProforma ? 'QUANTITY' : 'Quantity'}
+              </th>
+              <th style="padding:10px 8px; text-align:right; font-weight:700; text-transform:uppercase; font-size:0.825rem; letter-spacing:0.04em; width:18%; color:#0F172A;">
+                ${isProforma ? 'AMOUNT' : 'Unit Price'}
+              </th>
+              <th style="padding:10px 8px; text-align:right; font-weight:700; text-transform:uppercase; font-size:0.825rem; letter-spacing:0.04em; width:20%; color:#0F172A;">
+                ${isProforma ? 'TOTAL' : 'Total(Ksh)'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+          <tfoot>
+            ${(!isProforma && items.length > 1) ? `
+              <tr style="border-top:1px solid #CBD5E1;">
+                <td colspan="3" style="padding:8px 8px; text-align:right; font-weight:600; color:#475569;">Subtotal</td>
+                <td style="padding:8px 8px; text-align:right; font-weight:700; color:#0F172A;">${formatIntKsh(grandTotal)}</td>
+              </tr>
+            ` : ''}
+            <tr style="border-top:1.5px solid #000000; border-bottom:1.5px solid #000000;">
+              <td colspan="3" style="padding:10px 8px; font-weight:800; font-size:1.05rem; text-transform:uppercase; color:#0F172A;">
+                TOTAL
+              </td>
+              <td style="padding:10px 8px; text-align:right; font-weight:800; font-size:1.05rem; color:#0F172A;">
+                Ksh ${isProforma ? formatKsh(grandTotal) : formatIntKsh(grandTotal)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Payment Structure for Installments / Partial Deposits -->
+        ${paymentStructureHtml}
+
+        <!-- Notes / Validity Term -->
+        <div style="font-size:0.875rem; color:#475569; margin:16px 0 24px 0; font-style:italic;">
+          ${escapeHtml(data.validityNote || (isProforma ? 'Please Note: Valid for 14 days from date.' : 'Thank you!'))}
+        </div>
+
+        <!-- Settlement Instructions & Corporate Dev Op's Signature Block -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-top:24px; padding-top:16px; border-top:1px solid #E2E8F0;">
+          
+          <!-- Left: Official Payment Channels -->
+          <div style="flex:1; max-width:55%;">
+            <div style="font-size:0.825rem; font-weight:900; text-transform:uppercase; letter-spacing:0.06em; color:#0F172A; margin-bottom:8px;">
+              PAYMENT INFORMATION
+            </div>
+            <div style="margin-bottom:10px; font-size:0.85rem; color:#1E293B; line-height:1.45;">
+              <strong style="color:#0F172A; display:block;">MPESA (Mobile)</strong>
+              <div>Account Name: <strong>Emmanuel Nyakundi</strong></div>
+              <div>Phone No.: <strong>0790 964 002</strong></div>
+            </div>
+            <div style="font-size:0.85rem; color:#1E293B; line-height:1.45;">
+              <strong style="color:#0F172A; display:block;">Standard Chartered Bank (Bank)</strong>
+              <div>Account Name: <strong>Emmanuel Nyakundi</strong></div>
+              <div>Account No.: <strong>0100499055400</strong></div>
+            </div>
+          </div>
+
+          <!-- Right: Company Info & Dev Op's Engineer Signature Block -->
+          <div style="text-align:right; min-width:220px;">
+            <div style="margin-bottom:6px;">
+              <div style="font-size:1.15rem; font-weight:900; color:#0F172A; letter-spacing:-0.02em;">
+                DataPort<span style="color:#5C9400; font-size:1.2em;">.</span><span style="font-size:0.65em; font-weight:800;">INC</span>
+              </div>
+              <div style="font-size:0.775rem; color:#475569;">Along Jomo Kenyatta Avenue.</div>
+              <div style="font-size:0.775rem; color:#475569;">Tel: +254 790 964 002</div>
+              <div style="font-size:0.775rem; color:#475569;">Email: tech@dpinc.co.ke</div>
+            </div>
+
+            <!-- Authentic Blue Ink Vector Signature -->
+            <div style="margin-top:10px; display:inline-block; text-align:center;">
+              <svg width="120" height="38" viewBox="0 0 120 38" fill="none" style="display:block; margin:0 auto -4px auto;">
+                <path d="M12 26 C24 8, 30 5, 38 18 C45 30, 48 10, 56 22 C62 31, 75 14, 88 24 C95 28, 105 18, 112 20" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 14 C35 30, 50 33, 78 26" stroke="#1d4ed8" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <div style="border-top:1px solid #1E293B; width:150px; margin:0 auto 3px auto;"></div>
+              <div style="font-size:0.875rem; font-weight:800; color:#0F172A;">Nyakundi, E.</div>
+              <div style="font-size:0.75rem; color:#475569; font-weight:600;">Dev Op's Engineer</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `;
   }
 
   function renderLiveInvoicePreviewCard(data) {
     const container = document.getElementById("previewCardViewport");
     if (!container) return;
+    const titleEl = document.getElementById("previewModalTitle");
+    if (titleEl) titleEl.textContent = `${data.docType || 'Invoice'} ${data.invoiceNo} — ${data.clientName}`;
+    container.innerHTML = generateInvoiceDocumentHTML(data);
+  }
 
-    const items = (data.items && data.items.length > 0) ? data.items : [
-      { title: "Monthly Dedicated Internet Subscription", qty: "1 Month", rate: data.grandTotal }
-    ];
+  function populatePrintableInvoice(data) {
+    const container = document.getElementById("printableInvoiceSheet");
+    if (!container) return;
+    container.innerHTML = generateInvoiceDocumentHTML(data);
+  }
 
-    const isPaid = data.status === "paid";
-    const statusBadge = isPaid
-      ? `<span style="display:inline-block; padding:4px 14px; border-radius:4px; font-weight:800; font-size:0.8rem; text-transform:uppercase; border:1px solid #5C9400; background:#DCFCE7; color:#166534;">PAID IN FULL</span>`
-      : `<span style="display:inline-block; padding:4px 14px; border-radius:4px; font-weight:800; font-size:0.8rem; text-transform:uppercase; border:1px solid #EF4444; background:#FEE2E2; color:#B91C1C;">UNPAID / PAYMENT DUE</span>`;
+  /* =========================================================================
+     INVOICES HUB RENDERING & MANAGEMENT
+     ========================================================================= */
+  function renderInvoicesHub() {
+    const tbody = document.getElementById("invoicesMasterTableBody");
+    const invoices = erpState.invoices || [];
 
-    container.innerHTML = `
-      <div style="font-family:'Inter', sans-serif;">
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1.5rem; margin-bottom:1.5rem;">
-          <div>
-            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:4px;">
-              <div style="width:14px; height:14px; background:#5C9400; border-radius:3px;"></div>
-              <h2 style="font-size:1.6rem; font-weight:900; color:#0F172A; margin:0;">DATA PORT LIMITED</h2>
+    // Compute Metrics
+    let totalBilled = 0;
+    let totalPaid = 0;
+    let partialDeposits = 0;
+    let pendingReceivables = 0;
+
+    let countAll = invoices.length;
+    let countUnpaid = 0;
+    let countPartial = 0;
+    let countPaid = 0;
+
+    invoices.forEach(inv => {
+      const gTotal = Number(inv.grandTotal || inv.amount) || 0;
+      const tPaid = Number(inv.totalPaid || (inv.status === "paid" ? gTotal : inv.depositAmount)) || 0;
+      const bal = Number(inv.balanceDue !== undefined ? inv.balanceDue : Math.max(0, gTotal - tPaid)) || 0;
+
+      totalBilled += gTotal;
+
+      if (inv.status === "paid" || tPaid >= gTotal && gTotal > 0) {
+        totalPaid += gTotal;
+        countPaid++;
+      } else if (inv.status === "partial" || tPaid > 0) {
+        totalPaid += tPaid;
+        partialDeposits += tPaid;
+        pendingReceivables += bal;
+        countPartial++;
+      } else {
+        pendingReceivables += gTotal;
+        countUnpaid++;
+      }
+    });
+
+    // Update stats cards
+    const elBilled = document.getElementById("invStatTotalBilled");
+    const elPaid = document.getElementById("invStatTotalPaid");
+    const elPartial = document.getElementById("invStatPartialDeposits");
+    const elPending = document.getElementById("invStatPendingBalance");
+
+    if (elBilled) elBilled.textContent = `KSh ${totalBilled.toLocaleString()}`;
+    if (elPaid) elPaid.textContent = `KSh ${totalPaid.toLocaleString()}`;
+    if (elPartial) elPartial.textContent = `KSh ${partialDeposits.toLocaleString()}`;
+    if (elPending) elPending.textContent = `KSh ${pendingReceivables.toLocaleString()}`;
+
+    const elTotalCount = document.getElementById("invStatTotalCount");
+    const elPaidCount = document.getElementById("invStatPaidCount");
+    const elPartialCount = document.getElementById("invStatPartialCount");
+    const elDueCount = document.getElementById("invStatDueCount");
+
+    if (elTotalCount) elTotalCount.textContent = `${countAll} Invoices Recorded`;
+    if (elPaidCount) elPaidCount.textContent = `${countPaid} Cleared Full`;
+    if (elPartialCount) elPartialCount.textContent = `${countPartial} Active Plans`;
+    if (elDueCount) elDueCount.textContent = `${countUnpaid} Due / Unpaid`;
+
+    // Update filter pill badges
+    const pillAll = document.getElementById("pillCountAll");
+    const pillUnpaid = document.getElementById("pillCountUnpaid");
+    const pillPartial = document.getElementById("pillCountPartial");
+    const pillPaid = document.getElementById("pillCountPaid");
+
+    if (pillAll) pillAll.textContent = countAll;
+    if (pillUnpaid) pillUnpaid.textContent = countUnpaid;
+    if (pillPartial) pillPartial.textContent = countPartial;
+    if (pillPaid) pillPaid.textContent = countPaid;
+
+    if (!tbody) return;
+
+    // Filter Invoices
+    let filtered = invoices.filter(inv => {
+      // Status filter
+      if (currentInvoiceFilter === "unpaid" && inv.status !== "unpaid") return false;
+      if (currentInvoiceFilter === "partial" && inv.status !== "partial") return false;
+      if (currentInvoiceFilter === "paid" && inv.status !== "paid") return false;
+
+      // Type filter
+      if (currentInvoiceTypeFilter === "subscriber" && inv.clientType === "general") return false;
+      if (currentInvoiceTypeFilter === "general" && inv.clientType === "subscriber") return false;
+
+      // Search term
+      if (currentInvoiceSearchTerm) {
+        const query = currentInvoiceSearchTerm;
+        const matchesClient = (inv.clientName || "").toLowerCase().includes(query);
+        const matchesNo = (inv.invoiceNo || "").toLowerCase().includes(query);
+        const matchesPhone = (inv.phone || "").toLowerCase().includes(query);
+        if (!matchesClient && !matchesNo && !matchesPhone) return false;
+      }
+
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-muted" style="padding:2.5rem;">
+            No invoices found matching current filter criteria. Click "+ Create New Invoice" to bill clients.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(inv => {
+      const gTotal = Number(inv.grandTotal || inv.amount) || 0;
+      const tPaid = Number(inv.totalPaid || (inv.status === "paid" ? gTotal : inv.depositAmount)) || 0;
+      const bal = Number(inv.balanceDue !== undefined ? inv.balanceDue : Math.max(0, gTotal - tPaid)) || 0;
+
+      // Status pill
+      let statusBadge = "";
+      if (inv.status === "paid") {
+        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(34,197,94,0.15); border:1px solid #22c55e; color:#15803d;">PAID IN FULL</span>`;
+      } else if (inv.status === "partial") {
+        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(234,179,8,0.15); border:1px solid #eab308; color:#a16207;">PARTIAL DEPOSIT</span>`;
+      } else {
+        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#b91c1c;">UNPAID / DUE</span>`;
+      }
+
+      // Client type pill
+      const typeBadge = inv.clientType === "general" 
+        ? `<span class="badge" style="font-size:0.68rem; background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.3); color:#3b82f6;">General ICT</span>`
+        : `<span class="badge" style="font-size:0.68rem; background:rgba(92,148,0,0.1); border-color:rgba(92,148,0,0.3); color:var(--lime);">ISP Subscriber</span>`;
+
+      // Scope summary
+      const itemsCount = inv.items ? inv.items.length : 1;
+      const firstItemTitle = inv.items && inv.items[0] ? inv.items[0].title : (inv.package || "Internet Subscription");
+      const summaryText = itemsCount > 1 ? `${firstItemTitle} (+${itemsCount - 1} more)` : firstItemTitle;
+
+      return `
+        <tr style="border-bottom:1px solid var(--border-color);">
+          <td>
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary);">${escapeHtml(inv.invoiceNo || '')}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">${escapeHtml(inv.docType || 'Invoice')}</div>
+          </td>
+          <td>
+            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:2px;">
+              <strong style="color:var(--text-primary); font-size:0.925rem;">${escapeHtml(inv.clientName || '')}</strong>
+              ${typeBadge}
             </div>
-            <p style="font-size:0.85rem; font-weight:700; color:#5C9400; margin:0 0 3px 0; text-transform:uppercase;">High-End ICT Infrastructure & Dedicated ISP Networks</p>
-            <p style="font-size:0.8rem; color:#475569; margin:0 0 2px 0;">Along Jomo Kenyatta Avenue, Mombasa Mall, Mombasa, Kenya</p>
-            <p style="font-size:0.8rem; color:#475569; margin:0;">Phone: +254 790 964 002 | Email: billing@dpinc.top | Web: dpinc.top</p>
-          </div>
-          <div style="text-align:right;">
-            <h3 style="font-size:1.35rem; font-weight:900; color:#0F172A; text-transform:uppercase; margin:0 0 4px 0;">${escapeHtml(data.docType)}</h3>
-            <div style="font-family:'JetBrains Mono', monospace; font-weight:800; font-size:1.1rem; color:#5C9400;">${escapeHtml(data.invoiceNo)}</div>
-            <div style="font-size:0.8rem; color:#475569; margin-top:4px;">Date of Issue: <strong>${formatDateDisplay(data.issueDate)}</strong></div>
-            <div style="font-size:0.8rem; color:#B91C1C; margin-top:2px;">Due Date: <strong>${formatDateDisplay(data.dueDate)}</strong></div>
-          </div>
-        </div>
-
-        <!-- Client & Period Strip -->
-        <div style="border-top:2px solid #0F172A; border-bottom:1px solid #CBD5E1; padding:1rem 0; margin-bottom:1.5rem; display:flex; justify-content:space-between; gap:1.5rem;">
-          <div>
-            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748B; font-weight:700; margin-bottom:3px;">BILLED TO:</div>
-            <h4 style="font-size:1.15rem; font-weight:800; color:#0F172A; margin:0 0 3px 0;">${escapeHtml(data.clientName)}</h4>
-            <div style="font-size:0.825rem; color:#334155;">Phone: ${escapeHtml(data.phone)}</div>
-            <div style="font-size:0.825rem; color:#334155;">Email: ${escapeHtml(data.email || 'N/A')}</div>
-            <div style="font-size:0.825rem; color:#334155;">Location: ${escapeHtml(data.location || 'Mombasa')}</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:0.75rem; text-transform:uppercase; color:#64748B; font-weight:700; margin-bottom:3px;">BILLING CYCLE:</div>
-            <div style="font-size:1rem; font-weight:700; color:#0F172A; margin-bottom:3px;">${escapeHtml(data.period)}</div>
-            <div style="font-size:0.8rem; font-family:'JetBrains Mono', monospace; color:#475569; margin-bottom:6px;">Acc: ${escapeHtml(data.accountRef || data.phone)}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(inv.phone || '')} • ${escapeHtml(inv.location || 'Mombasa')}</div>
+          </td>
+          <td>
+            <div style="font-size:0.85rem; color:var(--text-primary);">${escapeHtml(summaryText)}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Due: ${inv.dueDate || '--'}</div>
+          </td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:var(--text-primary);">
+            KSh ${gTotal.toLocaleString()}
+          </td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#22c55e;">
+            KSh ${tPaid.toLocaleString()}
+          </td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${bal > 0 ? '#ef4444' : '#22c55e'};">
+            KSh ${bal.toLocaleString()}
+          </td>
+          <td style="text-align:center;">
             ${statusBadge}
-          </div>
-        </div>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:flex; justify-content:flex-end; gap:0.35rem; flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Live A4 Preview" onclick="window.dpOpenPreviewInvoice('${inv.id}')">
+                <i data-lucide="eye" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Print / Save PDF" onclick="window.dpPrintInvoice('${inv.id}')">
+                <i data-lucide="printer" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#22c55e;" title="Record Payment / Deposit" onclick="window.dpRecordInvoicePayment('${inv.id}')">
+                <i data-lucide="wallet" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#25D366;" title="Send WhatsApp Bill" onclick="window.dpDispatchInvoiceWhatsApp('${inv.id}')">
+                <i data-lucide="message-square" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Edit Invoice" onclick="window.dpOpenCreateInvoice(null, '${inv.id}')">
+                <i data-lucide="edit-3" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#ef4444;" title="Delete Invoice" onclick="window.dpDeleteInvoice('${inv.id}')">
+                <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
 
-        <!-- Line Items Table -->
-        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.875rem;">
-          <thead>
-            <tr style="background:#F1F5F9; border-top:1px solid #CBD5E1; border-bottom:2px solid #0F172A;">
-              <th style="padding:8px 10px; text-align:left; font-size:0.8rem; font-weight:800; color:#0F172A;">Description</th>
-              <th style="padding:8px 10px; text-align:center; font-size:0.8rem; font-weight:800; color:#0F172A; width:12%;">Qty</th>
-              <th style="padding:8px 10px; text-align:right; font-size:0.8rem; font-weight:800; color:#0F172A; width:18%;">Unit Rate (KSh)</th>
-              <th style="padding:8px 10px; text-align:right; font-size:0.8rem; font-weight:800; color:#0F172A; width:20%;">Amount (KSh)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items.map(i => `
-              <tr style="border-bottom:1px solid #E2E8F0;">
-                <td style="padding:10px;"><strong>${escapeHtml(i.title)}</strong></td>
-                <td style="padding:10px; text-align:center;">${escapeHtml(i.qty || '1')}</td>
-                <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace;">${(Number(i.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-                <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${(Number(i.rate) || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-          <tfoot>
-            <tr style="border-top:1px solid #CBD5E1;">
-              <td colspan="3" style="padding:8px 10px; text-align:right; font-weight:600; color:#475569;">Subtotal:</td>
-              <td style="padding:8px 10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${Number(data.subtotal).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-            </tr>
-            ${(data.vatMode !== "zero" && data.vatAmount > 0) ? `
-              <tr>
-                <td colspan="3" style="padding:6px 10px; text-align:right; font-weight:600; color:#475569;">VAT (16%):</td>
-                <td style="padding:6px 10px; text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;">${Number(data.vatAmount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-              </tr>
-            ` : ''}
-            <tr style="border-top:2px solid #0F172A; border-bottom:2px solid #0F172A; background:#F8FAFC;">
-              <td colspan="3" style="padding:10px; text-align:right; font-weight:900; font-size:1rem; color:#0F172A;">TOTAL AMOUNT:</td>
-              <td style="padding:10px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:1.2rem; font-weight:900; color:#5C9400;">KSh ${Number(data.grandTotal).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <!-- Payment Callout -->
-        <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-left:4px solid #5C9400; border-radius:6px; padding:1rem; font-size:0.825rem; color:#334155;">
-          <strong style="color:#0F172A; display:block; margin-bottom:4px;">Official Settlement Channels:</strong>
-          <p style="margin:0 0 3px 0;">• <strong>M-PESA Paybill:</strong> Business No: <strong>247247</strong> | Account No: <strong>${escapeHtml(data.phone || data.accountRef)}</strong></p>
-          <p style="margin:0 0 3px 0;">• <strong>Direct M-PESA:</strong> <strong>0790 964 002</strong> (Emmanuel Nyakundi)</p>
-          <p style="margin:0;">• <strong>Bank:</strong> Standard Chartered Bank (Acc: <strong>0100499055400</strong> | Data Port Limited)</p>
-        </div>
-      </div>
-    `;
+    if (window.lucide) window.lucide.createIcons();
   }
 
   function dispatchInvoiceViaWhatsApp(data) {
@@ -1532,66 +2090,127 @@
     let itemsText = "";
     if (data.items && data.items.length > 0) {
       data.items.forEach(i => {
-        itemsText += `  • ${i.title} (${i.qty}): KSh ${Number(i.rate).toLocaleString()}\n`;
+        itemsText += `  • ${i.title} (${i.qty || '1'}): KSh ${Number(i.rate).toLocaleString()}\n`;
       });
+    }
+
+    const grandTotal = Number(data.grandTotal || data.amount) || 0;
+    const totalPaid = Number(data.totalPaid || data.depositAmount) || 0;
+    const balanceDue = Number(data.balanceDue !== undefined ? data.balanceDue : (grandTotal - totalPaid)) || 0;
+
+    let balanceText = "";
+    if (totalPaid > 0) {
+      balanceText = `*DEPOSIT PAID:* KSh ${totalPaid.toLocaleString()}\n*BALANCE DUE:* *KSh ${balanceDue.toLocaleString()}*\n\n`;
     }
 
     const msg = `*DATA PORT LIMITED — OFFICIAL INVOICE NOTICE*\n\n` +
       `Dear *${data.clientName}*,\n\n` +
-      `Your *${data.docType}* for *${data.period}* is ready.\n\n` +
+      `Your *${data.docType || 'Invoice'}* is ready.\n\n` +
       `*Invoice Ref:* ${data.invoiceNo}\n` +
-      `*Billing Cycle:* ${data.period}\n` +
-      `*Due Date:* ${formatDateDisplay(data.dueDate)}\n\n` +
+      `*Due Date:* ${data.dueDate}\n\n` +
       `*Service Breakdown:*\n${itemsText}\n` +
-      `*TOTAL DUE:* *KSh ${Number(data.grandTotal).toLocaleString()}*\n\n` +
-      `*Official Payment Channel:*\n` +
-      `👉 M-PESA Paybill: *247247*\n` +
-      `👉 Account No: *${data.phone || data.accountRef}*\n` +
-      `👉 Direct M-Pesa: *0790 964 002* (Emmanuel Nyakundi)\n\n` +
-      `Thank you for choosing Data Port Limited. Dedicated internet SLA is active.`;
+      `*TOTAL AMOUNT:* *KSh ${grandTotal.toLocaleString()}*\n` +
+      balanceText +
+      `*Direct Payment Channels:*\n` +
+      `👉 *MPESA (Mobile):* 0790 964 002 (Emmanuel Nyakundi)\n` +
+      `👉 *Standard Chartered Bank:* Acc No: 0100499055400 (Emmanuel Nyakundi)\n\n` +
+      `Thank you for choosing Data Port Limited!`;
 
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, "_blank");
-    showToast(`WhatsApp invoice dispatched for ${data.clientName}.`);
+    showToast(`WhatsApp billing notice ready for ${data.clientName}`);
   }
 
-  function formatDateDisplay(dateStr) {
-    if (!dateStr) return "--/--/----";
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-  }
-
+  /* =========================================================================
+     GLOBAL WINDOW INVOICING ACTIONS
+     ========================================================================= */
   window.dpOpenCreateInvoice = function(subId, invId) {
+    if (typeof subId !== "string") subId = null;
+    if (typeof invId !== "string") invId = null;
+
     const modal = document.getElementById("createInvoiceModal");
     if (!modal) return;
 
-    // Refresh subscriber dropdown
+    // Refresh active subscriber dropdown
     const select = document.getElementById("invSelectSubscriber");
     if (select) {
-      let optionsHtml = `<option value="">-- Choose Active Subscriber or Custom --</option>`;
+      let optionsHtml = `<option value="">-- Choose Active Subscriber --</option>`;
       (erpState.subscribers || []).forEach(sub => {
         optionsHtml += `<option value="${sub.id}">${sub.name} (${sub.package} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
       });
-      optionsHtml += `<option value="__custom__">+ New / Custom Client</option>`;
       select.innerHTML = optionsHtml;
     }
 
     activeInvoiceLineItems = [];
 
-    // Set Defaults
     const now = new Date();
     const issueDateStr = now.toISOString().split("T")[0];
-    const dueDateObj = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    const dueDateObj = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
     const dueDateStr = dueDateObj.toISOString().split("T")[0];
 
+    const radSubscriber = document.getElementById("invTypeSubscriber");
+    const radGeneral = document.getElementById("invTypeGeneral");
+    const subSelectRow = document.getElementById("invSubscriberSelectRow");
+    const enablePlanCheckbox = document.getElementById("invEnablePaymentPlan");
+    const planFields = document.getElementById("invPaymentPlanFields");
+
+    // Case 1: Editing Existing Invoice
+    if (invId) {
+      const inv = (erpState.invoices || []).find(i => i.id === invId);
+      if (inv) {
+        document.getElementById("invModalTitle").textContent = `Edit Invoice ${inv.invoiceNo}`;
+        document.getElementById("invEditingId").value = inv.id;
+        document.getElementById("invSelectedSubId").value = inv.subId || "";
+        document.getElementById("invClientName").value = inv.clientName || "";
+        document.getElementById("invClientPhone").value = inv.phone || "";
+        document.getElementById("invClientEmail").value = inv.email || "";
+        document.getElementById("invClientLocation").value = inv.location || "Mombasa";
+        document.getElementById("invDocType").value = inv.docType || "Proforma Invoice";
+        document.getElementById("invInvoiceNumber").value = inv.invoiceNo || "";
+        document.getElementById("invIssueDate").value = inv.issueDate || issueDateStr;
+        document.getElementById("invDueDate").value = inv.dueDate || dueDateStr;
+        document.getElementById("invBillingPeriod").value = inv.period || `${monthNames[currentMonth]} ${currentYear}`;
+        document.getElementById("invValidityNote").value = inv.validityNote || "Please Note: Valid for 14 days from date.";
+
+        const isSub = inv.clientType === "subscriber" || !!inv.subId;
+        if (radSubscriber) radSubscriber.checked = isSub;
+        if (radGeneral) radGeneral.checked = !isSub;
+        if (subSelectRow) subSelectRow.style.display = isSub ? "block" : "none";
+        if (select && inv.subId) select.value = inv.subId;
+
+        const hasPlan = inv.hasPaymentPlan || (inv.depositAmount > 0) || (inv.totalPaid > 0);
+        if (enablePlanCheckbox) enablePlanCheckbox.checked = hasPlan;
+        if (planFields) planFields.style.display = hasPlan ? "block" : "none";
+        document.getElementById("invDepositAmount").value = inv.totalPaid || inv.depositAmount || 0;
+        document.getElementById("invDepositLabel").value = inv.depositLabel || "1 ST Installment";
+
+        activeInvoiceLineItems = (inv.items && inv.items.length > 0) ? JSON.parse(JSON.stringify(inv.items)) : [
+          { title: inv.package || "Internet Subscription", qty: "1 Month", rate: inv.grandTotal || inv.amount || 3000 }
+        ];
+
+        renderInvoiceLineItemsTable();
+        modal.style.display = "flex";
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+    }
+
+    // Case 2: New Invoice
+    document.getElementById("invModalTitle").textContent = "Create Client Invoice & Bill";
+    document.getElementById("invEditingId").value = "";
     document.getElementById("invIssueDate").value = issueDateStr;
     document.getElementById("invDueDate").value = dueDateStr;
     document.getElementById("invBillingPeriod").value = `${monthNames[currentMonth]} ${currentYear}`;
-    document.getElementById("invPaymentStatus").value = "unpaid";
-    document.getElementById("invDocType").value = "PROFORMA INVOICE";
-    document.getElementById("invInvoiceNumber").value = `DP-INV-${currentYear}-${Math.floor(Math.random() * 8999 + 1000)}`;
+    document.getElementById("invDocType").value = "Proforma Invoice";
+    document.getElementById("invInvoiceNumber").value = `#${String(Math.floor(Math.random() * 899 + 1)).padStart(3, '0')}/${currentYear.toString().slice(-2)}`;
+    document.getElementById("invValidityNote").value = "Please Note: Valid for 14 days from date.";
+    document.getElementById("invDepositAmount").value = 0;
+    document.getElementById("invDepositLabel").value = "1 ST Installment";
+    if (enablePlanCheckbox) enablePlanCheckbox.checked = false;
+    if (planFields) planFields.style.display = "none";
 
     if (subId) {
+      if (radSubscriber) radSubscriber.checked = true;
+      if (subSelectRow) subSelectRow.style.display = "block";
       if (select) select.value = subId;
       const sub = (erpState.subscribers || []).find(s => s.id === subId);
       if (sub) {
@@ -1600,35 +2219,136 @@
         document.getElementById("invClientPhone").value = sub.phone || "";
         document.getElementById("invClientEmail").value = sub.email || "";
         document.getElementById("invClientLocation").value = sub.location || "Mombasa";
-        document.getElementById("invClientAccountRef").value = sub.pppoeUser || `client_${sub.id}`;
-        
-        // Add default line item
+
         activeInvoiceLineItems.push({
           id: "item_" + Date.now(),
-          title: `${sub.package} — Monthly Dedicated High-Speed Internet`,
-          qty: "1 Month",
-          rate: sub.monthlyRate || sub.price || 3500
+          title: "DataPort NET Public IP",
+          qty: sub.speed || (sub.package && sub.package.includes("Mbps") ? sub.package.match(/\d+\s*mbps/i)?.[0].toLowerCase() : "25 mbps") || "25 mbps",
+          rate: Number(sub.monthlyRate || sub.price) || 3000
         });
       }
     } else {
+      if (radSubscriber) radSubscriber.checked = true;
+      if (subSelectRow) subSelectRow.style.display = "block";
       if (select) select.value = "";
       document.getElementById("invSelectedSubId").value = "";
       document.getElementById("invClientName").value = "";
       document.getElementById("invClientPhone").value = "";
       document.getElementById("invClientEmail").value = "";
       document.getElementById("invClientLocation").value = "";
-      document.getElementById("invClientAccountRef").value = "";
 
       activeInvoiceLineItems.push({
         id: "item_" + Date.now(),
-        title: "10 Mbps Standard Business — Monthly Dedicated Internet Subscription",
-        qty: "1 Month",
-        rate: 3500
+        title: "DataPort NET Public IP",
+        qty: "25 mbps",
+        rate: 3000
       });
     }
 
     renderInvoiceLineItemsTable();
     modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpOpenPreviewInvoice = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+    window.__currentPreviewInvoice = inv;
+    renderLiveInvoicePreviewCard(inv);
+    document.getElementById("invoicePreviewModal").style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpPrintInvoice = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+    populatePrintableInvoice(inv);
+    setTimeout(() => {
+      window.print();
+    }, 200);
+  };
+
+  window.dpRecordInvoicePayment = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+
+    const modal = document.getElementById("receivePaymentModal");
+    if (!modal) return;
+
+    const gTotal = Number(inv.grandTotal || inv.amount) || 0;
+    const tPaid = Number(inv.totalPaid || inv.depositAmount) || 0;
+    const bal = Math.max(0, gTotal - tPaid);
+
+    document.getElementById("payInvoiceId").value = inv.id;
+    document.getElementById("paySubId").value = inv.subId || "";
+    document.getElementById("payClientName").value = inv.clientName || "";
+    document.getElementById("payAmount").value = bal > 0 ? bal : gTotal;
+    document.getElementById("payDate").value = new Date().toISOString().split("T")[0];
+
+    modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpDispatchInvoiceWhatsApp = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+    dispatchInvoiceViaWhatsApp(inv);
+  };
+
+  window.dpDeleteInvoice = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+    if (!confirm(`Are you sure you want to delete invoice ${inv.invoiceNo} for ${inv.clientName}?`)) return;
+
+    erpState.invoices = (erpState.invoices || []).filter(i => i.id !== invId);
+    saveDatabase();
+
+    // Background delete from SQL database backend
+    fetch(`/api/invoices/${invId}`, {
+      method: "DELETE",
+      headers: { "x-admin-key": "dpinc-staff-master" }
+    }).catch(err => console.warn("SQL Delete Sync:", err));
+
+    renderAll();
+    showToast(`Invoice ${inv.invoiceNo} deleted from database.`);
+  };
+
+  window.dpOpenBatchInvoices = function() {
+    const batchModal = document.getElementById("batchInvoiceModal");
+    if (!batchModal) return;
+
+    const subs = erpState.subscribers || [];
+    const tbody = document.getElementById("batchSubsTableBody");
+    const totalEl = document.getElementById("batchTotalAmount");
+    const badgeEl = document.getElementById("batchActiveCount");
+    const period = `${monthNames[currentMonth]} ${currentYear}`;
+
+    let total = 0;
+    let html = "";
+
+    subs.forEach(sub => {
+      const rate = Number(sub.monthlyRate || sub.price) || 0;
+      total += rate;
+      const existing = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period === period);
+      const statusPill = existing 
+        ? `<span class="badge" style="background:#dcfce7; color:#15803d; border-color:#22c55e;">Ready (${existing.invoiceNo})</span>`
+        : `<span class="badge" style="background:#fee2e2; color:#b91c1c; border-color:#ef4444;">Pending</span>`;
+
+      html += `
+        <tr style="border-bottom:1px solid var(--border-color);">
+          <td style="padding:8px 10px;"><strong>${escapeHtml(sub.name)}</strong></td>
+          <td style="padding:8px 10px;">${escapeHtml(sub.package)}</td>
+          <td style="padding:8px 10px; font-family:var(--font-mono); text-align:right;">KSh ${rate.toLocaleString()}</td>
+          <td style="padding:8px 10px; text-align:center;">${statusPill}</td>
+        </tr>
+      `;
+    });
+
+    if (tbody) tbody.innerHTML = html;
+    if (totalEl) totalEl.textContent = `KSh ${total.toLocaleString()}`;
+    if (badgeEl) badgeEl.textContent = `${subs.length} Active Subscribers`;
+
+    batchModal.style.display = "flex";
     if (window.lucide) window.lucide.createIcons();
   };
 
@@ -2268,11 +2988,30 @@
         const refCode = document.getElementById("payRefCode").value.trim();
         const payDate = document.getElementById("payDate").value || new Date().toISOString().split("T")[0];
 
-        // Mark invoice paid
+        // Mark invoice paid or update partial deposit / installment
         let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period.includes(monthNames[currentMonth])));
         if (invoice) {
-          invoice.status = "paid";
-          invoice.paidAt = new Date().toISOString();
+          const invGrandTotal = Number(invoice.grandTotal || invoice.amount) || amount;
+          const prevPaid = Number(invoice.totalPaid || (invoice.status === "paid" ? invGrandTotal : invoice.depositAmount)) || 0;
+          const newTotalPaid = prevPaid + amount;
+          invoice.totalPaid = newTotalPaid;
+          invoice.balanceDue = Math.max(0, invGrandTotal - newTotalPaid);
+          
+          if (!invoice.installments) invoice.installments = [];
+          invoice.installments.push({
+            label: `${invoice.installments.length + 1} ST Installment`,
+            amount: amount,
+            date: payDate,
+            ref: refCode
+          });
+
+          if (invoice.balanceDue <= 0) {
+            invoice.status = "paid";
+            invoice.paidAt = new Date().toISOString();
+          } else {
+            invoice.status = "partial";
+            invoice.hasPaymentPlan = true;
+          }
         } else {
           invoice = {
             id: "inv_" + Date.now(),
@@ -2280,6 +3019,9 @@
             subId: subId,
             clientName: clientName,
             amount: amount,
+            grandTotal: amount,
+            totalPaid: amount,
+            balanceDue: 0,
             period: `${monthNames[currentMonth]} ${currentYear}`,
             status: "paid",
             paidAt: new Date().toISOString()
@@ -3040,98 +3782,148 @@
     if (!essentialsContainer || !hardwareContainer || !softwareContainer || !amcContainer) return;
 
     // Render Essentials
-    essentialsContainer.innerHTML = tariffs.essentials.map(pkg => `
-      <div class="tariff-edit-row" data-tariff-group="essentials" data-id="${pkg.id}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Package Name</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(pkg.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:160px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Billing Period</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(pkg.period || 'One-Off Investment')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Price (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${pkg.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+    essentialsContainer.innerHTML = tariffs.essentials.map((pkg, idx) => `
+      <div class="tariff-edit-row" data-tariff-group="essentials" data-id="${pkg.id}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Package Name</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(pkg.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Billing Term</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(pkg.period || 'One-Off Investment')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Package Price (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${pkg.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('essentials', '${pkg.id}')" title="Permanently delete package" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Deliverables & Scope Specification</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(pkg.description || '')}" placeholder="Scope description, hardware included, deliverables..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('essentials')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add New Essentials Package
+      </button>
+    `;
 
     // Render Hardware
     hardwareContainer.innerHTML = tariffs.hardware.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="hardware" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Service / Item</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Per Setup')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="hardware" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Service / Item</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Unit / Terms</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Per Setup')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Charge (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('hardware', '${item.id}')" title="Permanently delete service item" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
-        ${item.isCustom ? `
-          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('hardware', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
-            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
-          </button>
-        ` : ''}
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Technical Scope / Specifications</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Port filtering, configuration terms, cable length..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('hardware')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Hardware / Network Service
+      </button>
+    `;
 
     // Render Software
     softwareContainer.innerHTML = tariffs.software.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="software" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Software / Creative Service</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Starting Price')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="software" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Software / Creative Service</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Unit / Terms</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Starting Price')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Charge (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('software', '${item.id}')" title="Permanently delete service item" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
-        ${item.isCustom ? `
-          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('software', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
-            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
-          </button>
-        ` : ''}
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Software Scope & Deliverables</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Database backends, creative storyboard, hosting terms..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('software')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Software / Dev Service
+      </button>
+    `;
 
     // Render AMC
     amcContainer.innerHTML = tariffs.amc.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="amc" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">SLA Retainer / Support Plan</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Period / Unit</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ year')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Rate (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="amc" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">SLA Retainer / Support Plan</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Period / Unit</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ year')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Rate (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('amc', '${item.id}')" title="Permanently delete retainer" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">SLA Agreement & Response Commitments</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Response SLA, monthly preventive maintenance, site visits..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('amc')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Retainer / AMC Plan
+      </button>
+    `;
 
     if (window.lucide) window.lucide.createIcons();
   }
@@ -3146,6 +3938,7 @@
       const nameInput = row.querySelector(".tariff-name-input");
       const unitInput = row.querySelector(".tariff-unit-input");
       const priceInput = row.querySelector(".tariff-price-input");
+      const descInput = row.querySelector(".tariff-desc-input");
 
       if (group && id && current[group]) {
         const item = current[group].find(i => i.id === id);
@@ -3156,13 +3949,41 @@
             else item.unit = unitInput.value.trim();
           }
           if (priceInput) item.price = Math.max(0, parseFloat(priceInput.value) || 0);
+          if (descInput) item.description = descInput.value.trim();
         }
       }
     });
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
-      showToast("✓ Commercial Tariffs successfully saved and synchronized live!");
+      
+      // Dual background sync to SQL database backends (Next.js & XAMPP MySQL)
+      Object.keys(current).forEach(group => {
+        (current[group] || []).forEach(item => {
+          const payload = {
+            id: item.id,
+            code: item.id,
+            name: item.name,
+            category: group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
+            unit: item.period || item.unit || "Per Unit",
+            price: item.price,
+            description: item.description || ""
+          };
+          fetch("/api/services", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }).catch(() => {
+            fetch("api/services.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            }).catch(() => {});
+          });
+        });
+      });
+
+      showToast("✓ All Commercial Tariffs saved & synced to MySQL dpinc.top_db!");
     } catch (err) {
       console.error("Failed to save tariffs to localStorage:", err);
       showToast("Error saving tariffs. Check browser storage permissions.");
@@ -3177,44 +3998,103 @@
     }
   }
 
-  function addCustomTariff() {
-    const name = prompt("Enter new service or item name:");
+  window.dpAddCustomTariffToCategory = function(group) {
+    const defaultUnits = {
+      essentials: "One-Off Investment",
+      hardware: "Per Setup",
+      software: "Starting Price",
+      amc: "/ year"
+    };
+    const defaultPrices = {
+      essentials: 30000,
+      hardware: 15000,
+      software: 25000,
+      amc: 60000
+    };
+
+    const name = prompt("Enter service / package title:");
     if (!name || !name.trim()) return;
 
-    const priceStr = prompt("Enter service rate / price in KSh (e.g. 15000):", "15000");
+    const priceStr = prompt("Enter standard rate (KSh):", defaultPrices[group] || 10000);
     const price = parseFloat(priceStr) || 0;
 
-    const current = getSavedTariffs();
-    const newId = "itm-custom-" + Date.now().toString(36);
+    const unitStr = prompt("Enter billing term / unit:", defaultUnits[group] || "Per Unit");
+    const descStr = prompt("Enter deliverables / technical scope description (optional):", "Tailored commercial ICT deliverable.");
 
-    current.hardware.push({
+    const current = getSavedTariffs();
+    const newId = "srv-" + Date.now().toString(36);
+
+    const newItem = {
       id: newId,
       name: name.trim(),
-      category: "Custom",
+      category: group,
       price: price,
-      unit: "Per Unit / Setup",
-      description: "Custom commercial service added via NOC dashboard.",
+      unit: unitStr || "Per Setup",
+      period: unitStr || "One-Off Investment",
+      description: descStr || "",
       isCustom: true
-    });
+    };
+
+    if (!current[group]) current[group] = [];
+    current[group].push(newItem);
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+
+      const payload = {
+        id: newId,
+        code: newId,
+        name: name.trim(),
+        category: group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
+        unit: unitStr || "Per Setup",
+        price: price,
+        description: descStr || ""
+      };
+
+      fetch("/api/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(() => {
+        fetch("api/services.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      });
+
       renderTariffManager();
-      showToast(`✓ Added custom item: "${name.trim()}"`);
+      showToast(`✓ Added custom item "${name.trim()}"!`);
     } catch (err) {
       console.error("Failed to add custom tariff:", err);
     }
+  };
+
+  function addCustomTariff() {
+    const categoryChoice = prompt("Select category (1: Essentials, 2: Hardware/Network, 3: Software/Creative, 4: AMC Support):", "2");
+    let group = "hardware";
+    if (categoryChoice === "1") group = "essentials";
+    else if (categoryChoice === "3") group = "software";
+    else if (categoryChoice === "4") group = "amc";
+
+    window.dpAddCustomTariffToCategory(group);
   }
 
   window.dpRemoveCustomTariff = function(group, id) {
-    if (!confirm("Are you sure you want to remove this service item?")) return;
+    if (!confirm("Are you sure you want to permanently delete this service/package from the database?")) return;
     const current = getSavedTariffs();
     if (current[group]) {
       current[group] = current[group].filter(i => i.id !== id);
       try {
         localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+
+        // Sync DELETE to both Next.js and XAMPP PHP APIs
+        fetch(`/api/services/${id}`, { method: "DELETE" }).catch(() => {
+          fetch(`api/services.php?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+        });
+
         renderTariffManager();
-        showToast("✓ Service item removed.");
+        showToast("✓ Service item removed from catalog.");
       } catch (err) {
         console.error("Failed to remove item:", err);
       }
@@ -3227,6 +4107,7 @@
   function renderAll() {
     updateOverviewMetrics();
     renderCalendar();
+    renderInvoicesHub();
     renderSubscribersTable();
     renderJobCards();
     renderLedgerTable();

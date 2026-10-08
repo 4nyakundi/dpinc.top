@@ -1,29 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma schema for DATA PORT Limited (dpinc.top)
+// Comprehensive SQL Database Schema for Invoices, Services, Clients, Field Operations & Ledger
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model Lead {
-  id        String   @id @default(cuid())
-  name      String
-  email     String?  @unique
-  phone     String?
-  company   String?
-  source    String?  @default("web")
-  status    String   @default("new")
-  notes     String?
-  quotes    Quote[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Service {
+  id             String          @id @default(cuid())
+  code           String?         @unique
+  name           String
+  category       String          @default("General") // Essentials, Network & Security, Creative & Dev, AMC Support, Internet
+  description    String?
+  unit           String?         @default("Per Project") // One-Off, Per Month, Per Unit, Per Year, etc.
+  price          Float
+  active         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  invoiceItems   InvoiceItem[]
+  quoteLineItems QuoteLineItem[]
 }
 
+// Keep CatalogItem as an alias/compatibility model with Service
 model CatalogItem {
   id          String           @id @default(cuid())
   name        String           @unique
@@ -35,59 +37,161 @@ model CatalogItem {
   lineItems   QuoteLineItem[]
 }
 
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?  @unique
+  phone       String?
+  company     String?
+  location    String?  @default("Mombasa")
+  ipAddress   String?
+  package     String?
+  speed       String?
+  monthlyRate Float?   @default(0)
+  billingDay  Int?     @default(1)
+  source      String?  @default("web")
+  status      String   @default("new") // "new", "subscriber", "quote_sent", "inactive"
+  notes       String?
+  quotes      Quote[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Quote {
-  id            String           @id @default(cuid())
-  leadId        String?
-  lead          Lead?            @relation(fields: [leadId], references: [id])
-  invoiceNo     String?          @unique
-  status        String           @default("draft")
-  issueDate     DateTime         @default(now())
-  dueDate       DateTime?
-  subtotal      Float
-  tax           Float            @default(0)
-  labourFee     Float            @default(0)
-  total         Float
-  notes         String?
-  recurring     Boolean          @default(false)
-  recurrence    String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  lineItems     QuoteLineItem[]
-  invoice       Invoice?
+  id          String          @id @default(cuid())
+  leadId      String?
+  lead        Lead?           @relation(fields: [leadId], references: [id])
+  invoiceNo   String?         @unique
+  status      String          @default("draft") // "draft", "sent", "accepted", "proforma", "rejected"
+  issueDate   DateTime        @default(now())
+  dueDate     DateTime?
+  subtotal    Float
+  tax         Float           @default(0)
+  labourFee   Float           @default(0)
+  total       Float
+  notes       String?
+  recurring   Boolean         @default(false)
+  recurrence  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  lineItems   QuoteLineItem[]
+  invoice     Invoice?
 }
 
 model QuoteLineItem {
-  id            String      @id @default(cuid())
+  id            String       @id @default(cuid())
   quoteId       String
+  quote         Quote        @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   catalogItemId String?
-  quote         Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   catalogItem   CatalogItem? @relation(fields: [catalogItemId], references: [id])
+  serviceId     String?
+  service       Service?     @relation(fields: [serviceId], references: [id])
   name          String
-  quantity      Int
+  quantity      Int          @default(1)
   unitPrice     Float
   total         Float
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([quoteId])
   @@index([catalogItemId])
+  @@index([serviceId])
 }
 
 model Invoice {
-  id                    String   @id @default(cuid())
-  quoteId               String?  @unique
-  quote                 Quote?   @relation(fields: [quoteId], references: [id])
-  invoiceNo             String   @unique
-  issuedAt              DateTime @default(now())
-  dueAt                 DateTime?
-  subtotal              Float
-  tax                   Float    @default(0)
-  labourFee             Float    @default(0)
-  total                 Float
-  status                String   @default("unpaid")
-  generatedAutomatically Boolean @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                     String        @id @default(cuid())
+  invoiceNo              String        @unique
+  docType                String        @default("Invoice") // "Invoice", "Proforma Invoice", "Receipt"
+  clientType             String        @default("general") // "subscriber", "general"
+  clientName             String
+  phone                  String?
+  email                  String?
+  location               String?       @default("Mombasa")
+  subId                  String?
+  quoteId                String?       @unique
+  quote                  Quote?        @relation(fields: [quoteId], references: [id])
+  status                 String        @default("unpaid") // "paid", "unpaid", "partial", "cancelled"
+  issueDate              DateTime      @default(now())
+  dueDate                DateTime?
+  billingPeriod          String?
+  subtotal               Float         @default(0)
+  tax                    Float         @default(0)
+  labourFee              Float         @default(0)
+  total                  Float         @default(0)
+  totalPaid              Float         @default(0)
+  balanceDue             Float         @default(0)
+  hasPaymentPlan         Boolean       @default(false)
+  depositAmount          Float         @default(0)
+  depositLabel           String?       @default("1 ST Installment")
+  notes                  String?
+  validityNote           String?       @default("Please Note: Valid for 14 days from date.")
+  generatedAutomatically Boolean       @default(false)
+  paidAt                 DateTime?
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  items                  InvoiceItem[]
+}
+
+model InvoiceItem {
+  id        String   @id @default(cuid())
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id])
+  title     String
+  qty       String   @default("1")
+  rate      Float    @default(0)
+  total     Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([invoiceId])
+  @@index([serviceId])
+}
+
+model JobCard {
+  id               String            @id @default(cuid())
+  title            String
+  clientName       String
+  technician       String
+  date             DateTime          @default(now())
+  status           String            @default("in_progress") // "completed", "in_progress", "pending"
+  category         String            @default("Field Operations")
+  laborCost        Float             @default(0)
+  totalCost        Float             @default(0)
+  notes            String?
+  invoiceGenerated Boolean           @default(false)
+  invoiceRef       String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  materials        JobCardMaterial[]
+}
+
+model JobCardMaterial {
+  id        String   @id @default(cuid())
+  jobCardId String
+  jobCard   JobCard  @relation(fields: [jobCardId], references: [id], onDelete: Cascade)
+  name      String
+  qty       Int      @default(1)
+  unitCost  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobCardId])
+}
+
+model LedgerEntry {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  description   String
+  category      String
+  type          String // "income" or "expense"
+  amount        Float
+  paymentMethod String?
+  reference     String?
+  entity        String?  @default("DATA PORT Core")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Admin {

@@ -114,11 +114,18 @@ export async function POST(req: NextRequest) {
   });
 
   if (invoiceOnSave) {
+    const clientName = quote.lead?.name || lead?.name || "Valued Client";
+    const phone = quote.lead?.phone || lead?.phone || null;
+    const email = quote.lead?.email || lead?.email || null;
+
     const invoice = await prisma.invoice.create({
       data: {
         quoteId: quote.id,
         invoiceNo: buildInvoiceNumber(),
-        dueAt: dueDate ? new Date(dueDate) : undefined,
+        clientName,
+        phone,
+        email,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
         subtotal: quote.subtotal,
         tax: quote.tax,
         labourFee: quote.labourFee,

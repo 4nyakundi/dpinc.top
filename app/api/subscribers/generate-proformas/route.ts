@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 import { prisma } from "@/lib/prismadb";
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || "your-secret-key";
@@ -98,6 +97,11 @@ export async function POST(req: NextRequest) {
             data: {
               quoteId: monthlyQuote.id,
               invoiceNo: invoiceNumber,
+              clientType: "subscriber",
+              clientName: sub.name,
+              phone: sub.phone,
+              email: sub.email,
+              billingPeriod: `${month}-${year}`,
               subtotal: monthlyQuote.subtotal,
               tax: monthlyQuote.tax,
               labourFee: monthlyQuote.labourFee,

@@ -85,6 +85,21 @@
       "ipAddress": "197.232.44.52",
       "status": "active",
       "joinedDate": "2025-02-18"
+    },
+    {
+      "id": "sub-107",
+      "name": "Shani Chai",
+      "company": "Shani Chai Operations",
+      "phone": "0795 917 066",
+      "email": "shanichai@dpinc.co.ke",
+      "package": "DataPort NET Public IP (25 mbps)",
+      "speed": "25 mbps",
+      "monthlyRate": 3000,
+      "billingDay": 9,
+      "location": "VOK Bombolulu",
+      "ipAddress": "197.232.44.60",
+      "status": "active",
+      "joinedDate": "2026-02-09"
     }
   ],
   "jobCards": [
@@ -327,6 +342,65 @@
       "status": "unpaid",
       "paidAt": null,
       "jobCardId": null
+    },
+    {
+      "id": "inv-007",
+      "invoiceNo": "#007/26",
+      "docType": "Invoice",
+      "clientType": "subscriber",
+      "subId": "sub-107",
+      "clientName": "Shani Chai",
+      "phone": "0795 917 066",
+      "email": "shanichai@dpinc.co.ke",
+      "location": "VOK Bombolulu",
+      "items": [
+        { "title": "DataPort NET Public IP", "qty": "25 mbps", "rate": 3000 }
+      ],
+      "subtotal": 3000,
+      "amount": 3000,
+      "grandTotal": 3000,
+      "totalPaid": 3000,
+      "balanceDue": 0,
+      "period": "February 2026",
+      "issueDate": "2026-02-09",
+      "dueDate": "2026-02-14",
+      "status": "paid",
+      "paidAt": "2026-02-09T10:00:00.000Z",
+      "hasPaymentPlan": false,
+      "validityNote": "Thank you!"
+    },
+    {
+      "id": "inv-008",
+      "invoiceNo": "10.23/26",
+      "docType": "Proforma Invoice",
+      "clientType": "general",
+      "subId": null,
+      "clientName": "Tracy Wangari",
+      "phone": "0722 000 111",
+      "email": "tracy.wangari@domain.com",
+      "location": "Mombasa",
+      "items": [
+        { "title": "Domain Name Registaration. (Company).", "qty": "1 Year", "rate": 2500 },
+        { "title": "Domain Hosting (TrueHost Silver).", "qty": "1 Year", "rate": 4300 },
+        { "title": "Web Security & Debugging & SSL Security (Ask SSL)", "qty": "1 Year", "rate": 1800 },
+        { "title": "Web Creation & Design - Full Stacks Creation (JSON/CSS)", "qty": "Lifetime", "rate": 10000 }
+      ],
+      "subtotal": 18600,
+      "amount": 18600,
+      "grandTotal": 18600,
+      "totalPaid": 5000,
+      "balanceDue": 13600,
+      "hasPaymentPlan": true,
+      "depositAmount": 5000,
+      "depositLabel": "1 ST Installment",
+      "installments": [
+        { "label": "1 ST Installment", "amount": 5000, "date": "2025-01-16" }
+      ],
+      "period": "January 2025",
+      "issueDate": "2025-01-16",
+      "dueDate": "2025-01-30",
+      "status": "partial",
+      "validityNote": "Please Note: Valid for 14 days from date."
     }
   ],
   "vault": {
