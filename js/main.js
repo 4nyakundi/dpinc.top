@@ -982,27 +982,23 @@ function initPortfolioFilters() {
 function initContactForm() {
   const form = document.getElementById("contactForm");
   if (!form) return;
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = form.querySelector("[name='name']").value;
-    const email = form.querySelector("[name='email']").value;
-    const subject = form.querySelector("[name='subject']").value;
-    const message = form.querySelector("[name='message']").value;
-
-    if (!name || !email || !message) {
-      showToast("Please fill in all required fields.");
-      return;
-    }
-
-    const mailtoLink = `mailto:support@dpinc.top?subject=${encodeURIComponent(subject || 'Inquiry from dpinc.top')}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
-    
-    showToast("Transmission received! Preparing dispatch...");
-    
-    setTimeout(() => {
-      window.location.href = mailtoLink;
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    const button = form.querySelector("button[type='submit']");
+    button.disabled = true;
+    try {
+      const fields = new FormData(form);
+      const response = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        name: fields.get("name"), email: fields.get("email"), phone: fields.get("phone"),
+        message: String(fields.get("message") || ""),
+        notes: "Subject: " + String(fields.get("subject") || "") + " | Service: " + String(fields.get("service") || ""),
+      }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Unable to send the request");
       form.reset();
-    }, 800);
+      showToast("Your request has been saved. We will be in touch.");
+    } catch (error) { showToast(error.message); }
+    finally { button.disabled = false; }
   });
 }
 
@@ -1088,3 +1084,14 @@ function initDynamicTariffSync() {
   }
 }
 
+
+// Load the published database prices for every visitor, not only this browser's cache.
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("/api/tariffs", { cache: "no-store" });
+    if (!response.ok) return;
+    const result = await response.json();
+    localStorage.setItem("dataport_custom_tariffs", JSON.stringify(result.tariffs));
+    initDynamicTariffSync();
+  } catch { /* The published page remains usable during a connection interruption. */ }
+});

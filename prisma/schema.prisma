@@ -1,100 +1,397 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "mysql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
+// Financial amounts are integer Kenyan cents. API responses use shillings.
 model Lead {
-  id        String   @id @default(cuid())
-  name      String
-  email     String?  @unique
-  phone     String?
-  company   String?
-  source    String?  @default("web")
-  status    String   @default("new")
-  notes     String?
-  quotes    Quote[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String              @id @default(cuid())
+  name          String              @db.VarChar(120)
+  email         String?             @unique @db.VarChar(254)
+  phone         String?             @db.VarChar(40)
+  company       String?             @db.VarChar(200)
+  location      String?             @db.VarChar(500)
+  source        String              @default("web") @db.VarChar(50)
+  status        String              @default("new")
+  notes         String?             @db.Text
+  quotes        Quote[]
+  subscriptions Subscription[]
+  contacts      ContactSubmission[]
+  jobs          JobCard[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([status, updatedAt])
 }
 
 model CatalogItem {
-  id          String           @id @default(cuid())
-  name        String           @unique
-  description String?
-  price       Float
-  active      Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id          String          @id @default(cuid())
+  name        String          @unique @db.VarChar(200)
+  description String?         @db.Text
+  priceMinor  Int
+  active      Boolean         @default(true)
   lineItems   QuoteLineItem[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  category    String?         @db.VarChar(80)
+  unit        String?         @db.VarChar(100)
+  managedBy   String          @default("manual") @db.VarChar(32)
 }
 
 model Quote {
-  id            String           @id @default(cuid())
-  leadId        String?
-  lead          Lead?            @relation(fields: [leadId], references: [id])
-  invoiceNo     String?          @unique
-  status        String           @default("draft")
-  issueDate     DateTime         @default(now())
-  dueDate       DateTime?
-  subtotal      Float
-  tax           Float            @default(0)
-  labourFee     Float            @default(0)
-  total         Float
-  notes         String?
-  recurring     Boolean          @default(false)
-  recurrence    String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  lineItems     QuoteLineItem[]
-  invoice       Invoice?
+  id             String          @id @default(cuid())
+  leadId         String?
+  lead           Lead?           @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  invoiceNo      String          @unique @db.VarChar(200)
+  status         String          @default("draft") @db.VarChar(20)
+  issueDate      DateTime        @default(now())
+  dueDate        DateTime?
+  subtotalMinor  Int
+  taxMinor       Int             @default(0)
+  labourFeeMinor Int             @default(0)
+  totalMinor     Int
+  billedTo       String          @db.VarChar(120)
+  email          String?         @db.VarChar(254)
+  phone          String?         @db.VarChar(40)
+  company        String?         @db.VarChar(200)
+  location       String?         @db.VarChar(500)
+  notes          String?         @db.Text
+  pdfUrl         String?         @db.Text
+  recurring      Boolean         @default(false)
+  recurrence     String?
+  subscriptionId String?
+  subscription   Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  billingPeriod  String?         @db.VarChar(7)
+  archivedAt     DateTime?
+  lineItems      QuoteLineItem[]
+  invoice        Invoice?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([subscriptionId, billingPeriod])
+  @@index([leadId])
+  @@index([archivedAt, issueDate])
 }
 
 model QuoteLineItem {
-  id            String      @id @default(cuid())
-  quoteId       String
-  catalogItemId String?
-  quote         Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  catalogItem   CatalogItem? @relation(fields: [catalogItemId], references: [id])
-  name          String
-  quantity      Int
-  unitPrice     Float
-  total         Float
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id             String       @id @default(cuid())
+  quoteId        String
+  catalogItemId  String?
+  quote          Quote        @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  catalogItem    CatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: Restrict)
+  name           String       @db.VarChar(500)
+  quantity       Int
+  unitPriceMinor Int
+  totalMinor     Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@index([quoteId])
   @@index([catalogItemId])
 }
 
 model Invoice {
-  id                    String   @id @default(cuid())
-  quoteId               String?  @unique
-  quote                 Quote?   @relation(fields: [quoteId], references: [id])
-  invoiceNo             String   @unique
-  issuedAt              DateTime @default(now())
-  dueAt                 DateTime?
-  subtotal              Float
-  tax                   Float    @default(0)
-  labourFee             Float    @default(0)
-  total                 Float
-  status                String   @default("unpaid")
-  generatedAutomatically Boolean @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                     String        @id @default(cuid())
+  quoteId                String?       @unique
+  quote                  Quote?        @relation(fields: [quoteId], references: [id], onDelete: Restrict)
+  invoiceNo              String        @unique @db.VarChar(200)
+  issuedAt               DateTime      @default(now())
+  dueAt                  DateTime?
+  subtotalMinor          Int
+  taxMinor               Int           @default(0)
+  labourFeeMinor         Int           @default(0)
+  totalMinor             Int
+  status                 String        @default("unpaid") @db.VarChar(20)
+  generatedAutomatically Boolean       @default(false)
+  subscriptionId         String?
+  subscription           Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  billingPeriod          String?       @db.VarChar(7)
+  // Issued documents retain their original customer and item details.
+  snapshot               String        @db.LongText
+  archivedAt             DateTime?
+  payments               Payment[]
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  jobs                   JobCard[]
+  ledger                 LedgerEntry[]
+
+  @@unique([subscriptionId, billingPeriod])
+  @@index([archivedAt, issuedAt])
+}
+
+model Subscription {
+  id          String    @id @default(cuid())
+  leadId      String
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  packageName String    @db.VarChar(200)
+  priceMinor  Int
+  billingDay  Int       @default(1)
+  status      String    @default("active")
+  metadata    String    @db.LongText
+  quotes      Quote[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Invoice     Invoice[]
+
+  @@index([status, leadId])
+}
+
+model Payment {
+  id          String       @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  amountMinor Int
+  reference   String       @unique @db.VarChar(200)
+  method      String
+  paidAt      DateTime     @default(now())
+  voidedAt    DateTime?
+  createdAt   DateTime     @default(now())
+  ledger      LedgerEntry?
+
+  @@index([invoiceId])
+}
+
+model DocumentSequence {
+  key   String @id
+  value Int    @default(0)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  entityId  String
+  details   String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([entityId, createdAt])
+}
+
+// Legacy operational documents are private records, never public JSON files.
+// Revisions prevent a stale browser from silently overwriting another's work.
+model ErpState {
+  id        String   @id @default("main")
+  revision  Int      @default(0)
+  payload   String   @db.LongText
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  name      String   @db.VarChar(120)
+  email     String   @db.VarChar(254)
+  message   String   @db.Text
+  source    String   @default("website")
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
 }
 
 model Admin {
   id        String   @id @default(cuid())
-  username  String   @unique
+  username  String   @unique @db.VarChar(254)
   password  String
   role      String   @default("admin")
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RequestLimit {
+  id        String   @id
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model JobCard {
+  id         String    @id
+  leadId     String?
+  lead       Lead?     @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  invoiceId  String?
+  invoice    Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  title      String    @db.VarChar(500)
+  status     String
+  totalMinor Int
+  metadata   String    @db.LongText
+  archivedAt DateTime?
+  updatedAt  DateTime  @updatedAt
+
+  @@index([leadId])
+  @@index([invoiceId])
+}
+
+model LedgerEntry {
+  id          String    @id @default(cuid())
+  invoiceId   String?
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  paymentId   String?   @unique
+  payment     Payment?  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  kind        String
+  amountMinor Int
+  description String    @db.Text
+  reference   String?   @db.VarChar(200)
+  occurredAt  DateTime
+  metadata    String    @db.LongText
+  archivedAt  DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@index([invoiceId])
+  @@index([occurredAt])
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model admins {
+  id         String   @id @db.VarChar(36)
+  username   String   @unique(map: "username")
+  password   String   @db.VarChar(255)
+  role       String   @default("admin") @db.VarChar(50)
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model invoice_items {
+  id         String   @id @db.VarChar(36)
+  invoice_id String   @db.VarChar(36)
+  service_id String?  @db.VarChar(36)
+  title      String   @db.VarChar(255)
+  qty        String   @default("1") @db.VarChar(50)
+  rate       Decimal  @default(0.00) @db.Decimal(10, 2)
+  total      Decimal  @default(0.00) @db.Decimal(10, 2)
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+  invoices   invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "invoice_items_ibfk_1") @ignore
+
+  @@index([invoice_id], map: "invoice_id")
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model invoices {
+  id               String          @id @db.VarChar(36)
+  invoice_no       String          @unique(map: "invoice_no") @db.VarChar(100)
+  doc_type         String          @default("Invoice") @db.VarChar(50)
+  client_type      String          @default("general") @db.VarChar(50)
+  client_name      String
+  phone            String?         @db.VarChar(50)
+  email            String?
+  location         String?         @default("Mombasa") @db.VarChar(255)
+  sub_id           String?         @db.VarChar(36)
+  status           String          @default("unpaid") @db.VarChar(50)
+  issue_date       DateTime        @db.Date
+  due_date         DateTime?       @db.Date
+  billing_period   String?         @db.VarChar(100)
+  subtotal         Decimal         @default(0.00) @db.Decimal(10, 2)
+  tax              Decimal         @default(0.00) @db.Decimal(10, 2)
+  labour_fee       Decimal         @default(0.00) @db.Decimal(10, 2)
+  total            Decimal         @default(0.00) @db.Decimal(10, 2)
+  total_paid       Decimal         @default(0.00) @db.Decimal(10, 2)
+  balance_due      Decimal         @default(0.00) @db.Decimal(10, 2)
+  has_payment_plan Boolean         @default(false)
+  deposit_amount   Decimal         @default(0.00) @db.Decimal(10, 2)
+  deposit_label    String?         @default("1 ST Installment") @db.VarChar(100)
+  notes            String?         @db.Text
+  validity_note    String?         @default("Please Note: Valid for 14 days from date.") @db.VarChar(255)
+  paid_at          DateTime?       @db.DateTime(0)
+  created_at       DateTime        @default(now()) @db.DateTime(0)
+  updated_at       DateTime        @default(now()) @db.DateTime(0)
+  invoice_items    invoice_items[] @ignore
+
+  @@index([client_name], map: "client_name")
+  @@index([issue_date], map: "issue_date")
+  @@index([status], map: "status")
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model job_cards {
+  id                String   @id @db.VarChar(36)
+  title             String   @db.VarChar(255)
+  client_name       String
+  technician        String
+  date              DateTime @db.Date
+  status            String   @default("in_progress") @db.VarChar(50)
+  category          String   @default("Field Operations") @db.VarChar(100)
+  labor_cost        Decimal  @default(0.00) @db.Decimal(10, 2)
+  total_cost        Decimal  @default(0.00) @db.Decimal(10, 2)
+  notes             String?  @db.Text
+  invoice_generated Boolean  @default(false)
+  invoice_ref       String?  @db.VarChar(100)
+  created_at        DateTime @default(now()) @db.DateTime(0)
+  updated_at        DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model ledger_entries {
+  id             String              @id @db.VarChar(36)
+  date           DateTime            @db.Date
+  description    String              @db.VarChar(255)
+  category       String              @db.VarChar(100)
+  type           ledger_entries_type
+  amount         Decimal             @default(0.00) @db.Decimal(10, 2)
+  payment_method String?             @db.VarChar(100)
+  reference      String?             @db.VarChar(100)
+  entity         String?             @default("DATA PORT Core") @db.VarChar(100)
+  created_at     DateTime            @default(now()) @db.DateTime(0)
+  updated_at     DateTime            @default(now()) @db.DateTime(0)
+
+  @@index([date], map: "date")
+  @@index([type], map: "type")
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model services {
+  id          String   @id @db.VarChar(36)
+  code        String   @unique(map: "code") @db.VarChar(50)
+  name        String   @db.VarChar(255)
+  category    String   @db.VarChar(100)
+  description String?  @db.Text
+  unit        String   @default("Per Project") @db.VarChar(50)
+  price       Decimal  @default(0.00) @db.Decimal(10, 2)
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now()) @db.DateTime(0)
+  updated_at  DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+// Existing XAMPP table retained for migration compatibility.
+model subscribers {
+  id           String   @id @db.VarChar(36)
+  name         String
+  company      String?
+  phone        String?  @db.VarChar(50)
+  email        String?  @unique(map: "email")
+  location     String?  @default("Mombasa") @db.VarChar(255)
+  ip_address   String?  @db.VarChar(50)
+  package      String?
+  speed        String?  @db.VarChar(50)
+  monthly_rate Decimal? @default(0.00) @db.Decimal(10, 2)
+  billing_day  Int?     @default(1)
+  source       String?  @default("web") @db.VarChar(50)
+  status       String?  @default("subscriber") @db.VarChar(50)
+  notes        String?  @db.Text
+  created_at   DateTime @default(now()) @db.DateTime(0)
+  updated_at   DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+enum ledger_entries_type {
+  income
+  expense
 }

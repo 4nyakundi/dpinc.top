@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Printer, LogOut } from "lucide-react";
+import { loadRecords } from "@/lib/client-records";
 
 interface CatalogItem {
   id: string;
@@ -19,6 +20,7 @@ interface Lead {
   phone?: string;
   company?: string;
   source?: string;
+  location?: string;
   status: string;
 }
 
@@ -69,52 +71,18 @@ export default function QuoteGenerator() {
   };
 
   const loadLeads = async (token: string) => {
-    try {
-      const leadRes = await fetch("/api/leads", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (leadRes.ok) {
-        const leadData = await leadRes.json();
-        setLeads(leadData.leads || []);
-      }
-    } catch (error) {
-      console.error("Failed to load leads", error);
-    }
+    try { setLeads(await loadRecords<Lead>("/api/leads", "leads", token)); }
+    catch (error) { console.error(error); alert("Unable to load customers. Please retry."); }
   };
-
   const loadSavedQuotes = async (token: string) => {
     setRecordsLoading(true);
-    try {
-      const quotesRes = await fetch("/api/quotes", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (quotesRes.ok) {
-        const quotesData = await quotesRes.json();
-        setSavedQuotes(quotesData.quotes || []);
-      }
-    } catch (error) {
-      console.error("Failed to load saved quotes", error);
-    } finally {
-      setRecordsLoading(false);
-    }
+    try { setSavedQuotes(await loadRecords("/api/quotes", "quotes", token)); }
+    catch (error) { console.error(error); alert("Unable to load saved quotes. Please retry."); }
+    finally { setRecordsLoading(false); }
   };
-
   const loadSavedInvoices = async (token: string) => {
-    try {
-      const invoiceRes = await fetch("/api/invoices", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (invoiceRes.ok) {
-        const invoiceData = await invoiceRes.json();
-        setSavedInvoices(invoiceData.invoices || []);
-      }
-    } catch (error) {
-      console.error("Failed to load saved invoices", error);
-    }
+    try { setSavedInvoices(await loadRecords("/api/invoices", "invoices", token)); }
+    catch (error) { console.error(error); alert("Unable to load invoices. Please retry."); }
   };
 
   const handleLeadSelection = (leadId: string) => {
@@ -135,6 +103,7 @@ export default function QuoteGenerator() {
       setPhone(lead.phone || "");
       setCompany(lead.company || "");
       setSource(lead.source || "web");
+      setCustomerLocation(lead.location || "");
     }
   };
 
@@ -370,7 +339,7 @@ export default function QuoteGenerator() {
                 source,
                 location: customerLocation,
               },
-          lineItems,
+          lineItems: lineItems.map(({ service, ...item }) => ({ ...item, name: service })),
           labourFee,
           tax,
           notes: "Auto-generated quote",
@@ -402,6 +371,7 @@ export default function QuoteGenerator() {
   };
 
   const handleLogout = () => {
+    void fetch("/api/auth/logout", { method: "POST" });
     localStorage.removeItem("adminToken");
     router.push("/admin/login");
   };

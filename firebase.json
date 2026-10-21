@@ -3,20 +3,16 @@
     "rules": "firestore.rules"
   },
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
       "firebase.json",
-      ".firebaserc",
-      ".gitignore",
-      "**/.git/**",
-      "**/.next/**",
+      "**/.*",
       "**/node_modules/**",
-      "app/**",
-      "components/**",
-      "src/**",
-      "prisma/**",
-      "*.ts",
-      "*.mjs"
+      "**/*.db",
+      "**/*.db-*",
+      "**/*.sqlite*",
+      "**/erp-data.json",
+      "**/erp-embedded-legacy.json"
     ]
   }
 }

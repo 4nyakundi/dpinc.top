@@ -3,8 +3,7 @@
 import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,13 +18,15 @@ export default function ContactPage() {
     const formData = new FormData(form);
 
     try {
-      await addDoc(collection(db, "contactSubmissions"), {
+      const response = await fetch("/api/contact", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
         name: String(formData.get("name") || "").trim(),
         email: String(formData.get("email") || "").trim(),
         message: String(formData.get("message") || "").trim(),
         source: "website",
-        createdAt: serverTimestamp(),
+        }),
       });
+      if (!response.ok) throw new Error("Submission failed");
       form.reset();
       setStatus("success");
     } catch (error) {

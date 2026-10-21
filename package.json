@@ -7,7 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "node prisma/seed.js"
+    "seed": "node scripts/database.mjs seed",
+    "predev": "node scripts/prepare-static.mjs",
+    "prebuild": "node scripts/database.mjs generate && node scripts/prepare-static.mjs",
+    "db:generate": "node scripts/database.mjs generate",
+    "db:migrate": "node scripts/database.mjs deploy",
+    "db:status": "node scripts/database.mjs status",
+    "db:admin": "node scripts/database.mjs admin",
+    "db:import": "node scripts/database.mjs import",
+    "test:database": "node --experimental-strip-types --test tests/database.test.mjs",
+    "test:database:integration": "node --experimental-strip-types --test tests/database.integration.test.mjs",
+    "pretest:database:integration": "node scripts/prepare-database-tests.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
@@ -40,5 +50,8 @@
     "prisma": "^5.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

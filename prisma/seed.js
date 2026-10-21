@@ -1,78 +1,21 @@
 const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcryptjs");
+const fs = require("node:fs");
 const prisma = new PrismaClient();
-
 async function main() {
-  const adminPassword = await bcrypt.hash("PortReinz12", 10);
-
-  await prisma.admin.upsert({
-    where: { username: "admin@dpinc.top" },
-    update: { password: adminPassword },
-    create: {
-      username: "admin@dpinc.top",
-      password: adminPassword,
-    },
-  });
-
-  const catalogItems = [
-    {
-      name: "Website Design",
-      description: "Responsive website design with modern UI and branding.",
-      price: 60000,
-    },
-    {
-      name: "Social Media Content",
-      description: "Creative media and graphics for campaigns and social channels.",
-      price: 25000,
-    },
-    {
-      name: "Network Installation",
-      description: "Structured cabling, switches, and secure connectivity setup.",
-      price: 40000,
-    },
-    {
-      name: "CCTV Setup",
-      description: "Surveillance camera installation with remote access support.",
-      price: 50000,
-    },
+  const data = JSON.parse(fs.readFileSync("data/site-data.json", "utf8"));
+  const proposal = data.commercialProposal;
+  const items = [
+    ...(data.catalog || []),
+    ...proposal.essentialsPackages,
+    ...proposal.itemizedServices.map((item, index) => ({ ...item, id: "itm-" + String(index + 1).padStart(2, "0"), name: item.item })),
+    ...proposal.annualMaintenanceContracts.map(item => ({ ...item, price: item.annualCost })),
   ];
-
-  for (const item of catalogItems) {
-    await prisma.catalogItem.upsert({
-      where: { name: item.name },
-      update: {
-        description: item.description,
-        price: item.price,
-      },
-      create: item,
-    });
+  // Seed missing catalog entries only; never reset business prices, credentials or customers.
+  for (const item of items) {
+    if (!Number.isFinite(item.price) || item.price < 0) throw new Error("Invalid catalog price");
+    await prisma.catalogItem.upsert({ where: { name: item.name }, update: {}, create: {
+      ...(item.id ? { id: item.id } : {}), name: item.name, description: item.description || null, priceMinor: Math.round(item.price * 100),
+    } });
   }
-
-  await prisma.lead.upsert({
-    where: { email: "info@example.com" },
-    update: {
-      name: "Tech Client",
-      phone: "0700000000",
-      company: "Example Corp",
-      status: "quote_sent",
-    },
-    create: {
-      name: "Tech Client",
-      email: "info@example.com",
-      phone: "0700000000",
-      company: "Example Corp",
-      source: "web",
-      status: "quote_sent",
-      notes: "Existing lead for demo purposes.",
-    },
-  });
 }
-
-main()
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch(() => { console.error("Catalog seed failed. Check database configuration and catalog data."); process.exitCode = 1; }).finally(() => prisma.$disconnect());

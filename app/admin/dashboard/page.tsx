@@ -22,6 +22,7 @@ import {
   DollarSign
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import { loadRecords } from "@/lib/client-records";
 
 interface CatalogItem {
   id: string;
@@ -120,42 +121,18 @@ export default function AdminDashboard() {
       ]);
     } catch (err) {
       console.error("Error loading data", err);
+      setSyncStatus("Unable to load database records. Please sign in again or retry.");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchQuotes = async (authToken: string) => {
-    const res = await fetch("/api/quotes", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setQuotes(data.quotes || []);
-    }
-  };
-
-  const fetchInvoices = async (authToken: string) => {
-    const res = await fetch("/api/invoices", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setInvoices(data.invoices || []);
-    }
-  };
-
-  const fetchSubscribers = async (authToken: string) => {
-    const res = await fetch("/api/subscribers", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setSubscribers(data.subscribers || []);
-    }
-  };
+  const fetchQuotes = async (authToken: string) => setQuotes(await loadRecords<Quote>("/api/quotes", "quotes", authToken));
+  const fetchInvoices = async (authToken: string) => setInvoices(await loadRecords<Invoice>("/api/invoices", "invoices", authToken));
+  const fetchSubscribers = async (authToken: string) => setSubscribers(await loadRecords<Lead>("/api/subscribers", "subscribers", authToken));
 
   const handleLogout = () => {
+    void fetch("/api/auth/logout", { method: "POST" });
     localStorage.removeItem("adminToken");
     router.push("/admin/login");
   };
@@ -185,7 +162,7 @@ export default function AdminDashboard() {
   };
 
   const deleteQuote = async (quoteId: string) => {
-    if (!confirm("Are you sure you want to delete this quotation? This will delete all associated invoice records.")) return;
+    if (!confirm("Archive this quotation? Quotations linked to issued invoices must be retained.")) return;
     setActionLoading(true);
     try {
       const res = await fetch(`/api/quotes/${quoteId}`, {
@@ -195,7 +172,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         await loadAllData(token);
       } else {
-        alert("Failed to delete quotation");
+        alert((await res.json()).error || "Unable to archive quotation");
       }
     } catch (err) {
       console.error(err);
@@ -218,7 +195,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         await loadAllData(token);
       } else {
-        alert("Failed to update invoice status");
+        alert((await res.json()).error || "Unable to update invoice status");
       }
     } catch (err) {
       console.error(err);
@@ -238,7 +215,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         await loadAllData(token);
       } else {
-        alert("Failed to delete invoice");
+        alert((await res.json()).error || "Unable to archive invoice");
       }
     } catch (err) {
       console.error(err);
