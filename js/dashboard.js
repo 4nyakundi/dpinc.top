@@ -577,6 +577,40 @@
   }
 
   async function loadDatabase() {
+    // 1. Try to fetch live state from backend database (API)
+    try {
+      const endpoints = ["/api/erp", "api/erp.php"];
+      let liveData = null;
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success && Array.isArray(data.subscribers) && data.subscribers.length > 0) {
+              liveData = data;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (liveData) {
+        erpState = {
+          subscribers: liveData.subscribers || [],
+          invoices: liveData.invoices || [],
+          jobCards: liveData.jobCards || [],
+          ledger: liveData.ledger || [],
+          inventory: INITIAL_ERP_DATA.inventory || [],
+          lastUpdated: liveData.timestamp || new Date().toISOString()
+        };
+        saveDatabase(false); // save to cache without re-triggering remote push
+        return;
+      }
+    } catch (err) {
+      console.warn("Live backend fetch unavailable, falling back to cache:", err);
+    }
+
+    // 2. Fallback to localStorage cache
     const cached = localStorage.getItem(STORAGE_KEYS.ERP_DATA);
     if (cached) {
       try {
@@ -595,26 +629,38 @@
               erpState.invoices.push(inv);
             }
           });
-          saveDatabase();
+          saveDatabase(false);
         } else {
           erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-          saveDatabase();
+          saveDatabase(false);
         }
       } catch (err) {
         console.error("Error parsing cached ERP data, loading defaults:", err);
         erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-        saveDatabase();
+        saveDatabase(false);
       }
     } else {
       erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-      saveDatabase();
+      saveDatabase(false);
     }
   }
 
-  function saveDatabase() {
+  function saveDatabase(syncToBackend = true) {
     try {
       erpState.lastUpdated = new Date().toISOString();
       localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
+      
+      if (syncToBackend) {
+        // Sync updated state to backend database asynchronously
+        const syncPayload = {
+          subscribers: erpState.subscribers || [],
+          lastUpdated: erpState.lastUpdated
+        };
+        const headers = { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" };
+        fetch("/api/erp", { method: "POST", headers, body: JSON.stringify(syncPayload) })
+          .catch(() => fetch("api/erp.php", { method: "POST", headers, body: JSON.stringify(syncPayload) }))
+          .catch(e => console.warn("Backend ERP sync notice:", e));
+      }
     } catch (e) {
       console.warn("LocalStorage save error:", e);
     }
