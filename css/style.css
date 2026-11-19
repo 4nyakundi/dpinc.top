@@ -1188,47 +1188,9 @@ img, svg {
   50% { transform: translateY(-15px) rotate(1deg); }
 }
 
-/* --- Annnimate Signature Custom Studio Cursor --- */
-.custom-cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  background: #5C9400;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.08s ease-out, width 0.3s ease, height 0.3s ease, background 0.3s ease;
-}
-
+.custom-cursor-dot,
 .custom-cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 36px;
-  height: 36px;
-  border: 1.5px solid rgba(92, 148, 0, 0.45);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99998;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
-}
-
-.custom-cursor-ring.cursor-hover {
-  width: 58px;
-  height: 58px;
-  border-color: #5C9400;
-  background: rgba(92, 148, 0, 0.08);
-  backdrop-filter: blur(2px);
-}
-
-@media (hover: none) or (max-width: 1024px) {
-  .custom-cursor-dot, .custom-cursor-ring {
-    display: none !important;
-  }
+  display: none !important;
 }
 
 /* --- Annnimate Bento Focus & Spotlight Card Grid --- */

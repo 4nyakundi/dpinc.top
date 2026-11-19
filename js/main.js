@@ -7,7 +7,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", "light");
   initLenisSmoothScroll();
-  initCustomStudioCursor();
   initLucideIcons();
   initYear();
   initNavbarScrollEffect();
@@ -210,61 +209,10 @@ function initTelemetrySimulation() {
 }
 
 /* ==========================================================================
-   5. ANNNIMATE CUSTOM MAGNETIC STUDIO CURSOR
+   5. CUSTOM CURSOR (DISABLED FOR NATIVE SMOOTH POINTER BEHAVIOR)
    ========================================================================== */
 function initCustomStudioCursor() {
-  if (window.innerWidth < 1024 || 'ontouchstart' in window) return;
-
-  let dot = document.querySelector(".custom-cursor-dot");
-  let ring = document.querySelector(".custom-cursor-ring");
-
-  if (!dot) {
-    dot = document.createElement("div");
-    dot.className = "custom-cursor-dot";
-    document.body.appendChild(dot);
-  }
-
-  if (!ring) {
-    ring = document.createElement("div");
-    ring.className = "custom-cursor-ring";
-    document.body.appendChild(ring);
-  }
-
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let ringX = mouseX;
-  let ringY = mouseY;
-
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    dot.style.left = `${mouseX}px`;
-    dot.style.top = `${mouseY}px`;
-  }, { passive: true });
-
-  if (typeof gsap !== "undefined") {
-    gsap.ticker.add(() => {
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-      ring.style.left = `${ringX}px`;
-      ring.style.top = `${ringY}px`;
-    });
-  }
-
-  const hoverTargets = document.querySelectorAll(
-    "a, button, input, select, textarea, .stat-card, .pillar-card, .package-card, .project-card, .client-card-modern, .testimonial-card, .process-step-card, .bento-showcase-card"
-  );
-
-  hoverTargets.forEach((target) => {
-    target.addEventListener("mouseenter", () => {
-      ring.classList.add("cursor-hover");
-      dot.style.transform = "translate(-50%, -50%) scale(1.5)";
-    });
-    target.addEventListener("mouseleave", () => {
-      ring.classList.remove("cursor-hover");
-      dot.style.transform = "translate(-50%, -50%) scale(1)";
-    });
-  });
+  // Disabled: standard native smooth cursor is restored
 }
 
 /* ==========================================================================
