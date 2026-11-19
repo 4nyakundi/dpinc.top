@@ -13,6 +13,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- GSAP Animation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body class="dashboard-body">
 
@@ -64,6 +67,20 @@
           <i data-lucide="shield-check"></i> Unlock ERP Cockpit
         </button>
 
+        <div class="auth-divider">
+          <span>or sign in with</span>
+        </div>
+
+        <button type="button" id="googleSignInBtn" class="btn-google-auth">
+          <svg class="google-icon-svg" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google (NOC Access)</span>
+        </button>
+
         <div class="text-center text-muted" style="font-size:0.75rem; margin-top:1.25rem; font-family:var(--font-mono);">
           DATA PORT LTD • SECURE NOC & FINANCIAL PLATFORM v2.5
         </div>
@@ -80,6 +97,9 @@
     <header class="dash-navbar no-print">
       <div class="dash-nav-container">
         <div class="dash-brand-area">
+          <button id="sidebarToggleBtn" class="sidebar-toggle-btn" title="Toggle Navigation Panel">
+            <i data-lucide="menu" style="width:18px; height:18px;"></i>
+          </button>
           <a href="index.html" class="brand-logo">
             <img src="public/logo-light.png" alt="DataPort.INC" style="height:38px; width:auto;">
           </a>
@@ -107,8 +127,64 @@
       </div>
     </header>
 
-    <main class="dash-main-content">
-      <div class="container">
+    <!-- Full-Width Workspace Layout with Side Panel Menu -->
+    <div class="dash-workspace-layout">
+      <!-- Side Navigation Panel -->
+      <aside id="dashSidebar" class="dash-sidebar no-print">
+        <div class="dash-sidebar-header">
+          <span class="dash-sidebar-title">NOC Modules</span>
+          <span class="badge" style="font-size:0.65rem; padding:0.15rem 0.45rem;">LIVE</span>
+        </div>
+        
+        <nav class="dash-sidebar-nav">
+          <button class="dash-side-nav-btn active" data-tab="calendarTab">
+            <i data-lucide="calendar" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Billing Calendar</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="invoicesTab">
+            <i data-lucide="receipt" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Invoices Hub</span>
+            <span class="nav-badge" id="sideInvoicesCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="subscribersTab">
+            <i data-lucide="users" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Subscribers</span>
+            <span class="nav-badge" id="sideSubsCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="jobCardsTab">
+            <i data-lucide="wrench" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Job Cards</span>
+            <span class="nav-badge" id="sideJobsCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="ledgerTab">
+            <i data-lucide="book-open" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Money & Ledger</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="analyticsTab">
+            <i data-lucide="bar-chart-3" style="width:18px; height:18px;"></i>
+            <span class="nav-text">P&L Analytics</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="tariffsTab">
+            <i data-lucide="tags" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Pricing & Tariffs</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="vaultTab">
+            <i data-lucide="lock" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Executive Vault</span>
+          </button>
+        </nav>
+
+        <div class="dash-sidebar-footer">
+          <div class="sidebar-footer-text text-muted" style="font-size:0.75rem; text-align:center;">
+            Data Port NOC • v2.6
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Full-Width Content Area -->
+      <div class="dash-workspace-main">
+        <main class="dash-main-content">
+          <div class="container dash-fullwidth-container">
 
         <!-- Unified Financial & Operations Overview Metrics Bar -->
         <section class="dash-metrics-grid">
@@ -754,7 +830,9 @@
 
       </div>
     </main>
-  </div>
+    </div> <!-- /.dash-workspace-main -->
+  </div> <!-- /.dash-workspace-layout -->
+  </div> <!-- /#dashboardApp -->
 
   <!-- =========================================================================
        MODAL: CREATE & PRINT INTERNET SERVICE INVOICE

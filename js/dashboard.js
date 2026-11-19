@@ -510,12 +510,53 @@
   /* =========================================================================
      1. AUTHENTICATION & SESSION CONTROL
      ========================================================================= */
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBcn0VG_TrZDUr18BaZgjSFuNmmt8imZPM",
+    authDomain: "dataport-b34b0.firebaseapp.com",
+    projectId: "dataport-b34b0",
+    storageBucket: "dataport-b34b0.firebasestorage.app",
+    messagingSenderId: "670768253907",
+    appId: "1:670768253907:web:ba6ce77c216050bed2fd26"
+  };
+
+  let firebaseAuthInstance = null;
+  function getFirebaseAuth() {
+    if (typeof firebase === "undefined") return null;
+    if (!firebase.apps.length) {
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      } catch (err) {
+        console.warn("Firebase Init:", err);
+      }
+    }
+    return firebase.auth();
+  }
+
   function initAuth() {
     const loginGate = document.getElementById("loginGate");
     const dashboardApp = document.getElementById("dashboardApp");
     const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
     const logoutBtn = document.getElementById("logoutBtn");
+    const googleBtn = document.getElementById("googleSignInBtn");
+
+    // Initialize Firebase Auth listener
+    try {
+      firebaseAuthInstance = getFirebaseAuth();
+      if (firebaseAuthInstance) {
+        firebaseAuthInstance.onAuthStateChanged((user) => {
+          if (user) {
+            localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+            localStorage.setItem("dp_auth_user", JSON.stringify({ email: user.email, name: user.displayName }));
+            if (loginGate) loginGate.style.display = "none";
+            if (dashboardApp) dashboardApp.style.display = "block";
+            startMasterERP();
+          }
+        });
+      }
+    } catch (err) {
+      console.warn("Firebase Auth listener error:", err);
+    }
 
     const session = localStorage.getItem(STORAGE_KEYS.SESSION);
     if (session === "authenticated") {
@@ -525,6 +566,50 @@
     } else {
       if (loginGate) loginGate.style.display = "flex";
       if (dashboardApp) dashboardApp.style.display = "none";
+    }
+
+    // Google Sign-In Click Handler
+    if (googleBtn) {
+      googleBtn.addEventListener("click", async () => {
+        const auth = getFirebaseAuth();
+        if (!auth) {
+          alert("Firebase SDK is initializing, please check internet connection or reload.");
+          return;
+        }
+        try {
+          googleBtn.disabled = true;
+          googleBtn.innerHTML = `<span class="pulse-dot"></span><span>Connecting to Google NOC Gateway...</span>`;
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: "select_account" });
+          const result = await auth.signInWithPopup(provider);
+          if (result && result.user) {
+            localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+            localStorage.setItem("dp_auth_user", JSON.stringify({ email: result.user.email, name: result.user.displayName }));
+            if (loginGate) loginGate.style.display = "none";
+            if (dashboardApp) dashboardApp.style.display = "block";
+            startMasterERP();
+            showToast(`NOC Access Granted: ${result.user.email}`);
+          }
+        } catch (err) {
+          console.error("Google Auth Error:", err);
+          if (loginError) {
+            loginError.style.display = "block";
+            loginError.textContent = err.message || "Google Authentication failed.";
+          }
+        } finally {
+          if (googleBtn) {
+            googleBtn.disabled = false;
+            googleBtn.innerHTML = `
+              <svg class="google-icon-svg" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Continue with Google (NOC Access)</span>`;
+          }
+        }
+      });
     }
 
     if (loginForm) {
@@ -551,7 +636,12 @@
 
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
+        try {
+          const auth = getFirebaseAuth();
+          if (auth) auth.signOut();
+        } catch (_) {}
         localStorage.removeItem(STORAGE_KEYS.SESSION);
+        localStorage.removeItem("dp_auth_user");
         sessionStorage.removeItem(STORAGE_KEYS.VAULT_UNLOCKED);
         window.location.reload();
       });
@@ -679,22 +769,38 @@
   }
 
   /* =========================================================================
-     3. TAB NAVIGATION CONTROLLER
+     3. TAB NAVIGATION CONTROLLER & SIDEBAR PANEL
      ========================================================================= */
   function setupTabNavigation() {
-    const tabBtns = document.querySelectorAll(".dash-tab");
+    const tabBtns = document.querySelectorAll(".dash-tab, .dash-side-nav-btn");
     const tabPanes = document.querySelectorAll(".dash-tab-pane");
     const quickActionLabel = document.getElementById("quickActionLabel");
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+    const sidebar = document.getElementById("dashSidebar");
+
+    // Sidebar Toggle
+    if (sidebarToggleBtn && sidebar) {
+      sidebarToggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+      });
+    }
 
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         const targetTabId = btn.getAttribute("data-tab");
         activeTab = targetTabId;
 
-        tabBtns.forEach(b => b.classList.remove("active"));
+        // Sync active state on both top-bar and sidebar buttons
+        tabBtns.forEach(b => {
+          if (b.getAttribute("data-tab") === targetTabId) {
+            b.classList.add("active");
+          } else {
+            b.classList.remove("active");
+          }
+        });
+
         tabPanes.forEach(p => p.classList.remove("active"));
 
-        btn.classList.add("active");
         const targetPane = document.getElementById(targetTabId);
         if (targetPane) {
           targetPane.classList.add("active");
@@ -830,13 +936,23 @@
     if (elMargin) elMargin.textContent = `KSh ${netCash.toLocaleString()}`;
     if (elNet) elNet.textContent = `Margin: ${profitMargin}% Net`;
 
-    // Update Tab Counts
+    // Update Tab Counts (both top tab bar and side panel)
     const tabSubs = document.getElementById("tabSubsCount");
+    const sideSubs = document.getElementById("sideSubsCount");
     const tabJobs = document.getElementById("tabJobsCount");
+    const sideJobs = document.getElementById("sideJobsCount");
     const tabInvoices = document.getElementById("tabInvoicesCount");
-    if (tabSubs) tabSubs.textContent = totalSubs;
-    if (tabJobs) tabJobs.textContent = erpState.jobCards ? erpState.jobCards.length : 0;
-    if (tabInvoices) tabInvoices.textContent = erpState.invoices ? erpState.invoices.length : 0;
+    const sideInvoices = document.getElementById("sideInvoicesCount");
+    const subsCountVal = totalSubs;
+    const jobsCountVal = erpState.jobCards ? erpState.jobCards.length : 0;
+    const invoicesCountVal = erpState.invoices ? erpState.invoices.length : 0;
+
+    if (tabSubs) tabSubs.textContent = subsCountVal;
+    if (sideSubs) sideSubs.textContent = subsCountVal;
+    if (tabJobs) tabJobs.textContent = jobsCountVal;
+    if (sideJobs) sideJobs.textContent = jobsCountVal;
+    if (tabInvoices) tabInvoices.textContent = invoicesCountVal;
+    if (sideInvoices) sideInvoices.textContent = invoicesCountVal;
 
     // Update Breakdown Progress Bars
     const transitPct = totalIncome > 0 ? Math.min(100, Math.round((transitCost / totalIncome) * 100)) : 25;
