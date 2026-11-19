@@ -715,6 +715,9 @@
           laborCost: Number(j.labor_cost) || Number(j.laborCost) || 0,
           totalCost: Number(j.total_cost) || Number(j.totalCost) || 0,
           notes: j.notes || "",
+          siteRequirements: j.site_requirements || j.siteRequirements || "",
+          progressNotes: j.progress_notes || j.progressNotes || "",
+          credentials: j.credentials || "",
           invoiceGenerated: Boolean(Number(j.invoice_generated)),
           invoiceRef: j.invoice_ref || j.invoiceRef || null
         }));
@@ -2775,6 +2778,33 @@
 
         ${materialsHtml}
 
+        ${job.siteRequirements ? `
+          <div style="background:rgba(0,0,0,0.03); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.8rem; border-left:3px solid var(--border-color);">
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem;">
+              <i data-lucide="clipboard-list" style="width:12px; height:12px;"></i> Site Requirements:
+            </div>
+            <div style="color:var(--text-secondary); white-space:pre-wrap;">${job.siteRequirements}</div>
+          </div>
+        ` : ''}
+
+        ${job.progressNotes ? `
+          <div style="background:rgba(92, 148, 0, 0.04); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.8rem; border-left:3px solid var(--lime);">
+            <div style="font-weight:700; color:var(--lime); margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem;">
+              <i data-lucide="activity" style="width:12px; height:12px;"></i> Progress Milestones:
+            </div>
+            <div style="color:var(--text-secondary); white-space:pre-wrap;">${job.progressNotes}</div>
+          </div>
+        ` : ''}
+
+        ${job.credentials ? `
+          <div style="background:rgba(0,0,0,0.05); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.78rem; font-family:var(--font-mono); border-left:3px solid #6366f1;">
+            <div style="font-weight:700; color:#4f46e5; margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem; font-family:var(--font-sans);">
+              <i data-lucide="key" style="width:12px; height:12px;"></i> Site Credentials & Logins:
+            </div>
+            <div style="color:var(--text-primary); white-space:pre-wrap;">${job.credentials}</div>
+          </div>
+        ` : ''}
+
         ${job.notes ? `<p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem; font-style:italic;">"${job.notes}"</p>` : ''}
 
         <div class="job-cost-bar">
@@ -2784,10 +2814,13 @@
               KSh ${(job.totalCost || 0).toLocaleString()}
             </div>
           </div>
-          <div style="display:flex; gap:0.5rem;">
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpEditJobCard('${job.id}')" title="Edit Job Details, Progress & Credentials">
+              <i data-lucide="edit" style="width:14px;"></i> Edit
+            </button>
             ${!job.invoiceGenerated ? `
               <button class="btn btn-primary btn-sm" onclick="window.dpConvertJobToInvoice('${job.id}')" title="Generate Client Invoice">
-                <i data-lucide="file-plus"></i> Convert to Invoice
+                <i data-lucide="file-plus" style="width:14px;"></i> Invoice
               </button>
             ` : `
               <span class="badge" style="background:rgba(138,206,0,0.12); color:#8ACE00; border-color:#8ACE00;">
@@ -3295,32 +3328,64 @@
       });
     }
 
-    // 3. Create Job Card Form
+    // 3. Create / Edit Job Card Form
     const jobForm = document.getElementById("jobCardForm");
     if (jobForm) {
       jobForm.addEventListener("submit", (e) => {
         e.preventDefault();
+        const editId = document.getElementById("jobEditId").value;
         const labor = Number(document.getElementById("jobLaborCost").value) || 0;
         const materials = Number(document.getElementById("jobMaterialCost").value) || 0;
+        const title = document.getElementById("jobTitle").value.trim();
+        const clientName = document.getElementById("jobClient").value.trim();
+        const tech = document.getElementById("jobTech").value.trim();
+        const category = document.getElementById("jobCategory").value;
+        const status = document.getElementById("jobStatus").value || "in_progress";
+        const siteReq = document.getElementById("jobSiteRequirements").value.trim();
+        const progNotes = document.getElementById("jobProgressNotes").value.trim();
+        const credentials = document.getElementById("jobCredentials").value.trim();
+        const notes = document.getElementById("jobNotes").value.trim();
 
-        const newJob = {
-          id: "job_" + Date.now(),
-          title: document.getElementById("jobTitle").value.trim(),
-          clientName: document.getElementById("jobClient").value.trim(),
-          technician: document.getElementById("jobTech").value.trim(),
-          category: document.getElementById("jobCategory").value,
-          laborCost: labor,
-          totalCost: labor + materials,
-          notes: document.getElementById("jobNotes").value.trim(),
-          status: "in_progress",
-          invoiceGenerated: false
-        };
+        if (editId) {
+          const job = (erpState.jobCards || []).find(j => j.id === editId);
+          if (job) {
+            job.title = title;
+            job.clientName = clientName;
+            job.technician = tech;
+            job.category = category;
+            job.status = status;
+            job.laborCost = labor;
+            job.totalCost = labor + materials;
+            job.siteRequirements = siteReq;
+            job.progressNotes = progNotes;
+            job.credentials = credentials;
+            job.notes = notes;
+            showToast(`Job Card "${title}" updated.`);
+          }
+        } else {
+          const newJob = {
+            id: "job_" + Date.now(),
+            title: title,
+            clientName: clientName,
+            technician: tech,
+            category: category,
+            date: new Date().toISOString().split("T")[0],
+            laborCost: labor,
+            totalCost: labor + materials,
+            status: status,
+            siteRequirements: siteReq,
+            progressNotes: progNotes,
+            credentials: credentials,
+            notes: notes,
+            invoiceGenerated: false
+          };
+          erpState.jobCards.push(newJob);
+          showToast(`Job Card "${newJob.title}" created.`);
+        }
 
-        erpState.jobCards.push(newJob);
         saveDatabase();
         document.getElementById("jobCardModal").style.display = "none";
         renderAll();
-        showToast(`Job Card "${newJob.title}" created.`);
       });
     }
 
@@ -3866,10 +3931,42 @@
   function openJobCardModal() {
     const modal = document.getElementById("jobCardModal");
     const form = document.getElementById("jobCardForm");
+    const title = document.getElementById("jobCardModalTitle");
+    const editIdInput = document.getElementById("jobEditId");
     if (form) form.reset();
+    if (editIdInput) editIdInput.value = "";
+    if (title) title.textContent = "Create Field Deployment Job Card";
     if (modal) modal.style.display = "flex";
     if (window.lucide) window.lucide.createIcons();
   }
+
+  window.dpEditJobCard = function (jobId) {
+    const job = (erpState.jobCards || []).find(j => j.id === jobId);
+    if (!job) return;
+
+    const modal = document.getElementById("jobCardModal");
+    const title = document.getElementById("jobCardModalTitle");
+    if (title) title.textContent = `Edit Job Card: ${job.title}`;
+
+    document.getElementById("jobEditId").value = job.id;
+    document.getElementById("jobTitle").value = job.title || "";
+    document.getElementById("jobClient").value = job.clientName || "";
+    document.getElementById("jobTech").value = job.technician || "";
+    document.getElementById("jobCategory").value = job.category || "Fiber Deployment";
+    document.getElementById("jobStatus").value = job.status || "in_progress";
+    document.getElementById("jobLaborCost").value = job.laborCost || 0;
+    
+    const matCost = Math.max(0, (job.totalCost || 0) - (job.laborCost || 0));
+    document.getElementById("jobMaterialCost").value = matCost;
+
+    document.getElementById("jobSiteRequirements").value = job.siteRequirements || "";
+    document.getElementById("jobProgressNotes").value = job.progressNotes || "";
+    document.getElementById("jobCredentials").value = job.credentials || "";
+    document.getElementById("jobNotes").value = job.notes || "";
+
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
 
   function openLedgerModal() {
     const modal = document.getElementById("ledgerModal");

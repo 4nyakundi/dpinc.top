@@ -84,12 +84,13 @@ try {
         // 2. Sync job cards
         if (isset($input['jobCards']) && is_array($input['jobCards'])) {
             $jStmt = $pdo->prepare("INSERT INTO job_cards 
-                (id, title, client_name, technician, date, status, category, labor_cost, total_cost, notes, invoice_generated, invoice_ref)
-                VALUES (:id, :title, :client_name, :technician, :date, :status, :category, :labor_cost, :total_cost, :notes, :invoice_generated, :invoice_ref)
+                (id, title, client_name, technician, date, status, category, labor_cost, total_cost, notes, site_requirements, progress_notes, credentials, invoice_generated, invoice_ref)
+                VALUES (:id, :title, :client_name, :technician, :date, :status, :category, :labor_cost, :total_cost, :notes, :site_requirements, :progress_notes, :credentials, :invoice_generated, :invoice_ref)
                 ON DUPLICATE KEY UPDATE
                 title = VALUES(title), client_name = VALUES(client_name), technician = VALUES(technician),
                 date = VALUES(date), status = VALUES(status), category = VALUES(category),
                 labor_cost = VALUES(labor_cost), total_cost = VALUES(total_cost), notes = VALUES(notes),
+                site_requirements = VALUES(site_requirements), progress_notes = VALUES(progress_notes), credentials = VALUES(credentials),
                 invoice_generated = VALUES(invoice_generated), invoice_ref = VALUES(invoice_ref)");
 
             foreach ($input['jobCards'] as $j) {
@@ -105,6 +106,9 @@ try {
                     ':labor_cost'        => $j['laborCost'] ?? $j['labor_cost'] ?? 0,
                     ':total_cost'        => $j['totalCost'] ?? $j['total_cost'] ?? 0,
                     ':notes'             => $j['notes'] ?? null,
+                    ':site_requirements' => $j['siteRequirements'] ?? $j['site_requirements'] ?? null,
+                    ':progress_notes'    => $j['progressNotes'] ?? $j['progress_notes'] ?? null,
+                    ':credentials'       => $j['credentials'] ?? null,
                     ':invoice_generated' => !empty($j['invoiceGenerated']) ? 1 : 0,
                     ':invoice_ref'       => $j['invoiceRef'] ?? $j['invoice_ref'] ?? null
                 ]);
