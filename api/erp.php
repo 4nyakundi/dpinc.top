@@ -50,8 +50,8 @@ try {
             exit();
         }
 
-        // Handle sync of subscribers batch
-        if (!empty($input['subscribers']) && is_array($input['subscribers'])) {
+        // 1. Sync subscribers
+        if (isset($input['subscribers']) && is_array($input['subscribers'])) {
             $stmt = $pdo->prepare("INSERT INTO subscribers (id, name, company, phone, email, location, ip_address, package, speed, monthly_rate, billing_day, source, status, notes)
                 VALUES (:id, :name, :company, :phone, :email, :location, :ip_address, :package, :speed, :monthly_rate, :billing_day, :source, :status, :notes)
                 ON DUPLICATE KEY UPDATE
@@ -69,11 +69,11 @@ try {
                     ':phone'        => $s['phone'] ?? null,
                     ':email'        => $s['email'] ?? null,
                     ':location'     => $s['location'] ?? 'Mombasa',
-                    ':ip_address'   => $s['ip_address'] ?? $s['ip'] ?? null,
-                    ':package'      => $s['package'] ?? $s['plan'] ?? null,
+                    ':ip_address'   => $s['ipAddress'] ?? $s['ip_address'] ?? null,
+                    ':package'      => $s['package'] ?? null,
                     ':speed'        => $s['speed'] ?? null,
-                    ':monthly_rate' => $s['monthly_rate'] ?? $s['rate'] ?? 0,
-                    ':billing_day'  => $s['billing_day'] ?? 1,
+                    ':monthly_rate' => $s['monthlyRate'] ?? $s['monthly_rate'] ?? $s['price'] ?? 0,
+                    ':billing_day'  => $s['billingDay'] ?? $s['billing_day'] ?? 1,
                     ':source'       => $s['source'] ?? 'web',
                     ':status'       => $s['status'] ?? 'subscriber',
                     ':notes'        => $s['notes'] ?? null
@@ -81,7 +81,106 @@ try {
             }
         }
 
+        // 2. Sync job cards
+        if (isset($input['jobCards']) && is_array($input['jobCards'])) {
+            $jStmt = $pdo->prepare("INSERT INTO job_cards 
+                (id, title, client_name, technician, date, status, category, labor_cost, total_cost, notes, invoice_generated, invoice_ref)
+                VALUES (:id, :title, :client_name, :technician, :date, :status, :category, :labor_cost, :total_cost, :notes, :invoice_generated, :invoice_ref)
+                ON DUPLICATE KEY UPDATE
+                title = VALUES(title), client_name = VALUES(client_name), technician = VALUES(technician),
+                date = VALUES(date), status = VALUES(status), category = VALUES(category),
+                labor_cost = VALUES(labor_cost), total_cost = VALUES(total_cost), notes = VALUES(notes),
+                invoice_generated = VALUES(invoice_generated), invoice_ref = VALUES(invoice_ref)");
+
+            foreach ($input['jobCards'] as $j) {
+                $id = $j['id'] ?? ('job-' . bin2hex(random_bytes(4)));
+                $jStmt->execute([
+                    ':id'                => $id,
+                    ':title'             => $j['title'] ?? 'Field Job',
+                    ':client_name'       => $j['clientName'] ?? $j['client_name'] ?? 'Client',
+                    ':technician'        => $j['technician'] ?? 'Tech',
+                    ':date'              => $j['date'] ?? date('Y-m-d'),
+                    ':status'            => $j['status'] ?? 'in_progress',
+                    ':category'          => $j['category'] ?? 'Field Operations',
+                    ':labor_cost'        => $j['laborCost'] ?? $j['labor_cost'] ?? 0,
+                    ':total_cost'        => $j['totalCost'] ?? $j['total_cost'] ?? 0,
+                    ':notes'             => $j['notes'] ?? null,
+                    ':invoice_generated' => !empty($j['invoiceGenerated']) ? 1 : 0,
+                    ':invoice_ref'       => $j['invoiceRef'] ?? $j['invoice_ref'] ?? null
+                ]);
+            }
+        }
+
+        // 3. Sync ledger entries
+        if (isset($input['ledger']) && is_array($input['ledger'])) {
+            $lStmt = $pdo->prepare("INSERT INTO ledger_entries 
+                (id, date, description, category, type, amount, payment_method, reference, entity)
+                VALUES (:id, :date, :description, :category, :type, :amount, :payment_method, :reference, :entity)
+                ON DUPLICATE KEY UPDATE
+                date = VALUES(date), description = VALUES(description), category = VALUES(category),
+                type = VALUES(type), amount = VALUES(amount), payment_method = VALUES(payment_method),
+                reference = VALUES(reference), entity = VALUES(entity)");
+
+            foreach ($input['ledger'] as $l) {
+                $id = $l['id'] ?? ('tx-' . bin2hex(random_bytes(4)));
+                $lStmt->execute([
+                    ':id'             => $id,
+                    ':date'           => $l['date'] ?? date('Y-m-d'),
+                    ':description'    => $l['description'] ?? 'Transaction',
+                    ':category'       => $l['category'] ?? 'Operations',
+                    ':type'           => $l['type'] ?? 'income',
+                    ':amount'         => $l['amount'] ?? 0,
+                    ':payment_method' => $l['paymentMethod'] ?? $l['payment_method'] ?? 'M-Pesa',
+                    ':reference'      => $l['reference'] ?? null,
+                    ':entity'         => $l['entity'] ?? 'DATA PORT Core'
+                ]);
+            }
+        }
+
         echo json_encode(['success' => true, 'synced_at' => date('c')]);
+        exit();
+    } elseif ($method === 'DELETE') {
+        // Universal permanent delete endpoint
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+        $type = $_GET['type'] ?? ($input['type'] ?? null);
+        $id   = $_GET['id'] ?? ($input['id'] ?? null);
+
+        if (!$type || !$id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Type and ID required for permanent deletion.']);
+            exit();
+        }
+
+        $tableMap = [
+            'subscriber' => 'subscribers',
+            'jobCard'    => 'job_cards',
+            'ledger'     => 'ledger_entries',
+            'service'    => 'services',
+            'invoice'    => 'invoices'
+        ];
+
+        if (!isset($tableMap[$type])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => "Invalid entity type: {$type}"]);
+            exit();
+        }
+
+        $table = $tableMap[$type];
+
+        if ($type === 'invoice') {
+            $delItems = $pdo->prepare("DELETE FROM invoice_items WHERE invoice_id = ?");
+            $delItems->execute([$id]);
+        }
+
+        $delStmt = $pdo->prepare("DELETE FROM `{$table}` WHERE `id` = ?");
+        $delStmt->execute([$id]);
+
+        echo json_encode([
+            'success' => true,
+            'deleted' => $id,
+            'table'   => $table,
+            'message' => "Record {$id} permanently deleted from database."
+        ]);
         exit();
     } else {
         http_response_code(405);

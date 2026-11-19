@@ -685,11 +685,57 @@
       }
 
       if (liveData) {
+        // Map database fields to JavaScript camelCase conventions
+        const mappedSubs = (liveData.subscribers || []).map(s => ({
+          id: s.id,
+          name: s.name,
+          company: s.company || "",
+          phone: s.phone || "",
+          email: s.email || "",
+          location: s.location || "Mombasa",
+          ipAddress: s.ip_address || s.ipAddress || "",
+          package: s.package || "Fiber Internet",
+          speed: s.speed || "",
+          monthlyRate: Number(s.monthly_rate) || Number(s.monthlyRate) || 0,
+          price: Number(s.monthly_rate) || Number(s.price) || 0,
+          billingDay: Number(s.billing_day) || Number(s.billingDay) || 1,
+          source: s.source || "web",
+          status: s.status || "active",
+          notes: s.notes || ""
+        }));
+
+        const mappedJobs = (liveData.jobCards || []).map(j => ({
+          id: j.id,
+          title: j.title,
+          clientName: j.client_name || j.clientName || "",
+          technician: j.technician || "Lead Tech",
+          date: j.date || new Date().toISOString().split("T")[0],
+          status: j.status || "in_progress",
+          category: j.category || "Field Operations",
+          laborCost: Number(j.labor_cost) || Number(j.laborCost) || 0,
+          totalCost: Number(j.total_cost) || Number(j.totalCost) || 0,
+          notes: j.notes || "",
+          invoiceGenerated: Boolean(Number(j.invoice_generated)),
+          invoiceRef: j.invoice_ref || j.invoiceRef || null
+        }));
+
+        const mappedLedger = (liveData.ledger || []).map(l => ({
+          id: l.id,
+          date: l.date || new Date().toISOString().split("T")[0],
+          description: l.description,
+          category: l.category || "General",
+          type: l.type || "income",
+          amount: Number(l.amount) || 0,
+          paymentMethod: l.payment_method || l.paymentMethod || "M-Pesa",
+          reference: l.reference || "",
+          entity: l.entity || "DATA PORT Core"
+        }));
+
         erpState = {
-          subscribers: liveData.subscribers || [],
+          subscribers: mappedSubs,
           invoices: liveData.invoices || [],
-          jobCards: liveData.jobCards || [],
-          ledger: liveData.ledger || [],
+          jobCards: mappedJobs,
+          ledger: mappedLedger,
           inventory: INITIAL_ERP_DATA.inventory || [],
           lastUpdated: liveData.timestamp || new Date().toISOString()
         };
@@ -744,6 +790,8 @@
         // Sync updated state to backend database asynchronously
         const syncPayload = {
           subscribers: erpState.subscribers || [],
+          jobCards: erpState.jobCards || [],
+          ledger: erpState.ledger || [],
           lastUpdated: erpState.lastUpdated
         };
         const headers = { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" };
@@ -755,6 +803,24 @@
       console.warn("LocalStorage save error:", e);
     }
   }
+
+  // Universal Permanent Deletion Helper
+  window.dpPermanentDelete = async function(type, id) {
+    const endpoints = [
+      `/api/erp?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`,
+      `api/erp.php?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`
+    ];
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: { "x-admin-key": "dpinc-staff-master" }
+        });
+        if (res.ok) return true;
+      } catch (_) {}
+    }
+    return false;
+  };
 
   function startClock() {
     const clockEl = document.getElementById("liveKenyaClock");
@@ -2731,6 +2797,9 @@
             <button class="btn btn-secondary btn-sm" onclick="window.dpToggleJobStatus('${job.id}')" title="Toggle Status">
               <i data-lucide="rotate-cw" style="width:14px;"></i>
             </button>
+            <button class="btn btn-secondary btn-sm" style="color:#ef4444;" onclick="window.dpDeleteJob('${job.id}')" title="Delete Job Card">
+              <i data-lucide="trash-2" style="width:14px;"></i>
+            </button>
           </div>
         </div>
       `;
@@ -3738,21 +3807,33 @@
     showToast(`Rule "${rule.name}" is now ${rule.active ? 'Active' : 'Disabled'}.`);
   };
 
-  window.dpDeleteSub = function (subId) {
-    if (confirm("Are you sure you want to remove this subscriber?")) {
+  window.dpDeleteSub = async function (subId) {
+    if (confirm("Are you sure you want to permanently remove this subscriber from the database?")) {
       erpState.subscribers = (erpState.subscribers || []).filter(s => s.id !== subId);
       saveDatabase();
+      await window.dpPermanentDelete("subscriber", subId);
       renderAll();
-      showToast("Subscriber removed.");
+      showToast("Subscriber permanently deleted from database.");
     }
   };
 
-  window.dpDeleteTx = function (txId) {
-    if (confirm("Delete this ledger entry?")) {
+  window.dpDeleteTx = async function (txId) {
+    if (confirm("Permanently delete this ledger entry from the database?")) {
       erpState.ledger = (erpState.ledger || []).filter(t => t.id !== txId);
       saveDatabase();
+      await window.dpPermanentDelete("ledger", txId);
       renderAll();
-      showToast("Ledger entry removed.");
+      showToast("Ledger entry permanently deleted.");
+    }
+  };
+
+  window.dpDeleteJob = async function (jobId) {
+    if (confirm("Permanently delete this Job Card from the database?")) {
+      erpState.jobCards = (erpState.jobCards || []).filter(j => j.id !== jobId);
+      saveDatabase();
+      await window.dpPermanentDelete("jobCard", jobId);
+      renderAll();
+      showToast("Job Card permanently deleted.");
     }
   };
 
