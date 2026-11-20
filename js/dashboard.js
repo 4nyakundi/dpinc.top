@@ -31,142 +31,21 @@
   };
 
   const PACKAGE_RATES = {
-    "5 Mbps SOHO Fiber": 2500,
-    "10 Mbps Standard Business": 3500,
-    "15 Mbps Home Fiber Fast": 3500,
-    "20 Mbps Pro Office Dedicated": 5500,
-    "30 Mbps Dedicated Business Pro": 8500,
-    "40 Mbps Creative High-Upload": 9500,
-    "50 Mbps High-Capacity Enterprise": 12500,
-    "Custom Plan": 5000
+    "10 Mbps Home Lite": 1000,
+    "15 Mbps Home Package": 1500,
+    "15 Mbps Business Package": 1500,
+    "20 Mbps Home": 2000,
+    "20 Mbps Business": 2500,
+    "30 Mbps Max Home": 3000,
+    "30 Mbps Max Business": 3000,
+    "Custom Plan": 1000
   };
 
   // Complete Embedded Default Seed Dataset (Zero-dependency fallback for file:// and offline use)
   const INITIAL_ERP_DATA = {
     version: "2.5.0",
     lastUpdated: new Date().toISOString(),
-    subscribers: [
-      {
-        id: "sub-101",
-        name: "Mombasa Ocean View Suites",
-        company: "Ocean View Hospitality Ltd",
-        phone: "+254 712 345 678",
-        email: "management@oceanview.co.ke",
-        package: "50 Mbps High-Capacity Enterprise",
-        monthlyRate: 12500,
-        billingDay: 1,
-        location: "Nyali Beach Road, Mombasa",
-        ipAddress: "197.232.44.12",
-        pppoeUser: "oceanview_resort",
-        pppoePass: "dp@ocean#2026",
-        routerModel: "MikroTik RB4011 / Port 1",
-        status: "active",
-        joinedDate: "2024-01-15"
-      },
-      {
-        id: "sub-102",
-        name: "Crown Logistics Hub",
-        company: "Crown Global Forwarders",
-        phone: "+254 722 987 654",
-        email: "operations@crownlogistics.com",
-        package: "30 Mbps Dedicated Business Pro",
-        monthlyRate: 8500,
-        billingDay: 1,
-        location: "Mbaraki Port Area, Mombasa",
-        ipAddress: "197.232.44.18",
-        pppoeUser: "crown_logistics_hq",
-        pppoePass: "dp@crown#2026",
-        routerModel: "Huawei Dual-Band ONT / Port 1",
-        status: "active",
-        joinedDate: "2024-03-10"
-      },
-      {
-        id: "sub-103",
-        name: "Dr. Sarah Kimani Dental Clinic",
-        company: "Kimani Healthcare Group",
-        phone: "+254 733 112 233",
-        email: "reception@kimanidental.co.ke",
-        package: "20 Mbps Pro Office Dedicated",
-        monthlyRate: 5500,
-        billingDay: 5,
-        location: "Digo Road, CBD, Mombasa",
-        ipAddress: "197.232.44.25",
-        pppoeUser: "kimani_dental_cbd",
-        pppoePass: "dp@kimani#2026",
-        routerModel: "Huawei HG8245H5 ONT",
-        status: "active",
-        joinedDate: "2024-06-01"
-      },
-      {
-        id: "sub-104",
-        name: "Apex Creative Studio",
-        company: "Apex Media House",
-        phone: "+254 701 445 566",
-        email: "accounts@apexcreative.co.ke",
-        package: "40 Mbps Creative High-Upload",
-        monthlyRate: 9500,
-        billingDay: 10,
-        location: "Bamburi Mtambo, Mombasa",
-        ipAddress: "197.232.44.33",
-        pppoeUser: "apex_creative_media",
-        pppoePass: "dp@apex#2026",
-        routerModel: "Huawei AX3 Dual Band Router",
-        status: "active",
-        joinedDate: "2024-08-12"
-      },
-      {
-        id: "sub-105",
-        name: "Tudor Heights Apartment 4B",
-        company: "Residential Subscriber",
-        phone: "+254 790 964 002",
-        email: "resident4b@tudorheights.ke",
-        package: "15 Mbps Home Fiber Fast",
-        monthlyRate: 3500,
-        billingDay: 15,
-        location: "Tudor, Mombasa",
-        ipAddress: "197.232.44.41",
-        pppoeUser: "tudor_apt4b",
-        pppoePass: "dp@tudor4b#2026",
-        routerModel: "ZTE F670L Gigabit ONT",
-        status: "active",
-        joinedDate: "2025-01-05"
-      },
-      {
-        id: "sub-106",
-        name: "Coast Marine Spares",
-        company: "Coast Marine Engineering",
-        phone: "+254 720 778 899",
-        email: "info@coastmarine.co.ke",
-        package: "30 Mbps Dedicated Business Pro",
-        monthlyRate: 8500,
-        billingDay: 20,
-        location: "Shimanzi Industrial Area, Mombasa",
-        ipAddress: "197.232.44.52",
-        pppoeUser: "coast_marine_ops",
-        pppoePass: "dp@marine#2026",
-        routerModel: "Huawei ONT Dual-Band",
-        status: "active",
-        joinedDate: "2025-02-18"
-      },
-      {
-        id: "sub-107",
-        name: "Shani Chai",
-        company: "Shani Chai Operations",
-        phone: "0795 917 066",
-        email: "shanichai@dpinc.co.ke",
-        package: "DataPort NET Public IP (25 mbps)",
-        speed: "25 mbps",
-        monthlyRate: 3000,
-        billingDay: 9,
-        location: "VOK Bombolulu",
-        ipAddress: "197.232.44.60",
-        pppoeUser: "shani_chai_vok",
-        pppoePass: "dp@shani#2026",
-        routerModel: "Huawei ONT Dual-Band",
-        status: "active",
-        joinedDate: "2026-02-09"
-      }
-    ],
+    subscribers: [],
     jobCards: [
       {
         id: "job-101",
@@ -317,157 +196,7 @@
         entity: "Operations"
       }
     ],
-    invoices: [
-      {
-        id: "inv-001",
-        invoiceNo: "PROF-2026-0089",
-        subId: "sub-101",
-        clientName: "Mombasa Ocean View Suites",
-        phone: "+254 712 345 678",
-        email: "management@oceanview.co.ke",
-        package: "50 Mbps High-Capacity Enterprise",
-        amount: 12500,
-        period: "September 2026",
-        dueDate: "1st September 2026",
-        status: "paid",
-        paidAt: "2026-09-01T08:30:00.000Z",
-        jobCardId: null
-      },
-      {
-        id: "inv-002",
-        invoiceNo: "PROF-2026-0090",
-        subId: "sub-102",
-        clientName: "Crown Logistics Hub",
-        phone: "+254 722 987 654",
-        email: "operations@crownlogistics.com",
-        package: "30 Mbps Dedicated Business Pro",
-        amount: 8500,
-        period: "September 2026",
-        dueDate: "1st September 2026",
-        status: "paid",
-        paidAt: "2026-09-01T10:15:00.000Z",
-        jobCardId: null
-      },
-      {
-        id: "inv-003",
-        invoiceNo: "PROF-2026-0091",
-        subId: "sub-103",
-        clientName: "Dr. Sarah Kimani Dental Clinic",
-        phone: "+254 733 112 233",
-        email: "reception@kimanidental.co.ke",
-        package: "20 Mbps Pro Office Dedicated",
-        amount: 5500,
-        period: "September 2026",
-        dueDate: "5th September 2026",
-        status: "paid",
-        paidAt: "2026-09-05T14:20:00.000Z",
-        jobCardId: null
-      },
-      {
-        id: "inv-004",
-        invoiceNo: "PROF-2026-0092",
-        subId: "sub-104",
-        clientName: "Apex Creative Studio",
-        phone: "+254 701 445 566",
-        email: "accounts@apexcreative.co.ke",
-        package: "40 Mbps Creative High-Upload",
-        amount: 9500,
-        period: "September 2026",
-        dueDate: "10th September 2026",
-        status: "paid",
-        paidAt: "2026-09-10T11:00:00.000Z",
-        jobCardId: null
-      },
-      {
-        id: "inv-005",
-        invoiceNo: "PROF-2026-0093",
-        subId: "sub-105",
-        clientName: "Tudor Heights Apartment 4B",
-        phone: "+254 790 964 002",
-        email: "resident4b@tudorheights.ke",
-        package: "15 Mbps Home Fiber Fast",
-        amount: 3500,
-        period: "September 2026",
-        dueDate: "15th September 2026",
-        status: "unpaid",
-        paidAt: null,
-        jobCardId: null
-      },
-      {
-        id: "inv-006",
-        invoiceNo: "PROF-2026-0094",
-        subId: "sub-106",
-        clientName: "Coast Marine Spares",
-        phone: "+254 720 778 899",
-        email: "info@coastmarine.co.ke",
-        package: "30 Mbps Dedicated Business Pro",
-        amount: 8500,
-        period: "September 2026",
-        dueDate: "20th September 2026",
-        status: "unpaid",
-        paidAt: null,
-        jobCardId: null
-      },
-      {
-        id: "inv-007",
-        invoiceNo: "#007/26",
-        docType: "Invoice",
-        clientType: "subscriber",
-        subId: "sub-107",
-        clientName: "Shani Chai",
-        phone: "0795 917 066",
-        email: "shanichai@dpinc.co.ke",
-        location: "VOK Bombolulu",
-        items: [
-          { title: "DataPort NET Public IP", qty: "25 mbps", rate: 3000 }
-        ],
-        subtotal: 3000,
-        amount: 3000,
-        grandTotal: 3000,
-        totalPaid: 3000,
-        balanceDue: 0,
-        period: "February 2026",
-        issueDate: "2026-02-09",
-        dueDate: "2026-02-14",
-        status: "paid",
-        paidAt: "2026-02-09T10:00:00.000Z",
-        hasPaymentPlan: false,
-        validityNote: "Thank you!"
-      },
-      {
-        id: "inv-008",
-        invoiceNo: "10.23/26",
-        docType: "Proforma Invoice",
-        clientType: "general",
-        subId: null,
-        clientName: "Tracy Wangari",
-        phone: "0722 000 111",
-        email: "tracy.wangari@domain.com",
-        location: "Mombasa",
-        items: [
-          { title: "Domain Name Registaration. (Company).", qty: "1 Year", rate: 2500 },
-          { title: "Domain Hosting (TrueHost Silver).", qty: "1 Year", rate: 4300 },
-          { title: "Web Security & Debugging & SSL Security (Ask SSL)", qty: "1 Year", rate: 1800 },
-          { title: "Web Creation & Design - Full Stacks Creation (JSON/CSS)", qty: "Lifetime", rate: 10000 }
-        ],
-        subtotal: 18600,
-        amount: 18600,
-        grandTotal: 18600,
-        totalPaid: 5000,
-        balanceDue: 13600,
-        hasPaymentPlan: true,
-        depositAmount: 5000,
-        depositLabel: "1 ST Installment",
-        installments: [
-          { label: "1 ST Installment", amount: 5000, date: "2025-01-16" }
-        ],
-        period: "January 2025",
-        issueDate: "2025-01-16",
-        dueDate: "2025-01-30",
-        status: "partial",
-        validityNote: "Please Note: Valid for 14 days from date."
-      }
-    ],
+    invoices: [],
     vault: {
       pin: VAULT_DEFAULT_PIN,
       treasuryBalance: 125000,
@@ -669,7 +398,7 @@
   async function loadDatabase() {
     // 1. Try to fetch live state from backend database (API)
     try {
-      const endpoints = ["/api/erp", "api/erp.php"];
+      const endpoints = ["api/erp.php", "/api/erp"];
       let liveData = null;
       for (const ep of endpoints) {
         try {
@@ -800,6 +529,11 @@
           if (!Array.isArray(erpState.invoices)) erpState.invoices = [];
           if (!Array.isArray(erpState.jobCards)) erpState.jobCards = [];
           if (!Array.isArray(erpState.ledger)) erpState.ledger = [];
+          // Automatically purge obsolete demo placeholder records from storage
+          const demoSubIds = ['sub-101', 'sub-102', 'sub-103', 'sub-104', 'sub-105', 'sub-106', 'sub-107'];
+          const demoInvIds = ['inv-001', 'inv-002', 'inv-003', 'inv-004', 'inv-005', 'inv-006', 'inv-007', 'inv-008'];
+          erpState.subscribers = erpState.subscribers.filter(s => !demoSubIds.includes(s.id) && !(s.name && s.name.includes("Mombasa Ocean View")));
+          erpState.invoices = erpState.invoices.filter(i => !demoInvIds.includes(i.id) && !(i.invoiceNo && i.invoiceNo.startsWith("PROF-2026-")));
           saveDatabase(false);
           return;
         }
@@ -828,8 +562,8 @@
           lastUpdated: erpState.lastUpdated
         };
         const headers = { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" };
-        fetch("/api/erp", { method: "POST", headers, body: JSON.stringify(syncPayload) })
-          .catch(() => fetch("api/erp.php", { method: "POST", headers, body: JSON.stringify(syncPayload) }))
+        fetch("api/erp.php", { method: "POST", headers, body: JSON.stringify(syncPayload) })
+          .catch(() => fetch("/api/erp", { method: "POST", headers, body: JSON.stringify(syncPayload) }))
           .catch(e => console.warn("Backend ERP sync notice:", e));
       }
     } catch (e) {
@@ -1889,7 +1623,7 @@
     saveDatabase();
     
     // Background sync to SQL database backend
-    fetch("/api/invoices", {
+    fetch("api/invoices.php", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" },
       body: JSON.stringify(invData)
@@ -2565,6 +2299,7 @@
     saveDatabase();
 
     // Background permanent delete from SQL database backend
+    await fetch(`api/invoices.php?id=${encodeURIComponent(invId)}`, { method: "DELETE" }).catch(() => {});
     await window.dpPermanentDelete("invoice", invId);
 
     renderAll();
@@ -3286,6 +3021,11 @@
         }
 
         saveDatabase();
+        fetch("api/subscribers.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editId ? (erpState.subscribers.find(s => s.id === editId) || {}) : newSub)
+        }).catch(() => {});
         document.getElementById("subscriberModal").style.display = "none";
         renderAll();
       });
@@ -3611,8 +3351,8 @@
     } else {
       document.getElementById("subBillingDay").value = 1;
     }
-    document.getElementById("subPackage").value = "10 Mbps Standard Business";
-    document.getElementById("subPrice").value = 3500;
+    document.getElementById("subPackage").value = "10 Mbps Home Lite";
+    document.getElementById("subPrice").value = 1000;
     if (modal) modal.style.display = "flex";
     if (window.lucide) window.lucide.createIcons();
   };
@@ -3627,8 +3367,8 @@
     document.getElementById("subCompany").value = sub.company || "";
     document.getElementById("subPhone").value = sub.phone || "";
     document.getElementById("subEmail").value = sub.email || "";
-    document.getElementById("subPackage").value = sub.package || "10 Mbps Standard Business";
-    document.getElementById("subPrice").value = sub.monthlyRate || sub.price || 3500;
+    document.getElementById("subPackage").value = sub.package || "10 Mbps Home Lite";
+    document.getElementById("subPrice").value = sub.monthlyRate || sub.price || 1000;
     document.getElementById("subBillingDay").value = sub.billingDay || 1;
     document.getElementById("subLocation").value = sub.location || "";
     document.getElementById("subPppoeUser").value = sub.pppoeUser || "";
@@ -3928,6 +3668,7 @@
     if (confirm("Are you sure you want to permanently remove this subscriber from the database?")) {
       erpState.subscribers = (erpState.subscribers || []).filter(s => s.id !== subId);
       saveDatabase();
+      await fetch(`api/subscribers.php?id=${encodeURIComponent(subId)}`, { method: "DELETE" }).catch(() => {});
       await window.dpPermanentDelete("subscriber", subId);
       renderAll();
       showToast("Subscriber permanently deleted from database.");
@@ -4129,6 +3870,64 @@
         unit: "/ hour (Min 2 hrs)",
         description: "Emergency on-site and remote ad-hoc troubleshooting and repair (Minimum 2 hours per dispatch)."
       }
+    ],
+    internet: [
+      {
+        id: "isp-10m-lite",
+        name: "10 Mbps Home Lite",
+        category: "Home",
+        price: 1000,
+        unit: "/ month",
+        description: "Entry-level unlimited streaming, social media & home browsing."
+      },
+      {
+        id: "isp-15m-home",
+        name: "15 Mbps Home Package",
+        category: "Home",
+        price: 1500,
+        unit: "/ month",
+        description: "Ideal for families, online school, Zoom calls & smart TVs."
+      },
+      {
+        id: "isp-15m-biz",
+        name: "15 Mbps Business Package",
+        category: "Business",
+        price: 1500,
+        unit: "/ month",
+        description: "Built for shops, clinics, POS checkouts & front-office WiFi."
+      },
+      {
+        id: "isp-20m-home",
+        name: "20 Mbps Home",
+        category: "Home",
+        price: 2000,
+        unit: "/ month",
+        description: "High-speed 4K streaming, remote work, video conferencing."
+      },
+      {
+        id: "isp-20m-biz",
+        name: "20 Mbps Business",
+        category: "Business",
+        price: 2500,
+        unit: "/ month",
+        description: "Professional SME bandwidth for office workstations & CCTV."
+      },
+      {
+        id: "isp-30m-home",
+        name: "30 Mbps Max Home",
+        category: "Home",
+        price: 3000,
+        unit: "/ month",
+        description: "Ultimate home speed for gamers, content creators & large villas."
+      },
+      {
+        id: "isp-30m-biz",
+        name: "30 Mbps Max Business",
+        category: "Business",
+        price: 3000,
+        unit: "/ month",
+        description: "High-concurrency business fiber for corporate operations & teams."
+      }
     ]
   };
 
@@ -4137,7 +3936,10 @@
       const saved = localStorage.getItem(STORAGE_KEYS.TARIFFS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && typeof parsed === "object" && parsed.essentials) {
+        if (parsed && typeof parsed === "object") {
+          if (!parsed.internet || !parsed.internet.length) {
+            parsed.internet = JSON.parse(JSON.stringify(DEFAULT_COMMERCIAL_TARIFFS.internet));
+          }
           return parsed;
         }
       }
@@ -4171,7 +3973,46 @@
     const softwareContainer = document.getElementById("softwareTariffsList");
     const amcContainer = document.getElementById("amcTariffsList");
 
+    const internetContainer = document.getElementById("internetTariffsList");
     if (!essentialsContainer || !hardwareContainer || !softwareContainer || !amcContainer) return;
+
+    // Render Internet Bandwidth Plans
+    if (internetContainer && tariffs.internet) {
+      internetContainer.innerHTML = tariffs.internet.map((item, idx) => `
+        <div class="tariff-edit-row" data-tariff-group="internet" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+            <div style="flex:1; min-width:180px;">
+              <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Internet Plan Name</label>
+              <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+            </div>
+            <div style="width:130px;">
+              <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Billing Term</label>
+              <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ month')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+            </div>
+            <div style="width:150px;">
+              <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Monthly Rate (KSh)</label>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+                <input type="number" step="100" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+              </div>
+            </div>
+            <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+              <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('internet', '${item.id}')" title="Permanently delete plan" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+                <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+              </button>
+            </div>
+          </div>
+          <div style="width:100%;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Bandwidth Deliverables & Specifications</label>
+            <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Unlimited fiber, low latency peering, 24/7 SLA..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+          </div>
+        </div>
+      `).join("") + `
+        <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('internet')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem; grid-column:1 / -1;">
+          <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add New Internet Bandwidth Plan
+        </button>
+      `;
+    }
 
     // Render Essentials
     essentialsContainer.innerHTML = tariffs.essentials.map((pkg, idx) => `
@@ -4356,7 +4197,7 @@
             id: item.id,
             code: item.id,
             name: item.name,
-            category: group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
+            category: group === "internet" ? "Internet Bandwidth" : group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
             unit: item.period || item.unit || "Per Unit",
             price: item.price,
             description: item.description || ""
@@ -4392,12 +4233,14 @@
 
   window.dpAddCustomTariffToCategory = function(group) {
     const defaultUnits = {
+      internet: "/ month",
       essentials: "One-Off Investment",
       hardware: "Per Setup",
       software: "Starting Price",
       amc: "/ year"
     };
     const defaultPrices = {
+      internet: 1500,
       essentials: 30000,
       hardware: 15000,
       software: 25000,

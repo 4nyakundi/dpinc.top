@@ -433,12 +433,13 @@
               <div class="directory-filters" style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 <select id="subscriberFilterPlan" class="form-select" style="width:auto;">
                   <option value="all">All Packages</option>
-                  <option value="5 Mbps">5 Mbps SOHO</option>
-                  <option value="10 Mbps">10 Mbps Standard</option>
-                  <option value="20 Mbps">20 Mbps Pro Office</option>
-                  <option value="30 Mbps">30 Mbps Business Pro</option>
-                  <option value="40 Mbps">40 Mbps Creative</option>
-                  <option value="50 Mbps">50 Mbps Dedicated</option>
+                  <option value="10 Mbps Home Lite">10 Mbps Home Lite (1,000)</option>
+                  <option value="15 Mbps Home Package">15 Mbps Home Package (1,500)</option>
+                  <option value="15 Mbps Business Package">15 Mbps Business Package (1,500)</option>
+                  <option value="20 Mbps Home">20 Mbps Home (2,000)</option>
+                  <option value="20 Mbps Business">20 Mbps Business (2,500)</option>
+                  <option value="30 Mbps Max Home">30 Mbps Max Home (3,000)</option>
+                  <option value="30 Mbps Max Business">30 Mbps Max Business (3,000)</option>
                 </select>
                 <button id="exportSubsCsvBtn" class="btn btn-secondary btn-sm" title="Export Subscribers to CSV">
                   <i data-lucide="file-spreadsheet"></i> Export CSV
@@ -774,6 +775,20 @@
 
             <!-- Pricing Grid Groups -->
             <div class="tariffs-manager-grid">
+              <!-- Group 0: Optical Fiber Internet Bandwidth Tariffs -->
+              <div class="tariff-group-card" style="grid-column: 1 / -1;">
+                <div class="tariff-group-header">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <i data-lucide="wifi" class="text-lime" style="width:20px; height:20px;"></i>
+                    <h4 style="font-size:1.15rem; font-weight:800; margin:0;">Optical Fiber Internet Plans (Home & Business)</h4>
+                  </div>
+                  <span class="badge" style="font-size:0.7rem; color:var(--lime); border-color:var(--lime);">Monthly Subscriptions</span>
+                </div>
+                <div id="internetTariffsList" class="tariffs-items-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:0.75rem;">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
               <!-- Group 1: Essentials Commercial Bundles -->
               <div class="tariff-group-card">
                 <div class="tariff-group-header">
@@ -1158,13 +1173,13 @@
           <div class="form-group">
             <label class="form-label">Internet Bandwidth Package *</label>
             <select id="subPackage" class="form-select" required>
-              <option value="5 Mbps SOHO Fiber">5 Mbps SOHO Unlimited (KSh 2,500)</option>
-              <option value="10 Mbps Standard Business" selected>10 Mbps Standard Business (KSh 3,500)</option>
-              <option value="15 Mbps Home Fiber Fast">15 Mbps Home Fiber Fast (KSh 3,500)</option>
-              <option value="20 Mbps Pro Office Dedicated">20 Mbps Pro Office Dedicated (KSh 5,500)</option>
-              <option value="30 Mbps Dedicated Business Pro">30 Mbps Dedicated Business Pro (KSh 8,500)</option>
-              <option value="40 Mbps Creative High-Upload">40 Mbps Creative High-Upload (KSh 9,500)</option>
-              <option value="50 Mbps High-Capacity Enterprise">50 Mbps Enterprise Fiber (KSh 12,500)</option>
+              <option value="10 Mbps Home Lite" selected>10 Mbps Home Lite (KSh 1,000 / mo)</option>
+              <option value="15 Mbps Home Package">15 Mbps Home Package (KSh 1,500 / mo)</option>
+              <option value="15 Mbps Business Package">15 Mbps Business Package (KSh 1,500 / mo)</option>
+              <option value="20 Mbps Home">20 Mbps Home (KSh 2,000 / mo)</option>
+              <option value="20 Mbps Business">20 Mbps Business (KSh 2,500 / mo)</option>
+              <option value="30 Mbps Max Home">30 Mbps Max Home (KSh 3,000 / mo)</option>
+              <option value="30 Mbps Max Business">30 Mbps Max Business (KSh 3,000 / mo)</option>
               <option value="Custom Plan">Custom Bandwidth Package</option>
             </select>
           </div>

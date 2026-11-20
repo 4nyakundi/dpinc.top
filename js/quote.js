@@ -37,7 +37,14 @@ async function loadCatalogData() {
       { id: "itm-05", name: "Windows Server Setup + Domain Controller", price: 45000 },
       { id: "amc-01", name: "[AMC Annual] Standard Plan Retainer (Mon-Fri, 4h SLA)", price: 70000 },
       { id: "amc-02", name: "[AMC Annual] Premium Corporate Plan (24/7, 1h SLA, DevOps)", price: 90000 },
-      { id: "adh-01", name: "On-Demand Engineering Support (2 Hours Min)", price: 5000 }
+      { id: "adh-01", name: "On-Demand Engineering Support (2 Hours Min)", price: 5000 },
+      { id: "isp-10m-lite", name: "[Internet] 10 Mbps Home Lite (KSh 1,000 / mo)", price: 1000 },
+      { id: "isp-15m-home", name: "[Internet] 15 Mbps Home Package (KSh 1,500 / mo)", price: 1500 },
+      { id: "isp-15m-biz", name: "[Internet] 15 Mbps Business Package (KSh 1,500 / mo)", price: 1500 },
+      { id: "isp-20m-home", name: "[Internet] 20 Mbps Home (KSh 2,000 / mo)", price: 2000 },
+      { id: "isp-20m-biz", name: "[Internet] 20 Mbps Business (KSh 2,500 / mo)", price: 2500 },
+      { id: "isp-30m-home", name: "[Internet] 30 Mbps Max Home (KSh 3,000 / mo)", price: 3000 },
+      { id: "isp-30m-biz", name: "[Internet] 30 Mbps Max Business (KSh 3,000 / mo)", price: 3000 }
     ];
   }
 
