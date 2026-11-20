@@ -240,12 +240,13 @@
      1. AUTHENTICATION & SESSION CONTROL
      ========================================================================= */
   const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyBcn0VG_TrZDUr18BaZgjSFuNmmt8imZPM",
-    authDomain: "dataport-b34b0.firebaseapp.com",
-    projectId: "dataport-b34b0",
-    storageBucket: "dataport-b34b0.firebasestorage.app",
-    messagingSenderId: "670768253907",
-    appId: "1:670768253907:web:ba6ce77c216050bed2fd26"
+    apiKey: "AIzaSyAKYXsp1AK_chwSZ4IR2zkzA4UgwvQBbRU",
+    authDomain: "pulseinvest-ffd58.firebaseapp.com",
+    projectId: "pulseinvest-ffd58",
+    storageBucket: "pulseinvest-ffd58.firebasestorage.app",
+    messagingSenderId: "747317448358",
+    appId: "1:747317448358:web:90f4314030ed6d530eee67",
+    measurementId: "G-M59VQM3VKK"
   };
 
   let firebaseAuthInstance = null;
@@ -261,6 +262,28 @@
     return firebase.auth();
   }
 
+  function updateUserProfileUI(userData) {
+    const badge = document.getElementById("userProfileBadge");
+    const nameEl = document.getElementById("userDisplayName");
+    const avatarEl = document.getElementById("userAvatarImg");
+    if (!badge) return;
+
+    if (userData && (userData.email || userData.name)) {
+      if (nameEl) nameEl.textContent = userData.name || userData.email;
+      if (avatarEl) {
+        if (userData.photoURL) {
+          avatarEl.src = userData.photoURL;
+          avatarEl.style.display = "block";
+        } else {
+          avatarEl.style.display = "none";
+        }
+      }
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
   function initAuth() {
     const loginGate = document.getElementById("loginGate");
     const dashboardApp = document.getElementById("dashboardApp");
@@ -269,6 +292,12 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const googleBtn = document.getElementById("googleSignInBtn");
 
+    // Check existing cached user profile
+    try {
+      const cached = JSON.parse(localStorage.getItem("dp_auth_user") || "null");
+      updateUserProfileUI(cached);
+    } catch (_) {}
+
     // Initialize Firebase Auth listener
     try {
       firebaseAuthInstance = getFirebaseAuth();
@@ -276,7 +305,9 @@
         firebaseAuthInstance.onAuthStateChanged((user) => {
           if (user) {
             localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
-            localStorage.setItem("dp_auth_user", JSON.stringify({ email: user.email, name: user.displayName }));
+            const authUserData = { email: user.email, name: user.displayName || user.email, photoURL: user.photoURL };
+            localStorage.setItem("dp_auth_user", JSON.stringify(authUserData));
+            updateUserProfileUI(authUserData);
             if (loginGate) loginGate.style.display = "none";
             if (dashboardApp) dashboardApp.style.display = "block";
             startMasterERP();
@@ -2739,94 +2770,533 @@
   /* =========================================================================
      10. CANVAS CASH FLOW & P&L ANALYTICS CHART
      ========================================================================= */
+    /* =========================================================================
+     10. PULSE INVESTMENT FINANCIAL INTELLIGENCE & MONTHLY REPORTS ENGINE
+     ========================================================================= */
+  let currentPulseMonth = "2026-11";
+  let pulseTableSearchQuery = "";
+  let pulseTableTypeFilter = "all";
+
+  function initPulseAnalyticsListeners() {
+    const monthSelect = document.getElementById("pulseMonthFilter");
+    if (monthSelect) {
+      monthSelect.removeEventListener("change", handlePulseMonthChange);
+      monthSelect.addEventListener("change", handlePulseMonthChange);
+    }
+
+    const searchInput = document.getElementById("pulseTableSearch");
+    if (searchInput) {
+      searchInput.removeEventListener("input", handlePulseSearchInput);
+      searchInput.addEventListener("input", handlePulseSearchInput);
+    }
+
+    const typeSelect = document.getElementById("pulseTypeFilter");
+    if (typeSelect) {
+      typeSelect.removeEventListener("change", handlePulseTypeChange);
+      typeSelect.addEventListener("change", handlePulseTypeChange);
+    }
+
+    const exportBtn = document.getElementById("exportCsvBtn");
+    if (exportBtn) {
+      exportBtn.removeEventListener("click", exportPulseCsv);
+      exportBtn.addEventListener("click", exportPulseCsv);
+    }
+
+    const printBtn = document.getElementById("printAnalyticsBtn");
+    if (printBtn) {
+      printBtn.removeEventListener("click", handlePrintAnalytics);
+      printBtn.addEventListener("click", handlePrintAnalytics);
+    }
+  }
+
+  function handlePulseMonthChange(e) {
+    currentPulseMonth = e.target.value;
+    renderAnalytics();
+  }
+
+  function handlePulseSearchInput(e) {
+    pulseTableSearchQuery = e.target.value.toLowerCase().trim();
+    renderPulseTable();
+  }
+
+  function handlePulseTypeChange(e) {
+    pulseTableTypeFilter = e.target.value;
+    renderPulseTable();
+  }
+
+  function handlePrintAnalytics() {
+    window.print();
+  }
+
+  function exportPulseCsv() {
+    const rawLedger = (db && db.ledger) ? db.ledger : [];
+    const filtered = rawLedger.filter(item => {
+      if (currentPulseMonth === "all") return true;
+      return item.date && item.date.startsWith(currentPulseMonth);
+    });
+
+    if (!filtered.length) {
+      showToast("No records available to export for this period.");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Date,Description,Category,Type,Amount (Ksh),Payment Method,Reference\n";
+
+    filtered.forEach(row => {
+      const line = [
+        row.date || "",
+        `"${(row.description || "").replace(/"/g, '""')}"`,
+        `"${(row.category || "").replace(/"/g, '""')}"`,
+        row.type || "income",
+        row.amount || 0,
+        `"${(row.payment_method || row.paymentMethod || "M-Pesa").replace(/"/g, '""')}"`,
+        `"${(row.reference || "").replace(/"/g, '""')}"`
+      ].join(",");
+      csvContent += line + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `DataPort_Financial_Report_${currentPulseMonth}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Exported ${filtered.length} records to CSV.`);
+  }
+
+  function getMonthLabel(ym) {
+    const map = {
+      "2026-05": "May 2026",
+      "2026-06": "June 2026",
+      "2026-07": "July 2026",
+      "2026-08": "August 2026",
+      "2026-09": "September 2026",
+      "2026-10": "October 2026",
+      "2026-11": "November 2026",
+      "all": "All Time (May - Nov 2026)"
+    };
+    return map[ym] || ym;
+  }
+
   function renderAnalytics() {
+    initPulseAnalyticsListeners();
+
+    const rawLedger = (db && db.ledger) ? db.ledger : [];
+    const monthSelect = document.getElementById("pulseMonthFilter");
+    if (monthSelect && monthSelect.value) {
+      currentPulseMonth = monthSelect.value;
+    }
+
+    // Filter items
+    const isAll = (currentPulseMonth === "all");
+    const activeEntries = rawLedger.filter(item => {
+      if (isAll) return true;
+      return item.date && item.date.startsWith(currentPulseMonth);
+    });
+
+    // Calculate Inflow and Outflow
+    let inflow = 0;
+    let outflow = 0;
+    const revCategoryMap = {};
+    const expCategoryMap = {};
+
+    activeEntries.forEach(item => {
+      const amt = parseFloat(item.amount) || 0;
+      const isInc = (item.type === "income" || (item.type && item.type.toLowerCase().includes("income")));
+      if (isInc) {
+        inflow += amt;
+        const cat = item.category || "General Revenue";
+        revCategoryMap[cat] = (revCategoryMap[cat] || 0) + amt;
+      } else {
+        outflow += amt;
+        const cat = item.category || "Operating Expenses";
+        expCategoryMap[cat] = (expCategoryMap[cat] || 0) + amt;
+      }
+    });
+
+    const net = inflow - outflow;
+    const margin = inflow > 0 ? ((net / inflow) * 100).toFixed(1) : "0.0";
+
+    // Outstanding owed
+    let owed = 0;
+    if (isAll || currentPulseMonth === "2026-08" || currentPulseMonth === "2026-11") {
+      // Afribot outstanding balance
+      owed = 1500;
+    }
+
+    // Update KPI stat cards
+    const elInflow = document.getElementById("pulseInflowVal");
+    const elOutflow = document.getElementById("pulseOutflowVal");
+    const elNet = document.getElementById("pulseNetVal");
+    const elMargin = document.getElementById("pulseMarginVal");
+    const elOwed = document.getElementById("pulseOwedVal");
+    const elTreasury = document.getElementById("pulseTreasuryVal");
+    const elInflowSub = document.getElementById("pulseInflowSub");
+    const elOutflowSub = document.getElementById("pulseOutflowSub");
+    const elNetSub = document.getElementById("pulseNetSub");
+
+    if (elInflow) elInflow.textContent = `KSh ${inflow.toLocaleString()}`;
+    if (elOutflow) elOutflow.textContent = `KSh ${outflow.toLocaleString()}`;
+    if (elNet) {
+      elNet.textContent = (net >= 0 ? "+" : "-") + `KSh ${Math.abs(net).toLocaleString()}`;
+      elNet.style.color = (net >= 0) ? "var(--lime)" : "#ef4444";
+    }
+    if (elMargin) elMargin.textContent = `${margin}%`;
+    if (elOwed) elOwed.textContent = `KSh ${owed.toLocaleString()}`;
+    if (elTreasury) {
+      if (inflow === 0) {
+        elTreasury.textContent = "Standby";
+      } else {
+        const expRatio = (outflow / inflow) * 100;
+        if (expRatio <= 50) {
+          elTreasury.textContent = "Optimal (50/30/20)";
+          elTreasury.style.color = "var(--lime)";
+        } else {
+          elTreasury.textContent = `Spend ${expRatio.toFixed(0)}%`;
+          elTreasury.style.color = "#f59e0b";
+        }
+      }
+    }
+
+    const monthName = getMonthLabel(currentPulseMonth);
+    if (elInflowSub) elInflowSub.textContent = `Verified cash receipts (${monthName})`;
+    if (elOutflowSub) elOutflowSub.textContent = `Total disbursements (${monthName})`;
+    if (elNetSub) elNetSub.textContent = `Net liquidity gain (${monthName})`;
+
+    // Render Revenue Breakdown List
+    const revContainer = document.getElementById("pulseRevenueBreakdownList");
+    if (revContainer) {
+      const entries = Object.entries(revCategoryMap).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        revContainer.innerHTML = '<div class="text-muted" style="font-size:0.8125rem;">No revenue recorded for this period.</div>';
+      } else {
+        revContainer.innerHTML = entries.map(([cat, amt]) => {
+          const pct = inflow > 0 ? ((amt / inflow) * 100).toFixed(1) : 0;
+          return `
+            <div style="margin-bottom:0.75rem;">
+              <div class="breakdown-item-header" style="display:flex; justify-content:space-between; font-size:0.8125rem; margin-bottom:0.25rem;">
+                <span>${cat}</span>
+                <strong style="color:var(--lime); font-family:var(--font-mono);">KSh ${amt.toLocaleString()} (${pct}%)</strong>
+              </div>
+              <div class="progress-track" style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                <div class="progress-fill-green" style="width:${pct}%; height:100%; background:var(--lime); border-radius:3px;"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    // Render Expense Breakdown List
+    const expContainer = document.getElementById("pulseExpenseBreakdownList");
+    if (expContainer) {
+      const entries = Object.entries(expCategoryMap).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        expContainer.innerHTML = '<div class="text-muted" style="font-size:0.8125rem;">No expenses recorded for this period.</div>';
+      } else {
+        expContainer.innerHTML = entries.map(([cat, amt]) => {
+          const pct = outflow > 0 ? ((amt / outflow) * 100).toFixed(1) : 0;
+          return `
+            <div style="margin-bottom:0.75rem;">
+              <div class="breakdown-item-header" style="display:flex; justify-content:space-between; font-size:0.8125rem; margin-bottom:0.25rem;">
+                <span>${cat}</span>
+                <strong style="color:#ef4444; font-family:var(--font-mono);">KSh ${amt.toLocaleString()} (${pct}%)</strong>
+              </div>
+              <div class="progress-track" style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:#ef4444; border-radius:3px;"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    // Render Canvas Chart
+    renderPulseCanvasChart(isAll, rawLedger, activeEntries);
+
+    // Render Table
+    renderPulseTable();
+  }
+
+  function renderPulseCanvasChart(isAll, allEntries, activeEntries) {
     const canvas = document.getElementById("cashFlowCanvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Retina DPI Scaling
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
-    canvas.width = (rect.width || 700) * dpr;
-    canvas.height = (rect.height || 280) * dpr;
+    const w = (rect.width || 700);
+    const h = (rect.height || 300);
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
 
-    const width = rect.width || 700;
-    const height = rect.height || 280;
+    ctx.clearRect(0, 0, w, h);
 
-    // Clear Canvas
-    ctx.clearRect(0, 0, width, height);
+    const padding = { top: 35, right: 30, bottom: 45, left: 65 };
+    const chartW = w - padding.left - padding.right;
+    const chartH = h - padding.top - padding.bottom;
 
-    // 6-Month Projection Data
-    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"];
-    const incomeData = [120000, 145000, 160000, 185000, 210000, 245000];
-    const expenseData = [45000, 52000, 60000, 68000, 75000, 82000];
+    if (isAll) {
+      // 7-Month Comparative View: May to Nov 2026
+      const monthKeys = ["2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11"];
+      const monthNames = ["May '26", "Jun '26", "Jul '26", "Aug '26", "Sep '26", "Oct '26", "Nov '26"];
 
-    const padding = { top: 30, right: 30, bottom: 40, left: 60 };
-    const chartW = width - padding.left - padding.right;
-    const chartH = height - padding.top - padding.bottom;
-    const maxVal = 300000;
+      const monthlyData = monthKeys.map(k => {
+        let inf = 0;
+        let out = 0;
+        allEntries.forEach(item => {
+          if (item.date && item.date.startsWith(k)) {
+            const amt = parseFloat(item.amount) || 0;
+            if (item.type === "income" || (item.type && item.type.toLowerCase().includes("income"))) inf += amt;
+            else out += amt;
+          }
+        });
+        return { key: k, inflow: inf, outflow: out, net: inf - out };
+      });
 
-    // Draw Grid Lines
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padding.top + (chartH / 4) * i;
-      ctx.beginPath();
-      ctx.moveTo(padding.left, y);
-      ctx.lineTo(width - padding.right, y);
-      ctx.stroke();
+      let maxVal = 70000;
+      monthlyData.forEach(d => {
+        if (d.inflow > maxVal) maxVal = d.inflow * 1.15;
+      });
 
-      // Y-Axis Labels
-      ctx.fillStyle = "#A1A1AA";
-      ctx.font = "10px 'JetBrains Mono', monospace";
-      ctx.textAlign = "right";
-      const labelVal = Math.round(maxVal - (maxVal / 4) * i);
-      ctx.fillText(`${(labelVal / 1000)}k`, padding.left - 10, y + 4);
-    }
+      // Grid Lines
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        ctx.stroke();
 
-    const colWidth = chartW / months.length;
-    const barWidth = 22;
+        ctx.fillStyle = "#A1A1AA";
+        ctx.font = "10px 'JetBrains Mono', monospace";
+        ctx.textAlign = "right";
+        const val = Math.round(maxVal - (maxVal / 4) * i);
+        ctx.fillText(`${(val / 1000).toFixed(0)}k`, padding.left - 10, y + 4);
+      }
 
-    months.forEach((m, idx) => {
-      const xCenter = padding.left + colWidth * idx + colWidth / 2;
+      const colW = chartW / monthKeys.length;
+      const barW = Math.max(14, Math.min(24, colW * 0.28));
 
-      // Expense Bar (White)
-      const expHeight = (expenseData[idx] / maxVal) * chartH;
-      const expY = padding.top + chartH - expHeight;
-      ctx.fillStyle = "var(--text-primary)";
-      ctx.fillRect(xCenter - barWidth - 2, expY, barWidth, expHeight);
+      monthlyData.forEach((d, i) => {
+        const xc = padding.left + colW * i + colW / 2;
 
-      // Income Bar (#8ACE00 Green)
-      const incHeight = (incomeData[idx] / maxVal) * chartH;
-      const incY = padding.top + chartH - incHeight;
+        // Inflow Bar (Lime)
+        const inH = (d.inflow / maxVal) * chartH;
+        const inY = padding.top + chartH - inH;
+        ctx.fillStyle = "#8ACE00";
+        ctx.beginPath();
+        ctx.roundRect(xc - barW - 2, inY, barW, inH, [3, 3, 0, 0]);
+        ctx.fill();
+
+        // Outflow Bar (Red/Gray)
+        const outH = (d.outflow / maxVal) * chartH;
+        const outY = padding.top + chartH - outH;
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.roundRect(xc + 2, outY, barW, outH, [3, 3, 0, 0]);
+        ctx.fill();
+
+        // Month Label
+        ctx.fillStyle = "#EDEDED";
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(monthNames[i], xc, h - padding.bottom + 20);
+
+        // Highlight Net text
+        ctx.fillStyle = d.net >= 0 ? "rgba(138,206,0,0.85)" : "rgba(239,68,68,0.85)";
+        ctx.font = "9px 'JetBrains Mono', monospace";
+        const netStr = (d.net >= 0 ? "+" : "") + Math.round(d.net / 1000) + "k";
+        ctx.fillText(netStr, xc, inY - 6);
+      });
+
+      // Legend
       ctx.fillStyle = "#8ACE00";
-      ctx.fillRect(xCenter + 2, incY, barWidth, incHeight);
-
-      // X-Axis Labels
+      ctx.fillRect(w - 240, 12, 10, 10);
       ctx.fillStyle = "#EDEDED";
       ctx.font = "11px 'Inter', sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(m, xCenter, height - padding.bottom + 22);
-    });
+      ctx.textAlign = "left";
+      ctx.fillText("Cash Inflow", w - 224, 21);
 
-    // Chart Legend
-    ctx.fillStyle = "#8ACE00";
-    ctx.fillRect(width - 200, 10, 12, 12);
-    ctx.fillStyle = "var(--text-primary)";
-    ctx.font = "11px 'Inter', sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText("Gross Revenue", width - 180, 20);
+      ctx.fillStyle = "#ef4444";
+      ctx.fillRect(w - 140, 12, 10, 10);
+      ctx.fillStyle = "#EDEDED";
+      ctx.fillText("Expenses", w - 124, 21);
+    } else {
+      // Single Month Daily Timeline
+      const daysMap = {};
+      activeEntries.forEach(item => {
+        if (!item.date) return;
+        const parts = item.date.split("-");
+        const day = parseInt(parts[2], 10) || 1;
+        if (!daysMap[day]) daysMap[day] = { inflow: 0, outflow: 0 };
+        const amt = parseFloat(item.amount) || 0;
+        if (item.type === "income" || (item.type && item.type.toLowerCase().includes("income"))) {
+          daysMap[day].inflow += amt;
+        } else {
+          daysMap[day].outflow += amt;
+        }
+      });
 
-    ctx.fillStyle = "var(--text-primary)";
-    ctx.fillRect(width - 90, 10, 12, 12);
-    ctx.fillText("Expenses", width - 70, 20);
+      const days = Object.keys(daysMap).map(n => parseInt(n, 10)).sort((a, b) => a - b);
+      if (days.length === 0) {
+        ctx.fillStyle = "#71717A";
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("No transactions recorded for " + getMonthLabel(currentPulseMonth), w / 2, h / 2);
+        return;
+      }
+
+      let maxVal = 10000;
+      days.forEach(d => {
+        if (daysMap[d].inflow > maxVal) maxVal = daysMap[d].inflow * 1.2;
+        if (daysMap[d].outflow > maxVal) maxVal = daysMap[d].outflow * 1.2;
+      });
+
+      // Grid Lines
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        ctx.stroke();
+
+        ctx.fillStyle = "#A1A1AA";
+        ctx.font = "10px 'JetBrains Mono', monospace";
+        ctx.textAlign = "right";
+        const val = Math.round(maxVal - (maxVal / 4) * i);
+        ctx.fillText(`${(val / 1000).toFixed(1)}k`, padding.left - 10, y + 4);
+      }
+
+      const colW = chartW / Math.max(days.length, 1);
+      const barW = Math.max(10, Math.min(20, colW * 0.35));
+
+      days.forEach((day, i) => {
+        const xc = padding.left + colW * i + colW / 2;
+        const d = daysMap[day];
+
+        if (d.inflow > 0) {
+          const inH = (d.inflow / maxVal) * chartH;
+          const inY = padding.top + chartH - inH;
+          ctx.fillStyle = "#8ACE00";
+          ctx.beginPath();
+          ctx.roundRect(xc - barW - 1, inY, barW, inH, [2, 2, 0, 0]);
+          ctx.fill();
+        }
+
+        if (d.outflow > 0) {
+          const outH = (d.outflow / maxVal) * chartH;
+          const outY = padding.top + chartH - outH;
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath();
+          ctx.roundRect(xc + 1, outY, barW, outH, [2, 2, 0, 0]);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = "#EDEDED";
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`Day ${day}`, xc, h - padding.bottom + 20);
+      });
+
+      // Legend
+      ctx.fillStyle = "#8ACE00";
+      ctx.fillRect(w - 240, 12, 10, 10);
+      ctx.fillStyle = "#EDEDED";
+      ctx.font = "11px 'Inter', sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("Day Inflow", w - 224, 21);
+
+      ctx.fillStyle = "#ef4444";
+      ctx.fillRect(w - 140, 12, 10, 10);
+      ctx.fillStyle = "#EDEDED";
+      ctx.fillText("Day Outflow", w - 124, 21);
+    }
   }
 
-  /* =========================================================================
-     11. EXECUTIVE VAULT KEYPAD & ALLOCATIONS
-     ========================================================================= */
+  function renderPulseTable() {
+    const tbody = document.getElementById("pulseAuditTableBody");
+    const summaryEl = document.getElementById("pulseTableSummary");
+    const titleEl = document.getElementById("pulseTableTitle");
+    if (!tbody) return;
+
+    const rawLedger = (db && db.ledger) ? db.ledger : [];
+    const isAll = (currentPulseMonth === "all");
+
+    if (titleEl) {
+      titleEl.textContent = `Financial Ledger Audit — ${getMonthLabel(currentPulseMonth)}`;
+    }
+
+    const filtered = rawLedger.filter(item => {
+      if (!isAll && item.date && !item.date.startsWith(currentPulseMonth)) {
+        return false;
+      }
+      const isInc = (item.type === "income" || (item.type && item.type.toLowerCase().includes("income")));
+      if (pulseTableTypeFilter === "income" && !isInc) return false;
+      if (pulseTableTypeFilter === "expense" && isInc) return false;
+
+      if (pulseTableSearchQuery) {
+        const fullStr = `${item.date} ${item.description} ${item.category} ${item.amount} ${item.reference}`.toLowerCase();
+        if (!fullStr.includes(pulseTableSearchQuery)) return false;
+      }
+      return true;
+    });
+
+    if (summaryEl) {
+      summaryEl.textContent = `Displaying ${filtered.length} entries for ${getMonthLabel(currentPulseMonth)}`;
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-muted" style="padding:2.5rem;">
+            No transactions found matching the selected period and criteria.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(item => {
+      const isInc = (item.type === "income" || (item.type && item.type.toLowerCase().includes("income")));
+      const amt = parseFloat(item.amount) || 0;
+      const typeBadge = isInc
+        ? '<span class="badge" style="background:rgba(138,206,0,0.15); color:var(--lime);"><i data-lucide="arrow-down-left" style="width:10px; height:10px; display:inline;"></i> Inflow</span>'
+        : '<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444;"><i data-lucide="arrow-up-right" style="width:10px; height:10px; display:inline;"></i> Outflow</span>';
+
+      const isAfribotOwed = (item.description && item.description.toLowerCase().includes("afribot") && amt === 0);
+      const balDue = isAfribotOwed ? 1500 : 0;
+      const statusBadge = isAfribotOwed
+        ? '<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b;">Pending (KSh 1,500)</span>'
+        : '<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">Cleared</span>';
+
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono); font-size:0.8125rem; white-space:nowrap;">${item.date || "-"}</td>
+          <td style="font-weight:600; color:var(--text-primary);">${item.description || "General Entry"}</td>
+          <td><span class="badge" style="background:rgba(255,255,255,0.06); font-size:0.75rem;">${item.category || "General"}</span></td>
+          <td>${typeBadge}</td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${isAfribotOwed ? "1,500" : amt.toLocaleString()}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:${isInc ? 'var(--lime)' : '#ef4444'}; font-weight:700;">${amt.toLocaleString()}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:${balDue > 0 ? '#f59e0b' : 'var(--text-muted)'};">${balDue > 0 ? balDue.toLocaleString() : "0"}</td>
+          <td>${statusBadge}</td>
+        </tr>
+      `;
+    }).join("");
+
+    if (window.lucide && window.lucide.createIcons) {
+      window.lucide.createIcons();
+    }
+  }
+
+
   function setupVaultKeypad() {
     const keypadBtns = document.querySelectorAll(".pin-key-btn");
     const lockedState = document.getElementById("vaultLockedState");

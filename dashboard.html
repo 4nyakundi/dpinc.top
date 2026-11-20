@@ -120,6 +120,13 @@
           <a href="index.html" class="btn btn-secondary btn-sm" title="View Public Website">
             <i data-lucide="globe" style="width:16px; height:16px;"></i> Public Site
           </a>
+          <div id="userProfileBadge" class="user-profile-badge" style="display:none; align-items:center; gap:0.6rem; padding:0.25rem 0.65rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:30px;">
+            <img id="userAvatarImg" src="" alt="Google Operator" style="width:24px; height:24px; border-radius:50%; border:1px solid var(--lime); display:none; object-fit:cover;">
+            <div style="line-height:1.2; text-align:left;">
+              <div id="userDisplayName" style="font-size:0.75rem; font-weight:700; color:var(--text-primary); max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">NOC Staff</div>
+              <div style="font-size:0.625rem; color:var(--lime); font-family:var(--font-mono);">Google Verified</div>
+            </div>
+          </div>
           <button id="logoutBtn" class="btn btn-sm btn-logout" title="Lock & Logout">
             <i data-lucide="log-out" style="width:16px; height:16px;"></i> Logout
           </button>
@@ -162,7 +169,7 @@
           </button>
           <button class="dash-side-nav-btn" data-tab="analyticsTab">
             <i data-lucide="bar-chart-3" style="width:18px; height:18px;"></i>
-            <span class="nav-text">P&L Analytics</span>
+            <span class="nav-text">Pulse Reports & P&L</span>
           </button>
           <button class="dash-side-nav-btn" data-tab="tariffsTab">
             <i data-lucide="tags" style="width:18px; height:18px;"></i>
@@ -586,67 +593,199 @@
         <!-- =====================================================================
              TAB 5: P&L ANALYTICS & CASH FLOW CHARTS
              ===================================================================== -->
+                <!-- 6. PULSE INVESTMENT FINANCIAL INTELLIGENCE & MONTHLY REPORTS TAB -->
         <section id="analyticsTab" class="dash-tab-pane">
-          <div class="analytics-grid">
-            
-            <!-- Cash Flow Trend Chart -->
+          <!-- Pulse Analytics Header -->
+          <div class="glass-panel" style="padding:1.5rem; margin-bottom:1.5rem; border-left:4px solid var(--lime);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                  <span class="badge" style="background:rgba(138,206,0,0.15); color:var(--lime); border:1px solid rgba(138,206,0,0.3); font-weight:700;">
+                    <i data-lucide="zap" style="width:12px; height:12px; display:inline;"></i> Pulse Investment Engine
+                  </span>
+                  <span class="badge" style="font-size:0.7rem;">Verified Ledger 2026</span>
+                </div>
+                <h2 style="font-size:1.5rem; font-weight:800; margin:0; color:var(--text-primary);">Financial Intelligence & Monthly Reports</h2>
+                <p class="text-muted" style="font-size:0.875rem; margin-top:0.25rem;">
+                  Ground-truth audit of cash inflows, operating expenditures, profit trajectory & 50/30/20 treasury rules.
+                </p>
+              </div>
+
+              <!-- Month Selector & Actions -->
+              <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <label for="pulseMonthFilter" style="font-size:0.8125rem; font-weight:600; color:var(--text-secondary);">Period:</label>
+                  <select id="pulseMonthFilter" class="form-input" style="padding:0.45rem 0.85rem; font-weight:700; width:auto; min-width:190px;">
+                    <option value="all">All Time (May – Nov 2026)</option>
+                    <option value="2026-11" selected>November 2026 (Active)</option>
+                    <option value="2026-10">October 2026</option>
+                    <option value="2026-09">September 2026</option>
+                    <option value="2026-08">August 2026</option>
+                    <option value="2026-07">July 2026</option>
+                    <option value="2026-06">June 2026</option>
+                    <option value="2026-05">May 2026</option>
+                  </select>
+                </div>
+                <button id="exportCsvBtn" class="btn btn-secondary btn-sm" title="Export CSV for Selected Month">
+                  <i data-lucide="download"></i> Export CSV
+                </button>
+                <button id="printAnalyticsBtn" class="btn btn-secondary btn-sm" title="Print Comprehensive Financial Report">
+                  <i data-lucide="printer"></i> Print Report
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pulse KPI Stat Cards -->
+          <div class="metrics-grid mb-8" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Cash Inflow (Collected)</span>
+                <div class="metric-icon-box" style="background:rgba(138,206,0,0.12);"><i data-lucide="arrow-down-left" class="text-lime"></i></div>
+              </div>
+              <div class="metric-value text-lime" id="pulseInflowVal">KSh 0</div>
+              <div class="metric-footer text-muted" id="pulseInflowSub">Verified cash & M-Pesa receipts</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Cash Outflow (Expenses)</span>
+                <div class="metric-icon-box" style="background:rgba(239,68,68,0.12);"><i data-lucide="arrow-up-right" style="color:#ef4444;"></i></div>
+              </div>
+              <div class="metric-value" style="color:#ef4444;" id="pulseOutflowVal">KSh 0</div>
+              <div class="metric-footer text-muted" id="pulseOutflowSub">Field labor, transit & tools</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Net Cash Flow (Profit)</span>
+                <div class="metric-icon-box" style="background:rgba(59,130,246,0.12);"><i data-lucide="trending-up" style="color:#3b82f6;"></i></div>
+              </div>
+              <div class="metric-value" id="pulseNetVal">KSh 0</div>
+              <div class="metric-footer text-muted" id="pulseNetSub">Net liquidity surplus</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Operating Margin</span>
+                <div class="metric-icon-box"><i data-lucide="pie-chart"></i></div>
+              </div>
+              <div class="metric-value" id="pulseMarginVal">0%</div>
+              <div class="metric-footer text-muted" id="pulseMarginSub">Efficiency ratio</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Outstanding Accruals</span>
+                <div class="metric-icon-box" style="background:rgba(245,158,11,0.12);"><i data-lucide="clock" style="color:#f59e0b;"></i></div>
+              </div>
+              <div class="metric-value" style="color:#f59e0b;" id="pulseOwedVal">KSh 0</div>
+              <div class="metric-footer text-muted" id="pulseOwedSub">Pending receivables</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Treasury 50/30/20 Rule</span>
+                <div class="metric-icon-box"><i data-lucide="shield-check"></i></div>
+              </div>
+              <div class="metric-value" style="font-size:1.15rem;" id="pulseTreasuryVal">Optimal</div>
+              <div class="metric-footer text-muted" id="pulseTreasurySub">Ops 50% • Dev 30% • Reserve 20%</div>
+            </div>
+          </div>
+
+          <!-- Charts and Breakdowns -->
+          <div class="analytics-grid mb-8">
+            <!-- Cash Flow Trajectory Chart -->
             <div class="glass-panel chart-card">
               <div class="chart-header">
                 <div>
-                  <h3 style="font-size:1.25rem; font-weight:800;">Financial Trajectory & Cash Flow</h3>
-                  <p class="text-muted" style="font-size:0.8125rem;">Gross Income vs. Operating Costs vs. Net Margin</p>
+                  <h3 style="font-size:1.25rem; font-weight:800;" id="pulseChartTitle">Financial Trajectory & Cash Flow</h3>
+                  <p class="text-muted" style="font-size:0.8125rem;" id="pulseChartSub">Monthly Inflow (Gross) vs. Operating Costs vs. Net Margin</p>
                 </div>
                 <div style="display:flex; gap:0.5rem; align-items:center;">
-                  <button id="printAnalyticsBtn" class="btn btn-secondary btn-sm" title="Print Financial Report">
-                    <i data-lucide="printer"></i> Print Report
-                  </button>
-                  <span class="badge"><i data-lucide="activity" class="text-lime" style="width:12px; height:12px;"></i> Live Data</span>
+                  <span class="badge" style="background:rgba(138,206,0,0.1); color:var(--lime);"><span class="pulse-dot"></span> Live Ledger</span>
                 </div>
               </div>
-              
-              <div class="chart-canvas-container">
-                <canvas id="cashFlowCanvas" width="700" height="280"></canvas>
+              <div class="chart-canvas-container" style="min-height:300px;">
+                <canvas id="cashFlowCanvas" width="700" height="300"></canvas>
               </div>
             </div>
 
-            <!-- Revenue vs Cost Breakdown -->
+            <!-- Revenue Streams & Expense Breakdown -->
             <div class="glass-panel chart-card">
-              <h3 style="font-size:1.25rem; font-weight:800; margin-bottom:0.5rem;">Cost Structure</h3>
-              <p class="text-muted" style="font-size:0.8125rem;">Overhead distribution against gross revenue</p>
-
-              <div class="breakdown-bars-list">
+              <div class="chart-header">
                 <div>
-                  <div class="breakdown-item-header">
-                    <span>Upstream Fiber Transit</span>
-                    <strong id="transitPercentLabel">25%</strong>
-                  </div>
-                  <div class="progress-track">
-                    <div class="progress-fill-white" id="transitProgressBar" style="width: 25%;"></div>
-                  </div>
+                  <h3 style="font-size:1.25rem; font-weight:800;">Revenue Streams & Cost Structure</h3>
+                  <p class="text-muted" style="font-size:0.8125rem;">Active distribution breakdown for selected period</p>
                 </div>
+              </div>
 
-                <div>
-                  <div class="breakdown-item-header">
-                    <span>Hardware & Field Equipment</span>
-                    <strong id="hardwarePercentLabel">15%</strong>
-                  </div>
-                  <div class="progress-track">
-                    <div class="progress-fill-white" id="hardwareProgressBar" style="width: 15%;"></div>
-                  </div>
-                </div>
+              <!-- Revenue Breakdown Section -->
+              <h4 style="font-size:0.875rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--lime); margin-bottom:0.75rem;">
+                <i data-lucide="arrow-down-left" style="width:14px; height:14px; display:inline;"></i> Revenue Distribution
+              </h4>
+              <div class="breakdown-bars-list mb-6" id="pulseRevenueBreakdownList">
+                <!-- Dynamically populated -->
+              </div>
 
-                <div>
-                  <div class="breakdown-item-header">
-                    <span>Net Operating Profit</span>
-                    <strong class="text-lime" id="profitPercentLabel">60%</strong>
-                  </div>
-                  <div class="progress-track">
-                    <div class="progress-fill-green" id="profitProgressBar" style="width: 60%;"></div>
-                  </div>
+              <!-- Expenditure Breakdown Section -->
+              <h4 style="font-size:0.875rem; text-transform:uppercase; letter-spacing:0.05em; color:#ef4444; margin-bottom:0.75rem;">
+                <i data-lucide="arrow-up-right" style="width:14px; height:14px; display:inline;"></i> Operating Cost Distribution
+              </h4>
+              <div class="breakdown-bars-list" id="pulseExpenseBreakdownList">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction Audit Table for Selected Period -->
+          <div class="glass-panel" style="padding:1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem;">
+              <div>
+                <h3 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text-primary);" id="pulseTableTitle">
+                  Monthly Financial Ledger Entries
+                </h3>
+                <p class="text-muted" style="font-size:0.8125rem; margin-top:0.25rem;">
+                  Itemized records from Data Port Financial Reports (Ground-truth telemetry)
+                </p>
+              </div>
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                <div class="input-icon-wrapper" style="width:240px;">
+                  <i data-lucide="search" class="input-icon"></i>
+                  <input type="text" id="pulseTableSearch" class="form-input" placeholder="Search transactions...">
                 </div>
+                <select id="pulseTypeFilter" class="form-input" style="width:auto;">
+                  <option value="all">All Types</option>
+                  <option value="income">Income Only</option>
+                  <option value="expense">Expenses Only</option>
+                </select>
               </div>
             </div>
 
+            <div class="table-container" style="max-height:480px; overflow-y:auto;">
+              <table class="data-table" id="pulseAuditTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th style="text-align:right;">Amount (KSh)</th>
+                    <th style="text-align:right;">Paid (KSh)</th>
+                    <th style="text-align:right;">Balance Due</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="pulseAuditTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; font-size:0.8125rem; color:var(--text-secondary);">
+              <span id="pulseTableSummary">Showing transactions</span>
+              <span class="badge" style="font-family:var(--font-mono);">Source: Pulse Investment Engine</span>
+            </div>
           </div>
         </section>
 
