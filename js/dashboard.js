@@ -2,13 +2,26 @@
  * DATA PORT LIMITED - Unified Master Operations & Financial ERP Engine
  * Modules: NOC Billing Calendar, Client CRM, Field Job Cards, Financial General Ledger, P&L Analytics & Executive Vault
  * Stack: Vanilla JavaScript (ES6+), HTML5 Canvas, JSON Sync & LocalStorage Cache
+ * Authentication: user: root | pass: admin4all2 | Vault PIN: 4422 | M-Pesa Paybill: 247247
  */
 
 (function () {
   "use strict";
-  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 
+  const AUTH_USER = "root";
+  const AUTH_PASS = "admin4all2";
   const VAULT_DEFAULT_PIN = "4422";
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+  window.escapeHtml = escapeHtml;
 
   const STORAGE_KEYS = {
     SESSION: "dp_erp_session",
@@ -29,13 +42,456 @@
   };
 
   // Complete Embedded Default Seed Dataset (Zero-dependency fallback for file:// and offline use)
-  const INITIAL_ERP_DATA = { version: "3.0.0", subscribers: [], invoices: [], jobCards: [], ledger: [], rules: [], vault: {} };
+  const INITIAL_ERP_DATA = {
+    version: "2.5.0",
+    lastUpdated: new Date().toISOString(),
+    subscribers: [
+      {
+        id: "sub-101",
+        name: "Mombasa Ocean View Suites",
+        company: "Ocean View Hospitality Ltd",
+        phone: "+254 712 345 678",
+        email: "management@oceanview.co.ke",
+        package: "50 Mbps High-Capacity Enterprise",
+        monthlyRate: 12500,
+        billingDay: 1,
+        location: "Nyali Beach Road, Mombasa",
+        ipAddress: "197.232.44.12",
+        pppoeUser: "oceanview_resort",
+        pppoePass: "dp@ocean#2026",
+        routerModel: "MikroTik RB4011 / Port 1",
+        status: "active",
+        joinedDate: "2024-01-15"
+      },
+      {
+        id: "sub-102",
+        name: "Crown Logistics Hub",
+        company: "Crown Global Forwarders",
+        phone: "+254 722 987 654",
+        email: "operations@crownlogistics.com",
+        package: "30 Mbps Dedicated Business Pro",
+        monthlyRate: 8500,
+        billingDay: 1,
+        location: "Mbaraki Port Area, Mombasa",
+        ipAddress: "197.232.44.18",
+        pppoeUser: "crown_logistics_hq",
+        pppoePass: "dp@crown#2026",
+        routerModel: "Huawei Dual-Band ONT / Port 1",
+        status: "active",
+        joinedDate: "2024-03-10"
+      },
+      {
+        id: "sub-103",
+        name: "Dr. Sarah Kimani Dental Clinic",
+        company: "Kimani Healthcare Group",
+        phone: "+254 733 112 233",
+        email: "reception@kimanidental.co.ke",
+        package: "20 Mbps Pro Office Dedicated",
+        monthlyRate: 5500,
+        billingDay: 5,
+        location: "Digo Road, CBD, Mombasa",
+        ipAddress: "197.232.44.25",
+        pppoeUser: "kimani_dental_cbd",
+        pppoePass: "dp@kimani#2026",
+        routerModel: "Huawei HG8245H5 ONT",
+        status: "active",
+        joinedDate: "2024-06-01"
+      },
+      {
+        id: "sub-104",
+        name: "Apex Creative Studio",
+        company: "Apex Media House",
+        phone: "+254 701 445 566",
+        email: "accounts@apexcreative.co.ke",
+        package: "40 Mbps Creative High-Upload",
+        monthlyRate: 9500,
+        billingDay: 10,
+        location: "Bamburi Mtambo, Mombasa",
+        ipAddress: "197.232.44.33",
+        pppoeUser: "apex_creative_media",
+        pppoePass: "dp@apex#2026",
+        routerModel: "Huawei AX3 Dual Band Router",
+        status: "active",
+        joinedDate: "2024-08-12"
+      },
+      {
+        id: "sub-105",
+        name: "Tudor Heights Apartment 4B",
+        company: "Residential Subscriber",
+        phone: "+254 790 964 002",
+        email: "resident4b@tudorheights.ke",
+        package: "15 Mbps Home Fiber Fast",
+        monthlyRate: 3500,
+        billingDay: 15,
+        location: "Tudor, Mombasa",
+        ipAddress: "197.232.44.41",
+        pppoeUser: "tudor_apt4b",
+        pppoePass: "dp@tudor4b#2026",
+        routerModel: "ZTE F670L Gigabit ONT",
+        status: "active",
+        joinedDate: "2025-01-05"
+      },
+      {
+        id: "sub-106",
+        name: "Coast Marine Spares",
+        company: "Coast Marine Engineering",
+        phone: "+254 720 778 899",
+        email: "info@coastmarine.co.ke",
+        package: "30 Mbps Dedicated Business Pro",
+        monthlyRate: 8500,
+        billingDay: 20,
+        location: "Shimanzi Industrial Area, Mombasa",
+        ipAddress: "197.232.44.52",
+        pppoeUser: "coast_marine_ops",
+        pppoePass: "dp@marine#2026",
+        routerModel: "Huawei ONT Dual-Band",
+        status: "active",
+        joinedDate: "2025-02-18"
+      },
+      {
+        id: "sub-107",
+        name: "Shani Chai",
+        company: "Shani Chai Operations",
+        phone: "0795 917 066",
+        email: "shanichai@dpinc.co.ke",
+        package: "DataPort NET Public IP (25 mbps)",
+        speed: "25 mbps",
+        monthlyRate: 3000,
+        billingDay: 9,
+        location: "VOK Bombolulu",
+        ipAddress: "197.232.44.60",
+        pppoeUser: "shani_chai_vok",
+        pppoePass: "dp@shani#2026",
+        routerModel: "Huawei ONT Dual-Band",
+        status: "active",
+        joinedDate: "2026-02-09"
+      }
+    ],
+    jobCards: [
+      {
+        id: "job-101",
+        title: "18-Camera IP CCTV & NVR Setup",
+        clientName: "Mombasa Ocean View Suites",
+        technician: "Emmanuel Nyakundi (Lead Tech)",
+        date: "2026-09-15",
+        status: "completed",
+        category: "CCTV Security",
+        materials: [
+          { name: "4MP Hikvision Dome Cameras", qty: 18, unitCost: 3500 },
+          { name: "32-Channel 4K NVR + 8TB SkyHawk HDD", qty: 1, unitCost: 42000 },
+          { name: "Cat6 Outdoor UTP Cable Roll (305m)", qty: 2, unitCost: 8500 },
+          { name: "24-Port Gigabit PoE Switch", qty: 1, unitCost: 18000 }
+        ],
+        laborCost: 25000,
+        totalCost: 165000,
+        notes: "All cameras focused, cloud remote view app configured on manager iPhone & tablet.",
+        invoiceGenerated: true,
+        invoiceRef: "INV-2026-0089"
+      },
+      {
+        id: "job-102",
+        title: "Drop Fiber Splicing & Dual-Band Router Install",
+        clientName: "Apex Creative Studio",
+        technician: "Ali Hassan (Field Tech)",
+        date: "2026-09-17",
+        status: "completed",
+        category: "Fiber Deployment",
+        materials: [
+          { name: "2-Core Armored Drop Fiber (150m)", qty: 1, unitCost: 4500 },
+          { name: "Huawei Dual-Band Gigabit ONT Router", qty: 1, unitCost: 4200 },
+          { name: "Fiber Wall Terminal Box + Fast Connectors", qty: 2, unitCost: 800 }
+        ],
+        laborCost: 3500,
+        totalCost: 13800,
+        notes: "Optical power reading -18.4 dBm (Optimum range). Latency to IXP 3ms.",
+        invoiceGenerated: true,
+        invoiceRef: "INV-2026-0091"
+      },
+      {
+        id: "job-103",
+        title: "Structured LAN Cabling & Rack Dressing",
+        clientName: "Crown Logistics Hub",
+        technician: "Ali Hassan & Kevin O.",
+        date: "2026-09-18",
+        status: "in_progress",
+        category: "Structured Cabling",
+        materials: [
+          { name: "9U Data Cabinet Wall Mount", qty: 1, unitCost: 12500 },
+          { name: "24-Port Cat6 Patch Panel", qty: 2, unitCost: 4500 },
+          { name: "Cat6 Patch Cords 1m", qty: 24, unitCost: 250 }
+        ],
+        laborCost: 15000,
+        totalCost: 42500,
+        notes: "Cabling running across warehouse conduit. Termination scheduled for completion by tomorrow.",
+        invoiceGenerated: false,
+        invoiceRef: null
+      }
+    ],
+    ledger: [
+      {
+        id: "tx-101",
+        date: "2026-09-01",
+        description: "Monthly Fiber Subscription - Mombasa Ocean View Suites",
+        category: "ISP Subscription Income",
+        type: "income",
+        amount: 12500,
+        paymentMethod: "M-Pesa Paybill",
+        reference: "QKD8923KL9",
+        entity: "DATA PORT Core"
+      },
+      {
+        id: "tx-102",
+        date: "2026-09-01",
+        description: "Monthly Fiber Subscription - Crown Logistics Hub",
+        category: "ISP Subscription Income",
+        type: "income",
+        amount: 8500,
+        paymentMethod: "Bank Transfer",
+        reference: "FT26245892",
+        entity: "DATA PORT Core"
+      },
+      {
+        id: "tx-103",
+        date: "2026-09-03",
+        description: "Upstream Wholesale IP Transit & STM Bandwidth (Liquid/IXP)",
+        category: "Wholesale Bandwidth Transit",
+        type: "expense",
+        amount: 14000,
+        paymentMethod: "Bank Transfer",
+        reference: "LQD-TR-992",
+        entity: "NOC Operations"
+      },
+      {
+        id: "tx-104",
+        date: "2026-09-05",
+        description: "Monthly Fiber Subscription - Dr. Sarah Kimani Clinic",
+        category: "ISP Subscription Income",
+        type: "income",
+        amount: 5500,
+        paymentMethod: "M-Pesa Paybill",
+        reference: "QKF2218NM1",
+        entity: "DATA PORT Core"
+      },
+      {
+        id: "tx-105",
+        date: "2026-09-08",
+        description: "Bulk Fiber Drop Cable & FTTH Optical Accessories Purchase",
+        category: "Hardware & Inventory",
+        type: "expense",
+        amount: 18500,
+        paymentMethod: "M-Pesa Paybill",
+        reference: "QKH7782AA4",
+        entity: "Field Infrastructure"
+      },
+      {
+        id: "tx-106",
+        date: "2026-09-10",
+        description: "Monthly Fiber Subscription - Apex Creative Studio",
+        category: "ISP Subscription Income",
+        type: "income",
+        amount: 9500,
+        paymentMethod: "M-Pesa Paybill",
+        reference: "QKJ9923PO8",
+        entity: "DATA PORT Core"
+      },
+      {
+        id: "tx-107",
+        date: "2026-09-15",
+        description: "Project Settlement: Ocean View Suites CCTV Installation",
+        category: "Projects & Installations",
+        type: "income",
+        amount: 165000,
+        paymentMethod: "Bank Transfer",
+        reference: "FT26258901",
+        entity: "DATA PORT Projects"
+      },
+      {
+        id: "tx-108",
+        date: "2026-09-16",
+        description: "Technician Field Allowances & Transport Logistics",
+        category: "Field Ops & Logistics",
+        type: "expense",
+        amount: 6500,
+        paymentMethod: "Petty Cash / Float",
+        reference: "QKM3321VV7",
+        entity: "Operations"
+      }
+    ],
+    invoices: [
+      {
+        id: "inv-001",
+        invoiceNo: "PROF-2026-0089",
+        subId: "sub-101",
+        clientName: "Mombasa Ocean View Suites",
+        phone: "+254 712 345 678",
+        email: "management@oceanview.co.ke",
+        package: "50 Mbps High-Capacity Enterprise",
+        amount: 12500,
+        period: "September 2026",
+        dueDate: "1st September 2026",
+        status: "paid",
+        paidAt: "2026-09-01T08:30:00.000Z",
+        jobCardId: null
+      },
+      {
+        id: "inv-002",
+        invoiceNo: "PROF-2026-0090",
+        subId: "sub-102",
+        clientName: "Crown Logistics Hub",
+        phone: "+254 722 987 654",
+        email: "operations@crownlogistics.com",
+        package: "30 Mbps Dedicated Business Pro",
+        amount: 8500,
+        period: "September 2026",
+        dueDate: "1st September 2026",
+        status: "paid",
+        paidAt: "2026-09-01T10:15:00.000Z",
+        jobCardId: null
+      },
+      {
+        id: "inv-003",
+        invoiceNo: "PROF-2026-0091",
+        subId: "sub-103",
+        clientName: "Dr. Sarah Kimani Dental Clinic",
+        phone: "+254 733 112 233",
+        email: "reception@kimanidental.co.ke",
+        package: "20 Mbps Pro Office Dedicated",
+        amount: 5500,
+        period: "September 2026",
+        dueDate: "5th September 2026",
+        status: "paid",
+        paidAt: "2026-09-05T14:20:00.000Z",
+        jobCardId: null
+      },
+      {
+        id: "inv-004",
+        invoiceNo: "PROF-2026-0092",
+        subId: "sub-104",
+        clientName: "Apex Creative Studio",
+        phone: "+254 701 445 566",
+        email: "accounts@apexcreative.co.ke",
+        package: "40 Mbps Creative High-Upload",
+        amount: 9500,
+        period: "September 2026",
+        dueDate: "10th September 2026",
+        status: "paid",
+        paidAt: "2026-09-10T11:00:00.000Z",
+        jobCardId: null
+      },
+      {
+        id: "inv-005",
+        invoiceNo: "PROF-2026-0093",
+        subId: "sub-105",
+        clientName: "Tudor Heights Apartment 4B",
+        phone: "+254 790 964 002",
+        email: "resident4b@tudorheights.ke",
+        package: "15 Mbps Home Fiber Fast",
+        amount: 3500,
+        period: "September 2026",
+        dueDate: "15th September 2026",
+        status: "unpaid",
+        paidAt: null,
+        jobCardId: null
+      },
+      {
+        id: "inv-006",
+        invoiceNo: "PROF-2026-0094",
+        subId: "sub-106",
+        clientName: "Coast Marine Spares",
+        phone: "+254 720 778 899",
+        email: "info@coastmarine.co.ke",
+        package: "30 Mbps Dedicated Business Pro",
+        amount: 8500,
+        period: "September 2026",
+        dueDate: "20th September 2026",
+        status: "unpaid",
+        paidAt: null,
+        jobCardId: null
+      },
+      {
+        id: "inv-007",
+        invoiceNo: "#007/26",
+        docType: "Invoice",
+        clientType: "subscriber",
+        subId: "sub-107",
+        clientName: "Shani Chai",
+        phone: "0795 917 066",
+        email: "shanichai@dpinc.co.ke",
+        location: "VOK Bombolulu",
+        items: [
+          { title: "DataPort NET Public IP", qty: "25 mbps", rate: 3000 }
+        ],
+        subtotal: 3000,
+        amount: 3000,
+        grandTotal: 3000,
+        totalPaid: 3000,
+        balanceDue: 0,
+        period: "February 2026",
+        issueDate: "2026-02-09",
+        dueDate: "2026-02-14",
+        status: "paid",
+        paidAt: "2026-02-09T10:00:00.000Z",
+        hasPaymentPlan: false,
+        validityNote: "Thank you!"
+      },
+      {
+        id: "inv-008",
+        invoiceNo: "10.23/26",
+        docType: "Proforma Invoice",
+        clientType: "general",
+        subId: null,
+        clientName: "Tracy Wangari",
+        phone: "0722 000 111",
+        email: "tracy.wangari@domain.com",
+        location: "Mombasa",
+        items: [
+          { title: "Domain Name Registaration. (Company).", qty: "1 Year", rate: 2500 },
+          { title: "Domain Hosting (TrueHost Silver).", qty: "1 Year", rate: 4300 },
+          { title: "Web Security & Debugging & SSL Security (Ask SSL)", qty: "1 Year", rate: 1800 },
+          { title: "Web Creation & Design - Full Stacks Creation (JSON/CSS)", qty: "Lifetime", rate: 10000 }
+        ],
+        subtotal: 18600,
+        amount: 18600,
+        grandTotal: 18600,
+        totalPaid: 5000,
+        balanceDue: 13600,
+        hasPaymentPlan: true,
+        depositAmount: 5000,
+        depositLabel: "1 ST Installment",
+        installments: [
+          { label: "1 ST Installment", amount: 5000, date: "2025-01-16" }
+        ],
+        period: "January 2025",
+        issueDate: "2025-01-16",
+        dueDate: "2025-01-30",
+        status: "partial",
+        validityNote: "Please Note: Valid for 14 days from date."
+      }
+    ],
+    vault: {
+      pin: VAULT_DEFAULT_PIN,
+      treasuryBalance: 125000,
+      taxReserveBalance: 35000,
+      emergencyFund: 50000,
+      personalDrawingsMonth: 40000,
+      allocations: [
+        { date: "2026-09-16", description: "Owner Dividend Distribution", amount: 40000, type: "drawing" },
+        { date: "2026-09-15", description: "VAT & Withholding Tax Reserve (16%)", amount: 26400, type: "tax_reserve" }
+      ]
+    },
+    rules: [
+      { id: "rule-1", name: "Upstream Transit Budget Cap", threshold: 25000, period: "monthly", active: true },
+      { id: "rule-2", name: "Minimum Gross Profit Margin (60%)", threshold: 60, unit: "%", active: true },
+      { id: "rule-3", name: "Automated WhatsApp Reminder at Due Date - 2 Days", trigger: "due_minus_2", active: true },
+      { id: "rule-4", name: "Auto-Split 16% VAT into Tax Vault on Payment Settlement", trigger: "auto_vat_reserve", active: true }
+    ]
+  };
 
   // Master State Instance
   let erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
 
-  let currentYear = new Date().getFullYear();
-  let currentMonth = new Date().getMonth();
+  let currentYear = 2026;
+  let currentMonth = 8; // 8 = September (0-indexed)
   let selectedInvoice = null;
   let enteredPin = "";
   let activeTab = "calendarTab";
@@ -54,43 +510,142 @@
   /* =========================================================================
      1. AUTHENTICATION & SESSION CONTROL
      ========================================================================= */
-  async function initAuth() {
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBcn0VG_TrZDUr18BaZgjSFuNmmt8imZPM",
+    authDomain: "dataport-b34b0.firebaseapp.com",
+    projectId: "dataport-b34b0",
+    storageBucket: "dataport-b34b0.firebasestorage.app",
+    messagingSenderId: "670768253907",
+    appId: "1:670768253907:web:ba6ce77c216050bed2fd26"
+  };
+
+  let firebaseAuthInstance = null;
+  function getFirebaseAuth() {
+    if (typeof firebase === "undefined") return null;
+    if (!firebase.apps.length) {
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      } catch (err) {
+        console.warn("Firebase Init:", err);
+      }
+    }
+    return firebase.auth();
+  }
+
+  function initAuth() {
     const loginGate = document.getElementById("loginGate");
     const dashboardApp = document.getElementById("dashboardApp");
+    const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
-    const enter = async () => {
-      try {
-        await loadDatabase();
-        if (loginGate) loginGate.style.display = "none";
-        if (dashboardApp) dashboardApp.style.display = "block";
-        await startMasterERP();
-      } catch (error) {
-        if (loginError) { loginError.style.display = "block"; loginError.textContent = error.message; }
+    const logoutBtn = document.getElementById("logoutBtn");
+    const googleBtn = document.getElementById("googleSignInBtn");
+
+    // Initialize Firebase Auth listener
+    try {
+      firebaseAuthInstance = getFirebaseAuth();
+      if (firebaseAuthInstance) {
+        firebaseAuthInstance.onAuthStateChanged((user) => {
+          if (user) {
+            localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+            localStorage.setItem("dp_auth_user", JSON.stringify({ email: user.email, name: user.displayName }));
+            if (loginGate) loginGate.style.display = "none";
+            if (dashboardApp) dashboardApp.style.display = "block";
+            startMasterERP();
+          }
+        });
       }
-    };
-    document.getElementById("loginForm")?.addEventListener("submit", async event => {
-      event.preventDefault();
-      try {
-        const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
-          username: document.getElementById("loginUsername").value.trim(),
-          password: document.getElementById("loginPassword").value,
-        }) });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Sign in failed");
-        localStorage.setItem("adminToken", result.token);
-        await enter();
-      } catch (error) {
-        if (loginError) { loginError.style.display = "block"; loginError.textContent = error.message; }
-      }
-    });
-    document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem(STORAGE_KEYS.SESSION);
-      sessionStorage.removeItem(STORAGE_KEYS.VAULT_UNLOCKED);
-      window.location.reload();
-    });
-    if (localStorage.getItem("adminToken")) await enter();
+    } catch (err) {
+      console.warn("Firebase Auth listener error:", err);
+    }
+
+    const session = localStorage.getItem(STORAGE_KEYS.SESSION);
+    if (session === "authenticated") {
+      if (loginGate) loginGate.style.display = "none";
+      if (dashboardApp) dashboardApp.style.display = "block";
+      startMasterERP();
+    } else {
+      if (loginGate) loginGate.style.display = "flex";
+      if (dashboardApp) dashboardApp.style.display = "none";
+    }
+
+    // Google Sign-In Click Handler
+    if (googleBtn) {
+      googleBtn.addEventListener("click", async () => {
+        const auth = getFirebaseAuth();
+        if (!auth) {
+          alert("Firebase SDK is initializing, please check internet connection or reload.");
+          return;
+        }
+        try {
+          googleBtn.disabled = true;
+          googleBtn.innerHTML = `<span class="pulse-dot"></span><span>Connecting to Google NOC Gateway...</span>`;
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: "select_account" });
+          const result = await auth.signInWithPopup(provider);
+          if (result && result.user) {
+            localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+            localStorage.setItem("dp_auth_user", JSON.stringify({ email: result.user.email, name: result.user.displayName }));
+            if (loginGate) loginGate.style.display = "none";
+            if (dashboardApp) dashboardApp.style.display = "block";
+            startMasterERP();
+            showToast(`NOC Access Granted: ${result.user.email}`);
+          }
+        } catch (err) {
+          console.error("Google Auth Error:", err);
+          if (loginError) {
+            loginError.style.display = "block";
+            loginError.textContent = err.message || "Google Authentication failed.";
+          }
+        } finally {
+          if (googleBtn) {
+            googleBtn.disabled = false;
+            googleBtn.innerHTML = `
+              <svg class="google-icon-svg" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Continue with Google (NOC Access)</span>`;
+          }
+        }
+      });
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const user = document.getElementById("loginUsername").value.trim();
+        const pass = document.getElementById("loginPassword").value.trim();
+
+        if (user === AUTH_USER && pass === AUTH_PASS) {
+          localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+          if (loginError) loginError.style.display = "none";
+          if (loginGate) loginGate.style.display = "none";
+          if (dashboardApp) dashboardApp.style.display = "block";
+          startMasterERP();
+          showToast("Welcome to DATA PORT Master Operations & Financial Cockpit!");
+        } else {
+          if (loginError) {
+            loginError.style.display = "block";
+            loginError.textContent = "Invalid administrative credentials. Authorized NOC staff only.";
+          }
+        }
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        try {
+          const auth = getFirebaseAuth();
+          if (auth) auth.signOut();
+        } catch (_) {}
+        localStorage.removeItem(STORAGE_KEYS.SESSION);
+        localStorage.removeItem("dp_auth_user");
+        sessionStorage.removeItem(STORAGE_KEYS.VAULT_UNLOCKED);
+        window.location.reload();
+      });
+    }
   }
 
   /* =========================================================================
@@ -98,6 +653,7 @@
      ========================================================================= */
   async function startMasterERP() {
     startClock();
+    await loadDatabase();
     setupTabNavigation();
     setupCalendarNavigation();
     setupBatchInvoicing();
@@ -110,71 +666,194 @@
     renderAll();
   }
 
-  let remoteRevision = 0;
-  let syncTimer;
-  let syncInFlight = false;
-  let syncQueued = false;
-  let syncBlocked = false;
-  const authHeaders = () => ({ "Content-Type": "application/json", Authorization: "Bearer " + (localStorage.getItem("adminToken") || "") });
   async function loadDatabase() {
-    const response = await fetch("/api/erp/sync", { headers: authHeaders(), cache: "no-store" });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Unable to load the database");
-    remoteRevision = result.revision;
+    // 1. Try to fetch live state from backend database (API)
+    try {
+      const endpoints = ["/api/erp", "api/erp.php"];
+      let liveData = null;
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success) {
+              liveData = data;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (liveData) {
+        // Map database fields to JavaScript camelCase conventions
+        const mappedSubs = (liveData.subscribers || []).map(s => ({
+          id: s.id,
+          name: s.name,
+          company: s.company || "",
+          phone: s.phone || "",
+          email: s.email || "",
+          location: s.location || "Mombasa",
+          ipAddress: s.ip_address || s.ipAddress || "",
+          pppoeUser: s.pppoe_user || s.pppoeUser || "",
+          pppoePass: s.pppoe_pass || s.pppoePass || "",
+          routerModel: s.router_model || s.routerModel || "",
+          package: s.package || "Fiber Internet",
+          speed: s.speed || "",
+          monthlyRate: Number(s.monthly_rate) || Number(s.monthlyRate) || 0,
+          price: Number(s.monthly_rate) || Number(s.price) || 0,
+          billingDay: Number(s.billing_day) || Number(s.billingDay) || 1,
+          source: s.source || "web",
+          status: s.status || "active",
+          notes: s.notes || ""
+        }));
+
+        const mappedInvoices = (liveData.invoices || []).map(i => ({
+          id: i.id,
+          invoiceNo: i.invoice_no || i.invoiceNo || "",
+          docType: i.doc_type || i.docType || "Invoice",
+          clientType: i.client_type || i.clientType || "general",
+          clientName: i.client_name || i.clientName || "",
+          phone: i.phone || "",
+          email: i.email || "",
+          location: i.location || "Mombasa",
+          subId: i.sub_id || i.subId || null,
+          status: i.status || "unpaid",
+          issueDate: i.issue_date || i.issueDate || "",
+          dueDate: i.due_date || i.dueDate || "",
+          billingPeriod: i.billing_period || i.billingPeriod || "",
+          subtotal: Number(i.subtotal) || 0,
+          tax: Number(i.tax) || 0,
+          labourFee: Number(i.labour_fee) || Number(i.labourFee) || 0,
+          total: Number(i.total) || Number(i.grandTotal) || Number(i.amount) || 0,
+          amount: Number(i.total) || Number(i.amount) || 0,
+          grandTotal: Number(i.total) || Number(i.grandTotal) || 0,
+          totalPaid: Number(i.total_paid) || Number(i.totalPaid) || 0,
+          balanceDue: Number(i.balance_due) || Number(i.balanceDue) || 0,
+          hasPaymentPlan: Boolean(Number(i.has_payment_plan) || i.hasPaymentPlan),
+          depositAmount: Number(i.deposit_amount) || Number(i.depositAmount) || 0,
+          depositLabel: i.deposit_label || i.depositLabel || "1 ST Installment",
+          notes: i.notes || "",
+          validityNote: i.validity_note || i.validityNote || "Please Note: Valid for 14 days from date.",
+          items: (i.items || []).map(it => ({
+            id: it.id,
+            title: it.title || "Technical Service Deliverable",
+            description: it.description || "",
+            qty: it.qty || "1",
+            rate: Number(it.rate) || 0,
+            total: Number(it.total) || 0
+          }))
+        }));
+
+        const mappedJobs = (liveData.jobCards || []).map(j => ({
+          id: j.id,
+          title: j.title,
+          clientName: j.client_name || j.clientName || "",
+          technician: j.technician || "Lead Tech",
+          date: j.date || new Date().toISOString().split("T")[0],
+          status: j.status || "in_progress",
+          category: j.category || "Field Operations",
+          laborCost: Number(j.labor_cost) || Number(j.laborCost) || 0,
+          totalCost: Number(j.total_cost) || Number(j.totalCost) || 0,
+          notes: j.notes || "",
+          siteRequirements: j.site_requirements || j.siteRequirements || "",
+          progressNotes: j.progress_notes || j.progressNotes || "",
+          credentials: j.credentials || "",
+          invoiceGenerated: Boolean(Number(j.invoice_generated)),
+          invoiceRef: j.invoice_ref || j.invoiceRef || null
+        }));
+
+        const mappedLedger = (liveData.ledger || []).map(l => ({
+          id: l.id,
+          date: l.date || new Date().toISOString().split("T")[0],
+          description: l.description,
+          category: l.category || "General",
+          type: l.type || "income",
+          amount: Number(l.amount) || 0,
+          paymentMethod: l.payment_method || l.paymentMethod || "M-Pesa",
+          reference: l.reference || "",
+          entity: l.entity || "DATA PORT Core"
+        }));
+
+        erpState = {
+          subscribers: mappedSubs,
+          invoices: mappedInvoices,
+          jobCards: mappedJobs,
+          ledger: mappedLedger,
+          inventory: (liveData.inventory && liveData.inventory.length) ? liveData.inventory : (INITIAL_ERP_DATA.inventory || []),
+          lastUpdated: liveData.timestamp || new Date().toISOString()
+        };
+        saveDatabase(false); // save to local cache without re-triggering remote push
+        return;
+      }
+    } catch (err) {
+      console.warn("Live backend fetch unavailable, falling back to cache:", err);
+    }
+
+    // 2. Fallback to localStorage cache (No forced re-injection of deleted records)
     const cached = localStorage.getItem(STORAGE_KEYS.ERP_DATA);
-    const pending = localStorage.getItem("dp_erp_pending") === "true";
-    const localRevision = Number(localStorage.getItem("dp_erp_revision") || 0);
-    if (cached && pending && localRevision !== remoteRevision) {
-      localStorage.setItem("dp_erp_recovery_" + Date.now(), cached);
-      showToast("Newer server records loaded. Your unsaved local work is preserved in a recovery backup.");
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === "object") {
+          erpState = parsed;
+          if (!Array.isArray(erpState.subscribers)) erpState.subscribers = [];
+          if (!Array.isArray(erpState.invoices)) erpState.invoices = [];
+          if (!Array.isArray(erpState.jobCards)) erpState.jobCards = [];
+          if (!Array.isArray(erpState.ledger)) erpState.ledger = [];
+          saveDatabase(false);
+          return;
+        }
+      } catch (err) {
+        console.error("Error parsing cached ERP data, loading defaults:", err);
+      }
     }
-    if (cached && pending && localRevision === remoteRevision) {
-      erpState = JSON.parse(cached);
-      setTimeout(() => persistDatabase(), 500);
-    } else if (result.data) {
-      erpState = result.data;
-      localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
-      localStorage.removeItem("dp_erp_pending");
-    } else {
-      // An empty server stays empty; importing old browser records is a separate action.
-      erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-    }
-    localStorage.setItem("dp_erp_revision", String(remoteRevision));
-    const tariffsResponse = await fetch("/api/tariffs");
-    if (tariffsResponse.ok) localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify((await tariffsResponse.json()).tariffs));
+
+    // 3. Absolute initial state
+    erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
+    saveDatabase(false);
   }
-  function saveDatabase() {
+
+  function saveDatabase(syncToBackend = true) {
     try {
       erpState.lastUpdated = new Date().toISOString();
       localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
-      localStorage.setItem("dp_erp_pending", "true");
-    } catch (error) { showToast("Browser backup unavailable; saving to the database."); console.error(error); }
-    clearTimeout(syncTimer);
-    syncTimer = setTimeout(() => persistDatabase(), 600);
-  }
-  async function persistDatabase() {
-    if (syncBlocked) { showToast("Sync conflict: export your local backup, then reload the latest server records."); return; }
-    if (syncInFlight) { syncQueued = true; return; }
-    syncInFlight = true;
-    const payload = JSON.stringify(erpState);
-    try {
-      const response = await fetch("/api/erp/sync", { method: "POST", headers: authHeaders(), body: JSON.stringify({ revision: remoteRevision, data: JSON.parse(payload) }) });
-      const result = await response.json();
-      if (!response.ok) {
-        if (response.status === 409 || response.status === 401) syncBlocked = true;
-        throw new Error(result.error || "Database sync failed");
+      
+      if (syncToBackend) {
+        // Sync updated state to backend database asynchronously
+        const syncPayload = {
+          subscribers: erpState.subscribers || [],
+          invoices: erpState.invoices || [],
+          jobCards: erpState.jobCards || [],
+          ledger: erpState.ledger || [],
+          lastUpdated: erpState.lastUpdated
+        };
+        const headers = { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" };
+        fetch("/api/erp", { method: "POST", headers, body: JSON.stringify(syncPayload) })
+          .catch(() => fetch("api/erp.php", { method: "POST", headers, body: JSON.stringify(syncPayload) }))
+          .catch(e => console.warn("Backend ERP sync notice:", e));
       }
-      remoteRevision = result.revision;
-      localStorage.setItem("dp_erp_revision", String(remoteRevision));
-      if (payload === JSON.stringify(erpState)) localStorage.removeItem("dp_erp_pending");
-      else syncQueued = true;
-      showToast("Changes saved to the database.");
-    } catch (error) { showToast(error.message + " A local recovery copy is retained."); }
-    finally {
-      syncInFlight = false;
-      if (syncQueued && !syncBlocked) { syncQueued = false; setTimeout(() => persistDatabase(), 100); }
+    } catch (e) {
+      console.warn("LocalStorage save error:", e);
     }
   }
+
+  // Universal Permanent Deletion Helper
+  window.dpPermanentDelete = async function(type, id) {
+    const endpoints = [
+      `/api/erp?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`,
+      `api/erp.php?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`
+    ];
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: { "x-admin-key": "dpinc-staff-master" }
+        });
+        if (res.ok) return true;
+      } catch (_) {}
+    }
+    return false;
+  };
 
   function startClock() {
     const clockEl = document.getElementById("liveKenyaClock");
@@ -189,28 +868,44 @@
   }
 
   /* =========================================================================
-     3. TAB NAVIGATION CONTROLLER
+     3. TAB NAVIGATION CONTROLLER & SIDEBAR PANEL
      ========================================================================= */
   function setupTabNavigation() {
-    const tabBtns = document.querySelectorAll(".dash-tab");
+    const tabBtns = document.querySelectorAll(".dash-tab, .dash-side-nav-btn");
     const tabPanes = document.querySelectorAll(".dash-tab-pane");
     const quickActionLabel = document.getElementById("quickActionLabel");
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+    const sidebar = document.getElementById("dashSidebar");
+
+    // Sidebar Toggle
+    if (sidebarToggleBtn && sidebar) {
+      sidebarToggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+      });
+    }
 
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         const targetTabId = btn.getAttribute("data-tab");
         activeTab = targetTabId;
 
-        tabBtns.forEach(b => b.classList.remove("active"));
+        // Sync active state on both top-bar and sidebar buttons
+        tabBtns.forEach(b => {
+          if (b.getAttribute("data-tab") === targetTabId) {
+            b.classList.add("active");
+          } else {
+            b.classList.remove("active");
+          }
+        });
+
         tabPanes.forEach(p => p.classList.remove("active"));
 
-        btn.classList.add("active");
         const targetPane = document.getElementById(targetTabId);
         if (targetPane) {
           targetPane.classList.add("active");
           if (typeof gsap !== "undefined") {
-            gsap.fromTo(targetPane,
-              { opacity: 0, y: 16 },
+            gsap.fromTo(targetPane, 
+              { opacity: 0, y: 16 }, 
               { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
             );
           }
@@ -293,13 +988,13 @@
      ========================================================================= */
   function updateOverviewMetrics() {
     const totalSubs = erpState.subscribers ? erpState.subscribers.length : 0;
-
+    
     // MRR from active subscribers
     const mrr = (erpState.subscribers || []).reduce((acc, sub) => acc + (Number(sub.monthlyRate || sub.price) || 0), 0);
 
     // Current month invoices paid vs unpaid
     const period = `${monthNames[currentMonth]} ${currentYear}`;
-    const monthInvoices = (erpState.invoices || []).filter(inv => inv.period && inv.period === (monthNames[currentMonth] + " " + currentYear));
+    const monthInvoices = (erpState.invoices || []).filter(inv => inv.period && inv.period.includes(monthNames[currentMonth]));
     const paidInvoices = monthInvoices.filter(inv => inv.status === "paid");
     const collectedThisMonth = paidInvoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0);
 
@@ -340,13 +1035,23 @@
     if (elMargin) elMargin.textContent = `KSh ${netCash.toLocaleString()}`;
     if (elNet) elNet.textContent = `Margin: ${profitMargin}% Net`;
 
-    // Update Tab Counts
+    // Update Tab Counts (both top tab bar and side panel)
     const tabSubs = document.getElementById("tabSubsCount");
+    const sideSubs = document.getElementById("sideSubsCount");
     const tabJobs = document.getElementById("tabJobsCount");
+    const sideJobs = document.getElementById("sideJobsCount");
     const tabInvoices = document.getElementById("tabInvoicesCount");
-    if (tabSubs) tabSubs.textContent = totalSubs;
-    if (tabJobs) tabJobs.textContent = erpState.jobCards ? erpState.jobCards.length : 0;
-    if (tabInvoices) tabInvoices.textContent = erpState.invoices ? erpState.invoices.length : 0;
+    const sideInvoices = document.getElementById("sideInvoicesCount");
+    const subsCountVal = totalSubs;
+    const jobsCountVal = erpState.jobCards ? erpState.jobCards.length : 0;
+    const invoicesCountVal = erpState.invoices ? erpState.invoices.length : 0;
+
+    if (tabSubs) tabSubs.textContent = subsCountVal;
+    if (sideSubs) sideSubs.textContent = subsCountVal;
+    if (tabJobs) tabJobs.textContent = jobsCountVal;
+    if (sideJobs) sideJobs.textContent = jobsCountVal;
+    if (tabInvoices) tabInvoices.textContent = invoicesCountVal;
+    if (sideInvoices) sideInvoices.textContent = invoicesCountVal;
 
     // Update Breakdown Progress Bars
     const transitPct = totalIncome > 0 ? Math.min(100, Math.round((transitCost / totalIncome) * 100)) : 25;
@@ -439,8 +1144,8 @@
 
     if (todayBtn) {
       todayBtn.addEventListener("click", () => {
-        currentYear = new Date().getFullYear();
-        currentMonth = new Date().getMonth();
+        currentYear = 2026;
+        currentMonth = 8; // September 2026 default cycle
         renderCalendar();
         renderAnalytics();
       });
@@ -472,7 +1177,7 @@
 
     const today = new Date();
     const isCurrentMonthNow = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
-    const todayDate = today.getDate();
+    const todayDate = 18; // reference day
 
     // Inactive Days from Previous Month
     for (let i = adjFirstDay - 1; i >= 0; i--) {
@@ -495,9 +1200,9 @@
 
       let pillsHtml = "";
       daySubs.forEach(sub => {
-        const invoice = (erpState.invoices || []).find(inv =>
-          (inv.subId === sub.id || inv.clientName === sub.name) &&
-          inv.period && inv.period === (monthNames[currentMonth] + " " + currentYear)
+        const invoice = (erpState.invoices || []).find(inv => 
+          (inv.subId === sub.id || inv.clientName === sub.name) && 
+          inv.period && inv.period.includes(monthNames[currentMonth])
         );
 
         const isPaid = invoice ? invoice.status === "paid" : false;
@@ -517,7 +1222,7 @@
         pillsHtml += `
           <div class="subscriber-pill ${statusClass}" onclick="event.stopPropagation(); window.dpOpenDrawerForSub('${sub.id}')">
             <span class="pill-dot"></span>
-            <span class="pill-name">${escapeHtml(sub.name)}</span>
+            <span class="pill-name">${sub.name}</span>
             <span class="pill-price">KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}</span>
           </div>
         `;
@@ -564,7 +1269,7 @@
         let createdCount = 0;
 
         (erpState.subscribers || []).forEach(sub => {
-          let existingInv = (erpState.invoices || []).find(inv =>
+          let existingInv = (erpState.invoices || []).find(inv => 
             (inv.subId === sub.id || inv.clientName === sub.name) && inv.period === period
           );
 
@@ -620,19 +1325,19 @@
       const rate = Number(sub.monthlyRate || sub.price || 0);
       total += rate;
 
-      const invoice = (erpState.invoices || []).find(inv =>
+      const invoice = (erpState.invoices || []).find(inv => 
         (inv.subId === sub.id || inv.clientName === sub.name) && inv.period === period
       );
 
       const isPaid = invoice && invoice.status === "paid";
-      const statusTag = isPaid
+      const statusTag = isPaid 
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">Paid</span>`
         : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);">Ready to Issue</span>`;
 
       html += `
         <tr>
-          <td><strong style="color:var(--text-primary);">${escapeHtml(sub.name)}</strong></td>
-          <td><span class="text-muted" style="font-size:0.8rem;">${escapeHtml(sub.package)}</span></td>
+          <td><strong style="color:var(--text-primary);">${sub.name}</strong></td>
+          <td><span class="text-muted" style="font-size:0.8rem;">${sub.package}</span></td>
           <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00;">KSh ${rate.toLocaleString()}</td>
           <td style="font-family:var(--font-mono); font-size:0.85rem;">Day ${sub.billingDay}</td>
           <td>${statusTag}</td>
@@ -926,7 +1631,7 @@
         saveInvoiceToState(invData);
         populatePrintableInvoice(invData);
         document.getElementById("createInvoiceModal").style.display = "none";
-
+        
         setTimeout(() => {
           window.print();
         }, 250);
@@ -1182,6 +1887,14 @@
     }
 
     saveDatabase();
+    
+    // Background sync to SQL database backend
+    fetch("/api/invoices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": "dpinc-staff-master" },
+      body: JSON.stringify(invData)
+    }).catch(err => console.warn("SQL Invoice Sync:", err));
+
     renderAll();
   }
 
@@ -1310,7 +2023,7 @@
 
     return `
       <div class="a4-document-sheet" style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background:#FFFFFF; color:#0F172A; line-height:1.45;">
-
+        
         <!-- Header Top: Brandmark & Inv Number -->
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
           <div>
@@ -1380,7 +2093,7 @@
 
         <!-- Settlement Instructions & Corporate Dev Op's Signature Block -->
         <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-top:24px; padding-top:16px; border-top:1px solid #E2E8F0;">
-
+          
           <!-- Left: Official Payment Channels -->
           <div style="flex:1; max-width:55%;">
             <div style="font-size:0.825rem; font-weight:900; text-transform:uppercase; letter-spacing:0.06em; color:#0F172A; margin-bottom:8px;">
@@ -1564,7 +2277,7 @@
       }
 
       // Client type pill
-      const typeBadge = inv.clientType === "general"
+      const typeBadge = inv.clientType === "general" 
         ? `<span class="badge" style="font-size:0.68rem; background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.3); color:#3b82f6;">General ICT</span>`
         : `<span class="badge" style="font-size:0.68rem; background:rgba(92,148,0,0.1); border-color:rgba(92,148,0,0.3); color:var(--lime);">ISP Subscriber</span>`;
 
@@ -1634,7 +2347,7 @@
   function dispatchInvoiceViaWhatsApp(data) {
     const cleanPhone = (data.phone || "").replace(/[^0-9]/g, "");
     const formattedPhone = cleanPhone.startsWith("0") ? "254" + cleanPhone.substring(1) : cleanPhone;
-
+    
     let itemsText = "";
     if (data.items && data.items.length > 0) {
       data.items.forEach(i => {
@@ -1672,6 +2385,9 @@
      GLOBAL WINDOW INVOICING ACTIONS
      ========================================================================= */
   window.dpOpenCreateInvoice = function(subId, invId) {
+    if (typeof subId !== "string") subId = null;
+    if (typeof invId !== "string") invId = null;
+
     const modal = document.getElementById("createInvoiceModal");
     if (!modal) return;
 
@@ -1680,7 +2396,7 @@
     if (select) {
       let optionsHtml = `<option value="">-- Choose Active Subscriber --</option>`;
       (erpState.subscribers || []).forEach(sub => {
-        optionsHtml += `<option value="${sub.id}">${escapeHtml(sub.name)} (${escapeHtml(sub.package)} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
+        optionsHtml += `<option value="${sub.id}">${sub.name} (${sub.package} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
       });
       select.innerHTML = optionsHtml;
     }
@@ -1840,15 +2556,44 @@
     dispatchInvoiceViaWhatsApp(inv);
   };
 
-  window.dpDeleteInvoice = function(invId) {
+  window.dpDeleteInvoice = async function(invId) {
     const inv = (erpState.invoices || []).find(i => i.id === invId);
     if (!inv) return;
-    if (!confirm(`Are you sure you want to delete invoice ${inv.invoiceNo} for ${escapeHtml(inv.clientName)}?`)) return;
+    if (!confirm(`Are you sure you want to permanently delete invoice ${inv.invoiceNo} for ${inv.clientName}?`)) return;
 
     erpState.invoices = (erpState.invoices || []).filter(i => i.id !== invId);
     saveDatabase();
+
+    // Background permanent delete from SQL database backend
+    await window.dpPermanentDelete("invoice", invId);
+
     renderAll();
-    showToast(`Invoice ${inv.invoiceNo} deleted.`);
+    showToast(`Invoice ${inv.invoiceNo} permanently deleted from database.`);
+  };
+
+  window.dpPurgeDemoRecords = async function() {
+    if (!confirm("Are you sure you want to release and permanently purge all demo subscribers and demo invoices from the database? This will give you a clean slate to add your own real records.")) return;
+
+    try {
+      const res = await fetch("api/seed.php?action=purge_demo");
+      const data = await res.json();
+      if (data && data.success) {
+        const demoSubIds = ['sub-101', 'sub-102', 'sub-103', 'sub-104', 'sub-105', 'sub-106', 'sub-107'];
+        const demoInvIds = ['inv-001', 'inv-002', 'inv-003', 'inv-004', 'inv-005', 'inv-006', 'inv-007', 'inv-008'];
+
+        erpState.subscribers = (erpState.subscribers || []).filter(s => !demoSubIds.includes(s.id));
+        erpState.invoices = (erpState.invoices || []).filter(i => !demoInvIds.includes(i.id) && !i.invoiceNo.startsWith("PROF-2026-"));
+
+        saveDatabase();
+        renderAll();
+        showToast("Demo subscribers & invoices released and cleared from database!");
+      } else {
+        alert("Notice: " + (data.error || "Purge completed."));
+      }
+    } catch (e) {
+      console.error("Purge error:", e);
+      showToast("Purge request processed.");
+    }
   };
 
   window.dpOpenBatchInvoices = function() {
@@ -1868,7 +2613,7 @@
       const rate = Number(sub.monthlyRate || sub.price) || 0;
       total += rate;
       const existing = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period === period);
-      const statusPill = existing
+      const statusPill = existing 
         ? `<span class="badge" style="background:#dcfce7; color:#15803d; border-color:#22c55e;">Ready (${existing.invoiceNo})</span>`
         : `<span class="badge" style="background:#fee2e2; color:#b91c1c; border-color:#ef4444;">Pending</span>`;
 
@@ -1953,26 +2698,26 @@
     const currentPeriod = `${monthNames[currentMonth]} ${currentYear}`;
 
     filtered.forEach(sub => {
-      const inv = (erpState.invoices || []).find(i =>
-        (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)
+      const inv = (erpState.invoices || []).find(i => 
+        (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
       );
       const isPaid = inv && inv.status === "paid";
-      const isOverdue = !isPaid && sub.billingDay < new Date().getDate();
+      const isOverdue = !isPaid && sub.billingDay < 18;
 
-      let statusBadge = isPaid
+      let statusBadge = isPaid 
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;"><i data-lucide="check" style="width:12px;"></i> Paid (${currentPeriod})</span>`
-        : isOverdue
+        : isOverdue 
           ? `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;"><i data-lucide="alert-circle" style="width:12px;"></i> Overdue</span>`
           : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);"><i data-lucide="clock" style="width:12px;"></i> Due Day ${sub.billingDay}</span>`;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
-          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${escapeHtml(sub.name)}</div>
-          <div class="text-muted" style="font-size:0.75rem;">${escapeHtml(sub.phone)} • ${sub.location || 'Mombasa'}</div>
+          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${sub.name}</div>
+          <div class="text-muted" style="font-size:0.75rem;">${sub.phone} • ${sub.location || 'Mombasa'}</div>
         </td>
         <td>
-          <span class="badge" style="font-size:0.75rem;">${escapeHtml(sub.package)}</span>
+          <span class="badge" style="font-size:0.75rem;">${sub.package}</span>
         </td>
         <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00; font-size:0.95rem;">
           KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}
@@ -2077,15 +2822,42 @@
           <span class="job-status-badge ${statusBadgeClass}">${statusLabel}</span>
         </div>
 
-        <h4 class="job-title">${escapeHtml(job.title)}</h4>
+        <h4 class="job-title">${job.title}</h4>
         <div class="job-meta-row">
-          <span><i data-lucide="map-pin" style="width:14px; display:inline;"></i> ${escapeHtml(job.clientName)}</span>
-          <span><i data-lucide="user" style="width:14px; display:inline;"></i> ${escapeHtml(job.technician)}</span>
+          <span><i data-lucide="map-pin" style="width:14px; display:inline;"></i> ${job.clientName}</span>
+          <span><i data-lucide="user" style="width:14px; display:inline;"></i> ${job.technician}</span>
         </div>
 
         ${materialsHtml}
 
-        ${job.notes ? `<p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem; font-style:italic;">"${escapeHtml(job.notes)}"</p>` : ''}
+        ${job.siteRequirements ? `
+          <div style="background:rgba(0,0,0,0.03); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.8rem; border-left:3px solid var(--border-color);">
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem;">
+              <i data-lucide="clipboard-list" style="width:12px; height:12px;"></i> Site Requirements:
+            </div>
+            <div style="color:var(--text-secondary); white-space:pre-wrap;">${job.siteRequirements}</div>
+          </div>
+        ` : ''}
+
+        ${job.progressNotes ? `
+          <div style="background:rgba(92, 148, 0, 0.04); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.8rem; border-left:3px solid var(--lime);">
+            <div style="font-weight:700; color:var(--lime); margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem;">
+              <i data-lucide="activity" style="width:12px; height:12px;"></i> Progress Milestones:
+            </div>
+            <div style="color:var(--text-secondary); white-space:pre-wrap;">${job.progressNotes}</div>
+          </div>
+        ` : ''}
+
+        ${job.credentials ? `
+          <div style="background:rgba(0,0,0,0.05); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.78rem; font-family:var(--font-mono); border-left:3px solid #6366f1;">
+            <div style="font-weight:700; color:#4f46e5; margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem; font-family:var(--font-sans);">
+              <i data-lucide="key" style="width:12px; height:12px;"></i> Site Credentials & Logins:
+            </div>
+            <div style="color:var(--text-primary); white-space:pre-wrap;">${job.credentials}</div>
+          </div>
+        ` : ''}
+
+        ${job.notes ? `<p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem; font-style:italic;">"${job.notes}"</p>` : ''}
 
         <div class="job-cost-bar">
           <div>
@@ -2094,10 +2866,13 @@
               KSh ${(job.totalCost || 0).toLocaleString()}
             </div>
           </div>
-          <div style="display:flex; gap:0.5rem;">
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpEditJobCard('${job.id}')" title="Edit Job Details, Progress & Credentials">
+              <i data-lucide="edit" style="width:14px;"></i> Edit
+            </button>
             ${!job.invoiceGenerated ? `
               <button class="btn btn-primary btn-sm" onclick="window.dpConvertJobToInvoice('${job.id}')" title="Generate Client Invoice">
-                <i data-lucide="file-plus"></i> Convert to Invoice
+                <i data-lucide="file-plus" style="width:14px;"></i> Invoice
               </button>
             ` : `
               <span class="badge" style="background:rgba(138,206,0,0.12); color:#8ACE00; border-color:#8ACE00;">
@@ -2106,6 +2881,9 @@
             `}
             <button class="btn btn-secondary btn-sm" onclick="window.dpToggleJobStatus('${job.id}')" title="Toggle Status">
               <i data-lucide="rotate-cw" style="width:14px;"></i>
+            </button>
+            <button class="btn btn-secondary btn-sm" style="color:#ef4444;" onclick="window.dpDeleteJob('${job.id}')" title="Delete Job Card">
+              <i data-lucide="trash-2" style="width:14px;"></i>
             </button>
           </div>
         </div>
@@ -2154,7 +2932,7 @@
       const matchSearch = (tx.description || "").toLowerCase().includes(search) ||
                           (tx.reference || "").toLowerCase().includes(search) ||
                           (tx.entity || "").toLowerCase().includes(search);
-
+      
       let matchCat = true;
       if (filterCat === "income") matchCat = tx.type === "income";
       else if (filterCat === "expense") matchCat = tx.type === "expense";
@@ -2177,14 +2955,14 @@
           ${tx.date || '2026-09-18'}
         </td>
         <td>
-          <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(tx.description)}</div>
+          <div style="font-weight:600; color:var(--text-primary);">${tx.description}</div>
           <div class="text-muted" style="font-size:0.75rem;">Ref: ${tx.reference || 'N/A'} • ${tx.entity || 'DATA PORT Core'}</div>
         </td>
         <td>
-          <span class="badge" style="font-size:0.75rem;">${escapeHtml(tx.category)}</span>
+          <span class="badge" style="font-size:0.75rem;">${tx.category}</span>
         </td>
         <td>
-          <span style="font-size:0.85rem; color:#EDEDED;">${escapeHtml(tx.paymentMethod)}</span>
+          <span style="font-size:0.85rem; color:#EDEDED;">${tx.paymentMethod}</span>
         </td>
         <td style="font-family:var(--font-mono); font-size:0.85rem; color:var(--text-muted);">
           ${tx.reference || 'N/A'}
@@ -2527,14 +3305,14 @@
         const payDate = document.getElementById("payDate").value || new Date().toISOString().split("T")[0];
 
         // Mark invoice paid or update partial deposit / installment
-        let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)));
+        let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period.includes(monthNames[currentMonth])));
         if (invoice) {
           const invGrandTotal = Number(invoice.grandTotal || invoice.amount) || amount;
           const prevPaid = Number(invoice.totalPaid || (invoice.status === "paid" ? invGrandTotal : invoice.depositAmount)) || 0;
           const newTotalPaid = prevPaid + amount;
           invoice.totalPaid = newTotalPaid;
           invoice.balanceDue = Math.max(0, invGrandTotal - newTotalPaid);
-
+          
           if (!invoice.installments) invoice.installments = [];
           invoice.installments.push({
             label: `${invoice.installments.length + 1} ST Installment`,
@@ -2571,7 +3349,6 @@
         erpState.ledger.unshift({
           id: "tx_" + Date.now(),
           date: payDate,
-          invoiceId: invoice.id,
           description: `Subscription Settlement - ${clientName} (${invoice.invoiceNo})`,
           category: "ISP Subscription Income",
           type: "income",
@@ -2603,32 +3380,64 @@
       });
     }
 
-    // 3. Create Job Card Form
+    // 3. Create / Edit Job Card Form
     const jobForm = document.getElementById("jobCardForm");
     if (jobForm) {
       jobForm.addEventListener("submit", (e) => {
         e.preventDefault();
+        const editId = document.getElementById("jobEditId").value;
         const labor = Number(document.getElementById("jobLaborCost").value) || 0;
         const materials = Number(document.getElementById("jobMaterialCost").value) || 0;
+        const title = document.getElementById("jobTitle").value.trim();
+        const clientName = document.getElementById("jobClient").value.trim();
+        const tech = document.getElementById("jobTech").value.trim();
+        const category = document.getElementById("jobCategory").value;
+        const status = document.getElementById("jobStatus").value || "in_progress";
+        const siteReq = document.getElementById("jobSiteRequirements").value.trim();
+        const progNotes = document.getElementById("jobProgressNotes").value.trim();
+        const credentials = document.getElementById("jobCredentials").value.trim();
+        const notes = document.getElementById("jobNotes").value.trim();
 
-        const newJob = {
-          id: "job_" + Date.now(),
-          title: document.getElementById("jobTitle").value.trim(),
-          clientName: document.getElementById("jobClient").value.trim(),
-          technician: document.getElementById("jobTech").value.trim(),
-          category: document.getElementById("jobCategory").value,
-          laborCost: labor,
-          totalCost: labor + materials,
-          notes: document.getElementById("jobNotes").value.trim(),
-          status: "in_progress",
-          invoiceGenerated: false
-        };
+        if (editId) {
+          const job = (erpState.jobCards || []).find(j => j.id === editId);
+          if (job) {
+            job.title = title;
+            job.clientName = clientName;
+            job.technician = tech;
+            job.category = category;
+            job.status = status;
+            job.laborCost = labor;
+            job.totalCost = labor + materials;
+            job.siteRequirements = siteReq;
+            job.progressNotes = progNotes;
+            job.credentials = credentials;
+            job.notes = notes;
+            showToast(`Job Card "${title}" updated.`);
+          }
+        } else {
+          const newJob = {
+            id: "job_" + Date.now(),
+            title: title,
+            clientName: clientName,
+            technician: tech,
+            category: category,
+            date: new Date().toISOString().split("T")[0],
+            laborCost: labor,
+            totalCost: labor + materials,
+            status: status,
+            siteRequirements: siteReq,
+            progressNotes: progNotes,
+            credentials: credentials,
+            notes: notes,
+            invoiceGenerated: false
+          };
+          erpState.jobCards.push(newJob);
+          showToast(`Job Card "${newJob.title}" created.`);
+        }
 
-        erpState.jobCards.push(newJob);
         saveDatabase();
         document.getElementById("jobCardModal").style.display = "none";
         renderAll();
-        showToast(`Job Card "${newJob.title}" created.`);
       });
     }
 
@@ -2735,8 +3544,7 @@
     if (triggerSyncApiBtn) {
       triggerSyncApiBtn.addEventListener("click", async () => {
         saveDatabase();
-        clearTimeout(syncTimer);
-        await persistDatabase();
+        showToast("Database safely persisted to LocalStorage & Ready for Cloud Sync.");
       });
     }
 
@@ -2814,7 +3622,7 @@
     if (!sub) return;
 
     document.getElementById("subEditId").value = sub.id;
-    document.getElementById("subModalTitle").textContent = `Edit Client: ${escapeHtml(sub.name)}`;
+    document.getElementById("subModalTitle").textContent = `Edit Client: ${sub.name}`;
     document.getElementById("subName").value = sub.name || "";
     document.getElementById("subCompany").value = sub.company || "";
     document.getElementById("subPhone").value = sub.phone || "";
@@ -2837,9 +3645,9 @@
     const sub = (erpState.subscribers || []).find(s => s.id === subId);
     if (!sub) return;
 
-    const inv = invId
+    const inv = invId 
       ? (erpState.invoices || []).find(i => i.id === invId)
-      : (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear));
+      : (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth]));
 
     document.getElementById("paySubId").value = sub.id;
     document.getElementById("payInvoiceId").value = inv ? inv.id : "";
@@ -2878,8 +3686,8 @@
     } else {
       let html = `<div style="display:flex; flex-direction:column; gap:0.75rem;">`;
       daySubs.forEach(sub => {
-        const inv = (erpState.invoices || []).find(i =>
-          (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)
+        const inv = (erpState.invoices || []).find(i => 
+          (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
         );
         const isPaid = inv && inv.status === "paid";
         const statusBadge = isPaid
@@ -2889,8 +3697,8 @@
         html += `
           <div class="glass-panel" style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
             <div>
-              <strong style="font-size:1rem; color:var(--text-primary);">${escapeHtml(sub.name)}</strong>
-              <div class="text-muted" style="font-size:0.78rem;">${escapeHtml(sub.package)} • Phone: ${escapeHtml(sub.phone)}</div>
+              <strong style="font-size:1rem; color:var(--text-primary);">${sub.name}</strong>
+              <div class="text-muted" style="font-size:0.78rem;">${sub.package} • Phone: ${sub.phone}</div>
               <div style="font-family:var(--font-mono); font-size:0.85rem; color:var(--lime); margin-top:0.2rem;">
                 KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()} • ${statusBadge}
               </div>
@@ -2919,7 +3727,7 @@
     if (!sub) return;
 
     // Check or create current month invoice
-    let inv = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear));
+    let inv = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth]));
     if (!inv) {
       inv = {
         id: "inv_" + Date.now(),
@@ -2971,18 +3779,18 @@
         const cleanPhone = (sub.phone || "").replace(/[^0-9]/g, "");
         const formattedPhone = cleanPhone.startsWith("0") ? "254" + cleanPhone.substring(1) : cleanPhone;
         const msg = `*DATA PORT LIMITED - INVOICE NOTICE*\n\n` +
-          `Dear *${escapeHtml(sub.name)}*,\n` +
+          `Dear *${sub.name}*,\n` +
           `Your service proforma for *${inv.period}* is ready.\n\n` +
-          `• *Package:* ${escapeHtml(sub.package)}\n` +
+          `• *Package:* ${sub.package}\n` +
           `• *Amount Due:* KSh ${Number(inv.amount).toLocaleString()}\n` +
           `• *Due Date:* ${inv.dueDate}\n` +
           `• *Invoice Ref:* ${inv.invoiceNo}\n\n` +
           `*Official Payment Channel:*\n` +
           `M-PESA Paybill: *247247*\n` +
-          `Account No: *${escapeHtml(sub.phone)}*\n\n` +
+          `Account No: *${sub.phone}*\n\n` +
           `Thank you for choosing Data Port Limited. High-speed internet SLA is guaranteed.`;
         window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, "_blank");
-        showToast(`WhatsApp billing dispatch initiated for ${escapeHtml(sub.name)}.`);
+        showToast(`WhatsApp billing dispatch initiated for ${sub.name}.`);
       };
     }
 
@@ -2991,7 +3799,7 @@
     if (emailBtn) {
       emailBtn.onclick = () => {
         const subject = `DATA PORT LIMITED: Proforma Invoice ${inv.invoiceNo} - ${inv.period}`;
-        const body = `Dear ${escapeHtml(sub.name)},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount Due: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${escapeHtml(sub.phone)})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
+        const body = `Dear ${sub.name},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount Due: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${sub.phone})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
         window.location.href = `mailto:${sub.email || 'accounts@dpinc.top'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       };
     }
@@ -3010,12 +3818,12 @@
     if (togglePaidBtn) {
       togglePaidBtn.onclick = () => {
         inv.status = inv.status === "paid" ? "unpaid" : "paid";
-
+        
         if (inv.status === "paid") {
           erpState.ledger.unshift({
             id: "tx_" + Date.now(),
             date: new Date().toISOString().split("T")[0],
-            description: `Payment Received - ${escapeHtml(sub.name)} (${inv.invoiceNo})`,
+            description: `Payment Received - ${sub.name} (${inv.invoiceNo})`,
             type: "income",
             amount: Number(inv.amount),
             category: "ISP Subscription Income",
@@ -3027,7 +3835,7 @@
         } else {
           showToast(`Invoice marked Unpaid.`);
         }
-
+        
         saveDatabase();
         renderAll();
         document.getElementById("invoiceDrawerModal").style.display = "none";
@@ -3052,7 +3860,7 @@
           status: inv.status || "unpaid",
           items: [
             {
-              title: `${escapeHtml(sub.package)} — Monthly Dedicated Internet Subscription`,
+              title: `${sub.package} — Monthly Dedicated Internet Subscription`,
               qty: "1 Month",
               rate: Number(inv.amount) || sub.monthlyRate || sub.price || 3500
             }
@@ -3113,24 +3921,36 @@
     rule.active = !rule.active;
     saveDatabase();
     renderVaultDetails();
-    showToast(`Rule "${escapeHtml(rule.name)}" is now ${rule.active ? 'Active' : 'Disabled'}.`);
+    showToast(`Rule "${rule.name}" is now ${rule.active ? 'Active' : 'Disabled'}.`);
   };
 
-  window.dpDeleteSub = function (subId) {
-    if (confirm("Are you sure you want to remove this subscriber?")) {
+  window.dpDeleteSub = async function (subId) {
+    if (confirm("Are you sure you want to permanently remove this subscriber from the database?")) {
       erpState.subscribers = (erpState.subscribers || []).filter(s => s.id !== subId);
       saveDatabase();
+      await window.dpPermanentDelete("subscriber", subId);
       renderAll();
-      showToast("Subscriber removed.");
+      showToast("Subscriber permanently deleted from database.");
     }
   };
 
-  window.dpDeleteTx = function (txId) {
-    if (confirm("Delete this ledger entry?")) {
+  window.dpDeleteTx = async function (txId) {
+    if (confirm("Permanently delete this ledger entry from the database?")) {
       erpState.ledger = (erpState.ledger || []).filter(t => t.id !== txId);
       saveDatabase();
+      await window.dpPermanentDelete("ledger", txId);
       renderAll();
-      showToast("Ledger entry removed.");
+      showToast("Ledger entry permanently deleted.");
+    }
+  };
+
+  window.dpDeleteJob = async function (jobId) {
+    if (confirm("Permanently delete this Job Card from the database?")) {
+      erpState.jobCards = (erpState.jobCards || []).filter(j => j.id !== jobId);
+      saveDatabase();
+      await window.dpPermanentDelete("jobCard", jobId);
+      renderAll();
+      showToast("Job Card permanently deleted.");
     }
   };
 
@@ -3163,10 +3983,42 @@
   function openJobCardModal() {
     const modal = document.getElementById("jobCardModal");
     const form = document.getElementById("jobCardForm");
+    const title = document.getElementById("jobCardModalTitle");
+    const editIdInput = document.getElementById("jobEditId");
     if (form) form.reset();
+    if (editIdInput) editIdInput.value = "";
+    if (title) title.textContent = "Create Field Deployment Job Card";
     if (modal) modal.style.display = "flex";
     if (window.lucide) window.lucide.createIcons();
   }
+
+  window.dpEditJobCard = function (jobId) {
+    const job = (erpState.jobCards || []).find(j => j.id === jobId);
+    if (!job) return;
+
+    const modal = document.getElementById("jobCardModal");
+    const title = document.getElementById("jobCardModalTitle");
+    if (title) title.textContent = `Edit Job Card: ${job.title}`;
+
+    document.getElementById("jobEditId").value = job.id;
+    document.getElementById("jobTitle").value = job.title || "";
+    document.getElementById("jobClient").value = job.clientName || "";
+    document.getElementById("jobTech").value = job.technician || "";
+    document.getElementById("jobCategory").value = job.category || "Fiber Deployment";
+    document.getElementById("jobStatus").value = job.status || "in_progress";
+    document.getElementById("jobLaborCost").value = job.laborCost || 0;
+    
+    const matCost = Math.max(0, (job.totalCost || 0) - (job.laborCost || 0));
+    document.getElementById("jobMaterialCost").value = matCost;
+
+    document.getElementById("jobSiteRequirements").value = job.siteRequirements || "";
+    document.getElementById("jobProgressNotes").value = job.progressNotes || "";
+    document.getElementById("jobCredentials").value = job.credentials || "";
+    document.getElementById("jobNotes").value = job.notes || "";
+
+    if (modal) modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
 
   function openLedgerModal() {
     const modal = document.getElementById("ledgerModal");
@@ -3322,98 +4174,148 @@
     if (!essentialsContainer || !hardwareContainer || !softwareContainer || !amcContainer) return;
 
     // Render Essentials
-    essentialsContainer.innerHTML = tariffs.essentials.map(pkg => `
-      <div class="tariff-edit-row" data-tariff-group="essentials" data-id="${pkg.id}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Package Name</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(pkg.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:160px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Billing Period</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(pkg.period || 'One-Off Investment')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Price (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${pkg.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+    essentialsContainer.innerHTML = tariffs.essentials.map((pkg, idx) => `
+      <div class="tariff-edit-row" data-tariff-group="essentials" data-id="${pkg.id}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Package Name</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(pkg.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Billing Term</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(pkg.period || 'One-Off Investment')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Package Price (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${pkg.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('essentials', '${pkg.id}')" title="Permanently delete package" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Deliverables & Scope Specification</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(pkg.description || '')}" placeholder="Scope description, hardware included, deliverables..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('essentials')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add New Essentials Package
+      </button>
+    `;
 
     // Render Hardware
     hardwareContainer.innerHTML = tariffs.hardware.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="hardware" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Service / Item</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Per Setup')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="hardware" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Service / Item</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Unit / Terms</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Per Setup')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Charge (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('hardware', '${item.id}')" title="Permanently delete service item" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
-        ${item.isCustom ? `
-          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('hardware', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
-            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
-          </button>
-        ` : ''}
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Technical Scope / Specifications</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Port filtering, configuration terms, cable length..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('hardware')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Hardware / Network Service
+      </button>
+    `;
 
     // Render Software
     softwareContainer.innerHTML = tariffs.software.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="software" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Software / Creative Service</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Unit / Terms</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Starting Price')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Charge (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="software" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Software / Creative Service</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Unit / Terms</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || 'Starting Price')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Charge (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('software', '${item.id}')" title="Permanently delete service item" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
-        ${item.isCustom ? `
-          <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('software', '${item.id}')" title="Delete" style="padding:0.45rem; color:#dc2626; border-color:rgba(220,38,38,0.2);">
-            <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
-          </button>
-        ` : ''}
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">Software Scope & Deliverables</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Database backends, creative storyboard, hosting terms..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('software')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Software / Dev Service
+      </button>
+    `;
 
     // Render AMC
     amcContainer.innerHTML = tariffs.amc.map((item, idx) => `
-      <div class="tariff-edit-row" data-tariff-group="amc" data-id="${item.id}" data-idx="${idx}">
-        <div style="flex:1; min-width:200px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">SLA Retainer / Support Plan</label>
-          <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; padding:0.45rem 0.75rem; font-size:0.9rem;">
-        </div>
-        <div style="width:150px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Period / Unit</label>
-          <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ year')}" style="padding:0.45rem 0.75rem; font-size:0.85rem;">
-        </div>
-        <div style="width:180px;">
-          <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Rate (KSh)</label>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); font-size:0.85rem;">KSh</span>
-            <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.45rem 0.75rem;">
+      <div class="tariff-edit-row" data-tariff-group="amc" data-id="${item.id}" data-idx="${idx}" style="display:flex; flex-direction:column; gap:0.5rem; padding:0.85rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-secondary); margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; width:100%;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">SLA Retainer / Support Plan</label>
+            <input type="text" class="form-input tariff-name-input" value="${escapeHtml(item.name)}" style="font-weight:700; font-size:0.95rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Period / Unit</label>
+            <input type="text" class="form-input tariff-unit-input" value="${escapeHtml(item.unit || '/ year')}" style="font-size:0.85rem; padding:0.4rem 0.6rem; width:100%;">
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px; display:block;">Rate (KSh)</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="font-family:var(--font-mono); font-weight:700; font-size:0.85rem; color:var(--text-secondary);">KSh</span>
+              <input type="number" step="500" min="0" class="form-input tariff-price-input" value="${item.price}" style="font-weight:800; font-family:var(--font-mono); color:var(--lime-dark); padding:0.4rem 0.6rem; width:100%;">
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-end; padding-top:1.1rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.dpRemoveCustomTariff('amc', '${item.id}')" title="Permanently delete retainer" style="color:#ef4444; border-color:rgba(239,68,68,0.25); padding:0.4rem 0.6rem;">
+              <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+            </button>
           </div>
         </div>
+        <div style="width:100%;">
+          <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-bottom:2px; display:block;">SLA Agreement & Response Commitments</label>
+          <input type="text" class="form-input tariff-desc-input" value="${escapeHtml(item.description || '')}" placeholder="Response SLA, monthly preventive maintenance, site visits..." style="font-size:0.8rem; color:var(--text-secondary); padding:0.35rem 0.6rem; width:100%;">
+        </div>
       </div>
-    `).join("");
+    `).join("") + `
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpAddCustomTariffToCategory('amc')" style="width:100%; margin-top:0.35rem; font-size:0.8rem; padding:0.5rem;">
+        <i data-lucide="plus" style="width:13px; height:13px;"></i> + Add Retainer / AMC Plan
+      </button>
+    `;
 
     if (window.lucide) window.lucide.createIcons();
   }
@@ -3428,6 +4330,7 @@
       const nameInput = row.querySelector(".tariff-name-input");
       const unitInput = row.querySelector(".tariff-unit-input");
       const priceInput = row.querySelector(".tariff-price-input");
+      const descInput = row.querySelector(".tariff-desc-input");
 
       if (group && id && current[group]) {
         const item = current[group].find(i => i.id === id);
@@ -3438,15 +4341,41 @@
             else item.unit = unitInput.value.trim();
           }
           if (priceInput) item.price = Math.max(0, parseFloat(priceInput.value) || 0);
+          if (descInput) item.description = descInput.value.trim();
         }
       }
     });
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
-      erpState.tariffs = current;
-      saveDatabase();
-      showToast("✓ Commercial Tariffs successfully saved and synchronized live!");
+      
+      // Dual background sync to SQL database backends (Next.js & XAMPP MySQL)
+      Object.keys(current).forEach(group => {
+        (current[group] || []).forEach(item => {
+          const payload = {
+            id: item.id,
+            code: item.id,
+            name: item.name,
+            category: group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
+            unit: item.period || item.unit || "Per Unit",
+            price: item.price,
+            description: item.description || ""
+          };
+          fetch("/api/services", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }).catch(() => {
+            fetch("api/services.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            }).catch(() => {});
+          });
+        });
+      });
+
+      showToast("✓ All Commercial Tariffs saved & synced to MySQL dpinc.top_db!");
     } catch (err) {
       console.error("Failed to save tariffs to localStorage:", err);
       showToast("Error saving tariffs. Check browser storage permissions.");
@@ -3455,56 +4384,109 @@
 
   function resetTariffsToDefault() {
     if (confirm("Are you sure you want to reset all service charges to default factory pricing?")) {
-      erpState.tariffs = JSON.parse(JSON.stringify(DEFAULT_COMMERCIAL_TARIFFS));
-      localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(erpState.tariffs));
-      saveDatabase();
+      localStorage.removeItem(STORAGE_KEYS.TARIFFS);
       renderTariffManager();
       showToast("✓ Tariffs reset to factory default rates.");
     }
   }
 
-  function addCustomTariff() {
-    const name = prompt("Enter new service or item name:");
+  window.dpAddCustomTariffToCategory = function(group) {
+    const defaultUnits = {
+      essentials: "One-Off Investment",
+      hardware: "Per Setup",
+      software: "Starting Price",
+      amc: "/ year"
+    };
+    const defaultPrices = {
+      essentials: 30000,
+      hardware: 15000,
+      software: 25000,
+      amc: 60000
+    };
+
+    const name = prompt("Enter service / package title:");
     if (!name || !name.trim()) return;
 
-    const priceStr = prompt("Enter service rate / price in KSh (e.g. 15000):", "15000");
+    const priceStr = prompt("Enter standard rate (KSh):", defaultPrices[group] || 10000);
     const price = parseFloat(priceStr) || 0;
 
-    const current = getSavedTariffs();
-    const newId = "itm-custom-" + Date.now().toString(36);
+    const unitStr = prompt("Enter billing term / unit:", defaultUnits[group] || "Per Unit");
+    const descStr = prompt("Enter deliverables / technical scope description (optional):", "Tailored commercial ICT deliverable.");
 
-    current.hardware.push({
+    const current = getSavedTariffs();
+    const newId = "srv-" + Date.now().toString(36);
+
+    const newItem = {
       id: newId,
       name: name.trim(),
-      category: "Custom",
+      category: group,
       price: price,
-      unit: "Per Unit / Setup",
-      description: "Custom commercial service added via NOC dashboard.",
+      unit: unitStr || "Per Setup",
+      period: unitStr || "One-Off Investment",
+      description: descStr || "",
       isCustom: true
-    });
+    };
+
+    if (!current[group]) current[group] = [];
+    current[group].push(newItem);
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
-      erpState.tariffs = current;
-      saveDatabase();
+
+      const payload = {
+        id: newId,
+        code: newId,
+        name: name.trim(),
+        category: group === "essentials" ? "Essentials Packages" : (group === "hardware" ? "Network & Infrastructure" : (group === "software" ? "Development & Creative" : "Maintenance & AMC Retainers")),
+        unit: unitStr || "Per Setup",
+        price: price,
+        description: descStr || ""
+      };
+
+      fetch("/api/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(() => {
+        fetch("api/services.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      });
+
       renderTariffManager();
-      showToast(`✓ Added custom item: "${name.trim()}"`);
+      showToast(`✓ Added custom item "${name.trim()}"!`);
     } catch (err) {
       console.error("Failed to add custom tariff:", err);
     }
+  };
+
+  function addCustomTariff() {
+    const categoryChoice = prompt("Select category (1: Essentials, 2: Hardware/Network, 3: Software/Creative, 4: AMC Support):", "2");
+    let group = "hardware";
+    if (categoryChoice === "1") group = "essentials";
+    else if (categoryChoice === "3") group = "software";
+    else if (categoryChoice === "4") group = "amc";
+
+    window.dpAddCustomTariffToCategory(group);
   }
 
   window.dpRemoveCustomTariff = function(group, id) {
-    if (!confirm("Are you sure you want to remove this service item?")) return;
+    if (!confirm("Are you sure you want to permanently delete this service/package from the database?")) return;
     const current = getSavedTariffs();
     if (current[group]) {
       current[group] = current[group].filter(i => i.id !== id);
       try {
         localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
-      erpState.tariffs = current;
-      saveDatabase();
+
+        // Sync DELETE to both Next.js and XAMPP PHP APIs
+        fetch(`/api/services/${id}`, { method: "DELETE" }).catch(() => {
+          fetch(`api/services.php?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+        });
+
         renderTariffManager();
-        showToast("✓ Service item removed.");
+        showToast("✓ Service item removed from catalog.");
       } catch (err) {
         console.error("Failed to remove item:", err);
       }

@@ -7,7 +7,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", "light");
   initLenisSmoothScroll();
-  initCustomStudioCursor();
   initLucideIcons();
   initYear();
   initNavbarScrollEffect();
@@ -210,61 +209,10 @@ function initTelemetrySimulation() {
 }
 
 /* ==========================================================================
-   5. ANNNIMATE CUSTOM MAGNETIC STUDIO CURSOR
+   5. CUSTOM CURSOR (DISABLED FOR NATIVE SMOOTH POINTER BEHAVIOR)
    ========================================================================== */
 function initCustomStudioCursor() {
-  if (window.innerWidth < 1024 || 'ontouchstart' in window) return;
-
-  let dot = document.querySelector(".custom-cursor-dot");
-  let ring = document.querySelector(".custom-cursor-ring");
-
-  if (!dot) {
-    dot = document.createElement("div");
-    dot.className = "custom-cursor-dot";
-    document.body.appendChild(dot);
-  }
-
-  if (!ring) {
-    ring = document.createElement("div");
-    ring.className = "custom-cursor-ring";
-    document.body.appendChild(ring);
-  }
-
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let ringX = mouseX;
-  let ringY = mouseY;
-
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    dot.style.left = `${mouseX}px`;
-    dot.style.top = `${mouseY}px`;
-  }, { passive: true });
-
-  if (typeof gsap !== "undefined") {
-    gsap.ticker.add(() => {
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-      ring.style.left = `${ringX}px`;
-      ring.style.top = `${ringY}px`;
-    });
-  }
-
-  const hoverTargets = document.querySelectorAll(
-    "a, button, input, select, textarea, .stat-card, .pillar-card, .package-card, .project-card, .client-card-modern, .testimonial-card, .process-step-card, .bento-showcase-card"
-  );
-
-  hoverTargets.forEach((target) => {
-    target.addEventListener("mouseenter", () => {
-      ring.classList.add("cursor-hover");
-      dot.style.transform = "translate(-50%, -50%) scale(1.5)";
-    });
-    target.addEventListener("mouseleave", () => {
-      ring.classList.remove("cursor-hover");
-      dot.style.transform = "translate(-50%, -50%) scale(1)";
-    });
-  });
+  // Disabled: standard native smooth cursor is restored
 }
 
 /* ==========================================================================
@@ -982,23 +930,27 @@ function initPortfolioFilters() {
 function initContactForm() {
   const form = document.getElementById("contactForm");
   if (!form) return;
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-    const button = form.querySelector("button[type='submit']");
-    button.disabled = true;
-    try {
-      const fields = new FormData(form);
-      const response = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
-        name: fields.get("name"), email: fields.get("email"), phone: fields.get("phone"),
-        message: String(fields.get("message") || ""),
-        notes: "Subject: " + String(fields.get("subject") || "") + " | Service: " + String(fields.get("service") || ""),
-      }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Unable to send the request");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = form.querySelector("[name='name']").value;
+    const email = form.querySelector("[name='email']").value;
+    const subject = form.querySelector("[name='subject']").value;
+    const message = form.querySelector("[name='message']").value;
+
+    if (!name || !email || !message) {
+      showToast("Please fill in all required fields.");
+      return;
+    }
+
+    const mailtoLink = `mailto:support@dpinc.top?subject=${encodeURIComponent(subject || 'Inquiry from dpinc.top')}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+    
+    showToast("Transmission received! Preparing dispatch...");
+    
+    setTimeout(() => {
+      window.location.href = mailtoLink;
       form.reset();
-      showToast("Your request has been saved. We will be in touch.");
-    } catch (error) { showToast(error.message); }
-    finally { button.disabled = false; }
+    }, 800);
   });
 }
 
@@ -1084,14 +1036,53 @@ function initDynamicTariffSync() {
   }
 }
 
+/* ==========================================================================
+   22. PORTFOLIO LIVE SITE INTERACTIVE PREVIEW MODAL
+   ========================================================================== */
+window.dpOpenSitePreview = function(url, title, repoUrl) {
+  const modal = document.getElementById("sitePreviewModal");
+  const iframe = document.getElementById("sitePreviewIframe");
+  const urlBar = document.getElementById("previewUrlBar");
+  const newTabBtn = document.getElementById("previewNewTabBtn");
+  const repoBtn = document.getElementById("previewRepoBtn");
 
-// Load the published database prices for every visitor, not only this browser's cache.
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const response = await fetch("/api/tariffs", { cache: "no-store" });
-    if (!response.ok) return;
-    const result = await response.json();
-    localStorage.setItem("dataport_custom_tariffs", JSON.stringify(result.tariffs));
-    initDynamicTariffSync();
-  } catch { /* The published page remains usable during a connection interruption. */ }
+  if (!modal || !iframe) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  if (urlBar) urlBar.textContent = url;
+  if (newTabBtn) newTabBtn.href = url;
+  if (repoBtn) {
+    if (repoUrl) {
+      repoBtn.href = repoUrl;
+      repoBtn.style.display = "inline-flex";
+    } else {
+      repoBtn.style.display = "none";
+    }
+  }
+
+  iframe.src = url;
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  if (window.lucide && typeof lucide.createIcons === "function") {
+    lucide.createIcons();
+  }
+};
+
+window.dpCloseSitePreview = function() {
+  const modal = document.getElementById("sitePreviewModal");
+  const iframe = document.getElementById("sitePreviewIframe");
+  if (modal) modal.style.display = "none";
+  if (iframe) iframe.src = "";
+  document.body.style.overflow = "";
+};
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    window.dpCloseSitePreview();
+  }
 });
+
+

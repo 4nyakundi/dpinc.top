@@ -55,3 +55,6 @@ next-env.d.ts
 
 # Private legacy business records must not be deployed or committed.
 /data/erp-data.json
+
+sync-watcher.*
+start-sync.bat

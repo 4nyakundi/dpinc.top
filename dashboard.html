@@ -13,6 +13,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- GSAP Animation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body class="dashboard-body">
 
@@ -64,6 +67,20 @@
           <i data-lucide="shield-check"></i> Unlock ERP Cockpit
         </button>
 
+        <div class="auth-divider">
+          <span>or sign in with</span>
+        </div>
+
+        <button type="button" id="googleSignInBtn" class="btn-google-auth">
+          <svg class="google-icon-svg" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google (NOC Access)</span>
+        </button>
+
         <div class="text-center text-muted" style="font-size:0.75rem; margin-top:1.25rem; font-family:var(--font-mono);">
           DATA PORT LTD • SECURE NOC & FINANCIAL PLATFORM v2.5
         </div>
@@ -80,6 +97,9 @@
     <header class="dash-navbar no-print">
       <div class="dash-nav-container">
         <div class="dash-brand-area">
+          <button id="sidebarToggleBtn" class="sidebar-toggle-btn" title="Toggle Navigation Panel">
+            <i data-lucide="menu" style="width:18px; height:18px;"></i>
+          </button>
           <a href="index.html" class="brand-logo">
             <img src="public/logo-light.png" alt="DataPort.INC" style="height:38px; width:auto;">
           </a>
@@ -107,8 +127,64 @@
       </div>
     </header>
 
-    <main class="dash-main-content">
-      <div class="container">
+    <!-- Full-Width Workspace Layout with Side Panel Menu -->
+    <div class="dash-workspace-layout">
+      <!-- Side Navigation Panel -->
+      <aside id="dashSidebar" class="dash-sidebar no-print">
+        <div class="dash-sidebar-header">
+          <span class="dash-sidebar-title">NOC Modules</span>
+          <span class="badge" style="font-size:0.65rem; padding:0.15rem 0.45rem;">LIVE</span>
+        </div>
+        
+        <nav class="dash-sidebar-nav">
+          <button class="dash-side-nav-btn active" data-tab="calendarTab">
+            <i data-lucide="calendar" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Billing Calendar</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="invoicesTab">
+            <i data-lucide="receipt" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Invoices Hub</span>
+            <span class="nav-badge" id="sideInvoicesCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="subscribersTab">
+            <i data-lucide="users" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Subscribers</span>
+            <span class="nav-badge" id="sideSubsCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="jobCardsTab">
+            <i data-lucide="wrench" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Job Cards</span>
+            <span class="nav-badge" id="sideJobsCount">0</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="ledgerTab">
+            <i data-lucide="book-open" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Money & Ledger</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="analyticsTab">
+            <i data-lucide="bar-chart-3" style="width:18px; height:18px;"></i>
+            <span class="nav-text">P&L Analytics</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="tariffsTab">
+            <i data-lucide="tags" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Pricing & Tariffs</span>
+          </button>
+          <button class="dash-side-nav-btn" data-tab="vaultTab">
+            <i data-lucide="lock" style="width:18px; height:18px;"></i>
+            <span class="nav-text">Executive Vault</span>
+          </button>
+        </nav>
+
+        <div class="dash-sidebar-footer">
+          <div class="sidebar-footer-text text-muted" style="font-size:0.75rem; text-align:center;">
+            Data Port NOC • v2.6
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Full-Width Content Area -->
+      <div class="dash-workspace-main">
+        <main class="dash-main-content">
+          <div class="container dash-fullwidth-container">
 
         <!-- Unified Financial & Operations Overview Metrics Bar -->
         <section class="dash-metrics-grid">
@@ -187,10 +263,10 @@
           </div>
 
           <div class="dash-action-buttons">
-            <button id="openCreateInvoiceBtn" class="btn btn-secondary btn-sm" title="Create & Print Internet Invoice">
+            <button id="openCreateInvoiceBtn" class="btn btn-secondary btn-sm" onclick="window.dpOpenCreateInvoice()" title="Create & Print Internet Invoice">
               <i data-lucide="receipt" style="width:16px; height:16px; color:var(--lime);"></i> Create Invoice
             </button>
-            <button id="batchGenerateBtn" class="btn btn-secondary btn-sm" title="Generate proformas for all active subscribers for the selected month">
+            <button id="batchGenerateBtn" class="btn btn-secondary btn-sm" onclick="window.dpOpenBatchInvoices()" title="Generate proformas for all active subscribers for the selected month">
               <i data-lucide="zap" style="width:16px; height:16px; color:var(--lime);"></i> Batch Invoices
             </button>
             <button id="quickActionBtn" class="btn btn-primary btn-sm">
@@ -204,7 +280,7 @@
              ===================================================================== -->
         <section id="calendarTab" class="dash-tab-pane active">
           <div class="glass-panel calendar-wrapper">
-
+            
             <!-- Calendar Header & Month Navigation -->
             <div class="calendar-header-bar">
               <div class="calendar-title-group">
@@ -254,7 +330,7 @@
              ===================================================================== -->
         <section id="invoicesTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.25rem, 2.5vw, 2rem);">
-
+            
             <!-- Invoices Hub Header -->
             <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
               <div>
@@ -266,11 +342,14 @@
                 <p class="text-muted" style="font-size:0.875rem; margin:4px 0 0 0;">Create, preview, print, and track subscriber subscriptions, partial deposits & general ICT client invoices.</p>
               </div>
               <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-                <button type="button" class="btn btn-secondary btn-sm" id="invHubBatchBtn" title="Batch generate proformas for subscribers">
+                <button type="button" class="btn btn-secondary btn-sm" id="invHubBatchBtn" onclick="window.dpOpenBatchInvoices()" title="Batch generate proformas for subscribers">
                   <i data-lucide="zap" style="width:15px; height:15px; color:var(--lime);"></i> Batch Invoices
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" id="invHubCreateBtn" title="Create a new client invoice">
+                <button type="button" class="btn btn-primary btn-sm" id="invHubCreateBtn" onclick="window.dpOpenCreateInvoice()" title="Create a new client invoice">
                   <i data-lucide="plus" style="width:15px; height:15px;"></i> Create New Invoice
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpPurgeDemoRecords()" title="Release and clear demo records from database" style="color:#ef4444; border-color:rgba(239,68,68,0.25);">
+                  <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Clear Demo Data
                 </button>
               </div>
             </div>
@@ -367,6 +446,9 @@
                 <button id="openAddSubFromTabBtn" class="btn btn-primary btn-sm">
                   <i data-lucide="user-plus"></i> Add Client
                 </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpPurgeDemoRecords()" title="Release and clear demo records from database" style="color:#ef4444; border-color:rgba(239,68,68,0.25);">
+                  <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Clear Demo Data
+                </button>
               </div>
             </div>
 
@@ -417,7 +499,7 @@
              ===================================================================== -->
         <section id="ledgerTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
-
+            
             <!-- Live Account Balances Header -->
             <div class="ledger-summary-strip" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.75rem;">
               <div class="stat-card" style="padding:1.25rem; text-align:left;">
@@ -505,7 +587,7 @@
              ===================================================================== -->
         <section id="analyticsTab" class="dash-tab-pane">
           <div class="analytics-grid">
-
+            
             <!-- Cash Flow Trend Chart -->
             <div class="glass-panel chart-card">
               <div class="chart-header">
@@ -520,7 +602,7 @@
                   <span class="badge"><i data-lucide="activity" class="text-lime" style="width:12px; height:12px;"></i> Live Data</span>
                 </div>
               </div>
-
+              
               <div class="chart-canvas-container">
                 <canvas id="cashFlowCanvas" width="700" height="280"></canvas>
               </div>
@@ -571,7 +653,7 @@
              TAB 6: EXECUTIVE VAULT & RULES ENGINE (PIN PROTECTED)
              ===================================================================== -->
         <section id="vaultTab" class="dash-tab-pane">
-
+          
           <!-- Locked State (PIN Pad) -->
           <div id="vaultLockedState" class="glass-panel vault-locked-box">
             <div class="badge mb-3">
@@ -662,7 +744,7 @@
              ===================================================================== -->
         <section id="tariffsTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
-
+            
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; flex-wrap:wrap; gap:1.25rem;">
               <div>
                 <div class="badge" style="margin-bottom:0.6rem;">
@@ -754,7 +836,9 @@
 
       </div>
     </main>
-  </div>
+    </div> <!-- /.dash-workspace-main -->
+  </div> <!-- /.dash-workspace-layout -->
+  </div> <!-- /#dashboardApp -->
 
   <!-- =========================================================================
        MODAL: CREATE & PRINT INTERNET SERVICE INVOICE
@@ -888,7 +972,7 @@
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddSetup" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Installation Setup</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddRouter" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Router ONT</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddIp" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Public IP</button>
-
+              
               <span style="font-size:0.72rem; color:#60a5fa; font-weight:700; margin-left:0.5rem;">ICT & Web:</span>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddDomain" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Domain Reg.</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddHosting" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Web Hosting</button>
@@ -987,7 +1071,7 @@
         <!-- Modal Footer Actions -->
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; flex-wrap:wrap; border-top:1px solid var(--border-color); padding-top:1.25rem;">
           <button type="button" class="btn btn-secondary" data-close="createInvoiceModal">Cancel</button>
-
+          
           <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
             <button type="button" id="invSaveDraftBtn" class="btn btn-secondary" title="Save invoice to database without printing">
               <i data-lucide="save" style="width:15px; height:15px;"></i> Save Invoice
@@ -1230,13 +1314,15 @@
        MODAL: ADD JOB CARD
        ========================================================================= -->
   <div id="jobCardModal" class="modal-overlay" style="display:none;">
-    <div class="modal-dialog glass-panel" style="max-width:640px;">
+    <div class="modal-dialog glass-panel" style="max-width:680px; max-height:90vh; overflow-y:auto;">
       <div class="modal-header">
-        <h3 style="font-size:1.25rem; font-weight:700;">Create Field Deployment Job Card</h3>
+        <h3 id="jobCardModalTitle" style="font-size:1.25rem; font-weight:700;">Create Field Deployment Job Card</h3>
         <button class="modal-close-btn" data-close="jobCardModal">&times;</button>
       </div>
 
       <form id="jobCardForm" style="margin-top:1.25rem;">
+        <input type="hidden" id="jobEditId" value="">
+
         <div class="form-group">
           <label class="form-label">Job Title / Task Description *</label>
           <input type="text" id="jobTitle" class="form-input" placeholder="e.g. 16-Port Fiber Switch & CCTV Drop" required>
@@ -1261,17 +1347,53 @@
               <option value="CCTV Security">CCTV Surveillance & NVR</option>
               <option value="Structured Cabling">Structured LAN Cabling</option>
               <option value="Wireless Link">Wireless Point-to-Point Link</option>
+              <option value="Server / Active Directory">Server / Active Directory</option>
+              <option value="Maintenance / AMC">Maintenance / AMC</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="jobStatus" class="form-select">
+              <option value="in_progress">In Progress</option>
+              <option value="pending">Pending Dispatch</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2col">
           <div class="form-group">
             <label class="form-label">Labor Charge (KSh) *</label>
             <input type="number" id="jobLaborCost" class="form-input" placeholder="e.g. 5000" required>
           </div>
+          <div class="form-group">
+            <label class="form-label">Materials & Hardware Cost (KSh)</label>
+            <input type="number" id="jobMaterialCost" class="form-input" placeholder="e.g. 15000" value="0">
+          </div>
         </div>
 
+        <!-- Site Requirements -->
         <div class="form-group">
-          <label class="form-label">Materials & Hardware Cost (KSh)</label>
-          <input type="number" id="jobMaterialCost" class="form-input" placeholder="e.g. 15000" value="0">
+          <label class="form-label">
+            <i data-lucide="clipboard-list" style="width:14px; height:14px; display:inline;"></i> Site Requirements & Prerequisite Checklist
+          </label>
+          <textarea id="jobSiteRequirements" class="form-textarea" rows="2" placeholder="e.g. Power outlet within 2m, conduit line clear, roof mast bracket required, ladder access verified..."></textarea>
+        </div>
+
+        <!-- Progress of Site Requirements -->
+        <div class="form-group">
+          <label class="form-label">
+            <i data-lucide="activity" style="width:14px; height:14px; display:inline;"></i> Progress & Execution Milestones
+          </label>
+          <textarea id="jobProgressNotes" class="form-textarea" rows="2" placeholder="e.g. Fiber dropped & spliced; dBm reading: -19.2. Waiting on client router mounting..."></textarea>
+        </div>
+
+        <!-- Usernames & Passwords (Credentials Vault for the Site) -->
+        <div class="form-group">
+          <label class="form-label" style="color:var(--lime);">
+            <i data-lucide="key" style="width:14px; height:14px; display:inline;"></i> Equipment Usernames & Passwords / Site Credentials
+          </label>
+          <textarea id="jobCredentials" class="form-textarea" rows="2" placeholder="e.g. Router IP: 192.168.100.1 | PPPoE: cust_nyali / Pass: dp@2026 | NVR Admin: admin / Pwd: SecurePass2026" style="font-family:var(--font-mono); font-size:0.85rem;"></textarea>
         </div>
 
         <div class="form-group">
@@ -1281,8 +1403,8 @@
 
         <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.75rem;">
           <button type="button" class="btn btn-secondary" data-close="jobCardModal">Cancel</button>
-          <button type="submit" class="btn btn-primary">
-            <i data-lucide="check"></i> Create Job Card
+          <button type="submit" id="jobCardSubmitBtn" class="btn btn-primary">
+            <i data-lucide="check"></i> Save Job Card
           </button>
         </div>
       </form>
@@ -1367,7 +1489,7 @@
       </div>
 
       <div class="drawer-content" style="margin-top:1.25rem;">
-
+        
         <!-- Summary Box -->
         <div class="invoice-summary-box">
           <div class="grid-2col" style="gap:1rem;">
