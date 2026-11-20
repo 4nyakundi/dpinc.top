@@ -55,6 +55,9 @@ next-env.d.ts
 
 # Private legacy business records must not be deployed or committed.
 /data/erp-data.json
+<<<<<<< HEAD
 
 sync-watcher.*
 start-sync.bat
+=======
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)

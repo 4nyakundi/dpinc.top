@@ -2,14 +2,12 @@
  * DATA PORT LIMITED - Unified Master Operations & Financial ERP Engine
  * Modules: NOC Billing Calendar, Client CRM, Field Job Cards, Financial General Ledger, P&L Analytics & Executive Vault
  * Stack: Vanilla JavaScript (ES6+), HTML5 Canvas, JSON Sync & LocalStorage Cache
- * Authentication: user: root | pass: admin4all2 | Vault PIN: 4422 | M-Pesa Paybill: 247247
  */
 
 (function () {
   "use strict";
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 
-  const AUTH_USER = "root";
-  const AUTH_PASS = "admin4all2";
   const VAULT_DEFAULT_PIN = "4422";
 
   function escapeHtml(str) {
@@ -42,6 +40,7 @@
   };
 
   // Complete Embedded Default Seed Dataset (Zero-dependency fallback for file:// and offline use)
+<<<<<<< HEAD
   const INITIAL_ERP_DATA = {
     version: "2.5.0",
     lastUpdated: new Date().toISOString(),
@@ -215,12 +214,15 @@
       { id: "rule-4", name: "Auto-Split 16% VAT into Tax Vault on Payment Settlement", trigger: "auto_vat_reserve", active: true }
     ]
   };
+=======
+  const INITIAL_ERP_DATA = { version: "3.0.0", subscribers: [], invoices: [], jobCards: [], ledger: [], rules: [], vault: {} };
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
 
   // Master State Instance
   let erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
 
-  let currentYear = 2026;
-  let currentMonth = 8; // 8 = September (0-indexed)
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth();
   let selectedInvoice = null;
   let enteredPin = "";
   let activeTab = "calendarTab";
@@ -239,6 +241,7 @@
   /* =========================================================================
      1. AUTHENTICATION & SESSION CONTROL
      ========================================================================= */
+<<<<<<< HEAD
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAKYXsp1AK_chwSZ4IR2zkzA4UgwvQBbRU",
     authDomain: "pulseinvest-ffd58.firebaseapp.com",
@@ -285,10 +288,13 @@
   }
 
   function initAuth() {
+=======
+  async function initAuth() {
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
     const loginGate = document.getElementById("loginGate");
     const dashboardApp = document.getElementById("dashboardApp");
-    const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
+<<<<<<< HEAD
     const logoutBtn = document.getElementById("logoutBtn");
     const googleBtn = document.getElementById("googleSignInBtn");
 
@@ -406,6 +412,41 @@
         window.location.reload();
       });
     }
+=======
+    const enter = async () => {
+      try {
+        await loadDatabase();
+        if (loginGate) loginGate.style.display = "none";
+        if (dashboardApp) dashboardApp.style.display = "block";
+        await startMasterERP();
+      } catch (error) {
+        if (loginError) { loginError.style.display = "block"; loginError.textContent = error.message; }
+      }
+    };
+    document.getElementById("loginForm")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      try {
+        const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+          username: document.getElementById("loginUsername").value.trim(),
+          password: document.getElementById("loginPassword").value,
+        }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Sign in failed");
+        localStorage.setItem("adminToken", result.token);
+        await enter();
+      } catch (error) {
+        if (loginError) { loginError.style.display = "block"; loginError.textContent = error.message; }
+      }
+    });
+    document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem(STORAGE_KEYS.SESSION);
+      sessionStorage.removeItem(STORAGE_KEYS.VAULT_UNLOCKED);
+      window.location.reload();
+    });
+    if (localStorage.getItem("adminToken")) await enter();
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
   }
 
   /* =========================================================================
@@ -413,7 +454,6 @@
      ========================================================================= */
   async function startMasterERP() {
     startClock();
-    await loadDatabase();
     setupTabNavigation();
     setupCalendarNavigation();
     setupBatchInvoicing();
@@ -426,7 +466,14 @@
     renderAll();
   }
 
+  let remoteRevision = 0;
+  let syncTimer;
+  let syncInFlight = false;
+  let syncQueued = false;
+  let syncBlocked = false;
+  const authHeaders = () => ({ "Content-Type": "application/json", Authorization: "Bearer " + (localStorage.getItem("adminToken") || "") });
   async function loadDatabase() {
+<<<<<<< HEAD
     // 1. Try to fetch live state from backend database (API)
     try {
       const endpoints = ["api/erp.php", "/api/erp"];
@@ -599,6 +646,64 @@
       }
     } catch (e) {
       console.warn("LocalStorage save error:", e);
+=======
+    const response = await fetch("/api/erp/sync", { headers: authHeaders(), cache: "no-store" });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Unable to load the database");
+    remoteRevision = result.revision;
+    const cached = localStorage.getItem(STORAGE_KEYS.ERP_DATA);
+    const pending = localStorage.getItem("dp_erp_pending") === "true";
+    const localRevision = Number(localStorage.getItem("dp_erp_revision") || 0);
+    if (cached && pending && localRevision !== remoteRevision) {
+      localStorage.setItem("dp_erp_recovery_" + Date.now(), cached);
+      showToast("Newer server records loaded. Your unsaved local work is preserved in a recovery backup.");
+    }
+    if (cached && pending && localRevision === remoteRevision) {
+      erpState = JSON.parse(cached);
+      setTimeout(() => persistDatabase(), 500);
+    } else if (result.data) {
+      erpState = result.data;
+      localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
+      localStorage.removeItem("dp_erp_pending");
+    } else {
+      // An empty server stays empty; importing old browser records is a separate action.
+      erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
+    }
+    localStorage.setItem("dp_erp_revision", String(remoteRevision));
+    const tariffsResponse = await fetch("/api/tariffs");
+    if (tariffsResponse.ok) localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify((await tariffsResponse.json()).tariffs));
+  }
+  function saveDatabase() {
+    try {
+      erpState.lastUpdated = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEYS.ERP_DATA, JSON.stringify(erpState));
+      localStorage.setItem("dp_erp_pending", "true");
+    } catch (error) { showToast("Browser backup unavailable; saving to the database."); console.error(error); }
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => persistDatabase(), 600);
+  }
+  async function persistDatabase() {
+    if (syncBlocked) { showToast("Sync conflict: export your local backup, then reload the latest server records."); return; }
+    if (syncInFlight) { syncQueued = true; return; }
+    syncInFlight = true;
+    const payload = JSON.stringify(erpState);
+    try {
+      const response = await fetch("/api/erp/sync", { method: "POST", headers: authHeaders(), body: JSON.stringify({ revision: remoteRevision, data: JSON.parse(payload) }) });
+      const result = await response.json();
+      if (!response.ok) {
+        if (response.status === 409 || response.status === 401) syncBlocked = true;
+        throw new Error(result.error || "Database sync failed");
+      }
+      remoteRevision = result.revision;
+      localStorage.setItem("dp_erp_revision", String(remoteRevision));
+      if (payload === JSON.stringify(erpState)) localStorage.removeItem("dp_erp_pending");
+      else syncQueued = true;
+      showToast("Changes saved to the database.");
+    } catch (error) { showToast(error.message + " A local recovery copy is retained."); }
+    finally {
+      syncInFlight = false;
+      if (syncQueued && !syncBlocked) { syncQueued = false; setTimeout(() => persistDatabase(), 100); }
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
     }
   }
 
@@ -669,8 +774,8 @@
         if (targetPane) {
           targetPane.classList.add("active");
           if (typeof gsap !== "undefined") {
-            gsap.fromTo(targetPane, 
-              { opacity: 0, y: 16 }, 
+            gsap.fromTo(targetPane,
+              { opacity: 0, y: 16 },
               { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
             );
           }
@@ -755,13 +860,13 @@
      ========================================================================= */
   function updateOverviewMetrics() {
     const totalSubs = erpState.subscribers ? erpState.subscribers.length : 0;
-    
+
     // MRR from active subscribers
     const mrr = (erpState.subscribers || []).reduce((acc, sub) => acc + (Number(sub.monthlyRate || sub.price) || 0), 0);
 
     // Current month invoices paid vs unpaid
     const period = `${monthNames[currentMonth]} ${currentYear}`;
-    const monthInvoices = (erpState.invoices || []).filter(inv => inv.period && inv.period.includes(monthNames[currentMonth]));
+    const monthInvoices = (erpState.invoices || []).filter(inv => inv.period && inv.period === (monthNames[currentMonth] + " " + currentYear));
     const paidInvoices = monthInvoices.filter(inv => inv.status === "paid");
     const collectedThisMonth = paidInvoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0);
 
@@ -806,6 +911,7 @@
     const tabSubs = document.getElementById("tabSubsCount");
     const sideSubs = document.getElementById("sideSubsCount");
     const tabJobs = document.getElementById("tabJobsCount");
+<<<<<<< HEAD
     const sideJobs = document.getElementById("sideJobsCount");
     const tabInvoices = document.getElementById("tabInvoicesCount");
     const sideInvoices = document.getElementById("sideInvoicesCount");
@@ -819,6 +925,12 @@
     if (sideJobs) sideJobs.textContent = jobsCountVal;
     if (tabInvoices) tabInvoices.textContent = invoicesCountVal;
     if (sideInvoices) sideInvoices.textContent = invoicesCountVal;
+=======
+    const tabInvoices = document.getElementById("tabInvoicesCount");
+    if (tabSubs) tabSubs.textContent = totalSubs;
+    if (tabJobs) tabJobs.textContent = erpState.jobCards ? erpState.jobCards.length : 0;
+    if (tabInvoices) tabInvoices.textContent = erpState.invoices ? erpState.invoices.length : 0;
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
 
     // Update Breakdown Progress Bars
     const transitPct = totalIncome > 0 ? Math.min(100, Math.round((transitCost / totalIncome) * 100)) : 25;
@@ -911,8 +1023,8 @@
 
     if (todayBtn) {
       todayBtn.addEventListener("click", () => {
-        currentYear = 2026;
-        currentMonth = 8; // September 2026 default cycle
+        currentYear = new Date().getFullYear();
+        currentMonth = new Date().getMonth();
         renderCalendar();
         renderAnalytics();
       });
@@ -944,7 +1056,7 @@
 
     const today = new Date();
     const isCurrentMonthNow = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
-    const todayDate = 18; // reference day
+    const todayDate = today.getDate();
 
     // Inactive Days from Previous Month
     for (let i = adjFirstDay - 1; i >= 0; i--) {
@@ -967,9 +1079,9 @@
 
       let pillsHtml = "";
       daySubs.forEach(sub => {
-        const invoice = (erpState.invoices || []).find(inv => 
-          (inv.subId === sub.id || inv.clientName === sub.name) && 
-          inv.period && inv.period.includes(monthNames[currentMonth])
+        const invoice = (erpState.invoices || []).find(inv =>
+          (inv.subId === sub.id || inv.clientName === sub.name) &&
+          inv.period && inv.period === (monthNames[currentMonth] + " " + currentYear)
         );
 
         const isPaid = invoice ? invoice.status === "paid" : false;
@@ -989,7 +1101,7 @@
         pillsHtml += `
           <div class="subscriber-pill ${statusClass}" onclick="event.stopPropagation(); window.dpOpenDrawerForSub('${sub.id}')">
             <span class="pill-dot"></span>
-            <span class="pill-name">${sub.name}</span>
+            <span class="pill-name">${escapeHtml(sub.name)}</span>
             <span class="pill-price">KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}</span>
           </div>
         `;
@@ -1036,7 +1148,7 @@
         let createdCount = 0;
 
         (erpState.subscribers || []).forEach(sub => {
-          let existingInv = (erpState.invoices || []).find(inv => 
+          let existingInv = (erpState.invoices || []).find(inv =>
             (inv.subId === sub.id || inv.clientName === sub.name) && inv.period === period
           );
 
@@ -1092,19 +1204,19 @@
       const rate = Number(sub.monthlyRate || sub.price || 0);
       total += rate;
 
-      const invoice = (erpState.invoices || []).find(inv => 
+      const invoice = (erpState.invoices || []).find(inv =>
         (inv.subId === sub.id || inv.clientName === sub.name) && inv.period === period
       );
 
       const isPaid = invoice && invoice.status === "paid";
-      const statusTag = isPaid 
+      const statusTag = isPaid
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;">Paid</span>`
         : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);">Ready to Issue</span>`;
 
       html += `
         <tr>
-          <td><strong style="color:var(--text-primary);">${sub.name}</strong></td>
-          <td><span class="text-muted" style="font-size:0.8rem;">${sub.package}</span></td>
+          <td><strong style="color:var(--text-primary);">${escapeHtml(sub.name)}</strong></td>
+          <td><span class="text-muted" style="font-size:0.8rem;">${escapeHtml(sub.package)}</span></td>
           <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00;">KSh ${rate.toLocaleString()}</td>
           <td style="font-family:var(--font-mono); font-size:0.85rem;">Day ${sub.billingDay}</td>
           <td>${statusTag}</td>
@@ -1398,7 +1510,7 @@
         saveInvoiceToState(invData);
         populatePrintableInvoice(invData);
         document.getElementById("createInvoiceModal").style.display = "none";
-        
+
         setTimeout(() => {
           window.print();
         }, 250);
@@ -1654,6 +1766,7 @@
     }
 
     saveDatabase();
+<<<<<<< HEAD
     
     // Background sync to SQL database backend
     fetch("api/invoices.php", {
@@ -1662,6 +1775,8 @@
       body: JSON.stringify(invData)
     }).catch(err => console.warn("SQL Invoice Sync:", err));
 
+=======
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
     renderAll();
   }
 
@@ -1790,7 +1905,11 @@
 
     return `
       <div class="a4-document-sheet" style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background:#FFFFFF; color:#0F172A; line-height:1.45;">
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
         <!-- Header Top: Brandmark & Inv Number -->
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
           <div>
@@ -1860,7 +1979,11 @@
 
         <!-- Settlement Instructions & Corporate Dev Op's Signature Block -->
         <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-top:24px; padding-top:16px; border-top:1px solid #E2E8F0;">
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
           <!-- Left: Official Payment Channels -->
           <div style="flex:1; max-width:55%;">
             <div style="font-size:0.825rem; font-weight:900; text-transform:uppercase; letter-spacing:0.06em; color:#0F172A; margin-bottom:8px;">
@@ -2044,7 +2167,11 @@
       }
 
       // Client type pill
+<<<<<<< HEAD
       const typeBadge = inv.clientType === "general" 
+=======
+      const typeBadge = inv.clientType === "general"
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
         ? `<span class="badge" style="font-size:0.68rem; background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.3); color:#3b82f6;">General ICT</span>`
         : `<span class="badge" style="font-size:0.68rem; background:rgba(92,148,0,0.1); border-color:rgba(92,148,0,0.3); color:var(--lime);">ISP Subscriber</span>`;
 
@@ -2114,7 +2241,7 @@
   function dispatchInvoiceViaWhatsApp(data) {
     const cleanPhone = (data.phone || "").replace(/[^0-9]/g, "");
     const formattedPhone = cleanPhone.startsWith("0") ? "254" + cleanPhone.substring(1) : cleanPhone;
-    
+
     let itemsText = "";
     if (data.items && data.items.length > 0) {
       data.items.forEach(i => {
@@ -2163,7 +2290,7 @@
     if (select) {
       let optionsHtml = `<option value="">-- Choose Active Subscriber --</option>`;
       (erpState.subscribers || []).forEach(sub => {
-        optionsHtml += `<option value="${sub.id}">${sub.name} (${sub.package} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
+        optionsHtml += `<option value="${sub.id}">${escapeHtml(sub.name)} (${escapeHtml(sub.package)} — KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()})</option>`;
       });
       select.innerHTML = optionsHtml;
     }
@@ -2323,6 +2450,7 @@
     dispatchInvoiceViaWhatsApp(inv);
   };
 
+<<<<<<< HEAD
   window.dpDeleteInvoice = async function(invId) {
     const inv = (erpState.invoices || []).find(i => i.id === invId);
     if (!inv) return;
@@ -2362,6 +2490,17 @@
       console.error("Purge error:", e);
       showToast("Purge request processed.");
     }
+=======
+  window.dpDeleteInvoice = function(invId) {
+    const inv = (erpState.invoices || []).find(i => i.id === invId);
+    if (!inv) return;
+    if (!confirm(`Are you sure you want to delete invoice ${inv.invoiceNo} for ${escapeHtml(inv.clientName)}?`)) return;
+
+    erpState.invoices = (erpState.invoices || []).filter(i => i.id !== invId);
+    saveDatabase();
+    renderAll();
+    showToast(`Invoice ${inv.invoiceNo} deleted.`);
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
   };
 
   window.dpOpenBatchInvoices = function() {
@@ -2381,7 +2520,11 @@
       const rate = Number(sub.monthlyRate || sub.price) || 0;
       total += rate;
       const existing = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period === period);
+<<<<<<< HEAD
       const statusPill = existing 
+=======
+      const statusPill = existing
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
         ? `<span class="badge" style="background:#dcfce7; color:#15803d; border-color:#22c55e;">Ready (${existing.invoiceNo})</span>`
         : `<span class="badge" style="background:#fee2e2; color:#b91c1c; border-color:#ef4444;">Pending</span>`;
 
@@ -2466,26 +2609,26 @@
     const currentPeriod = `${monthNames[currentMonth]} ${currentYear}`;
 
     filtered.forEach(sub => {
-      const inv = (erpState.invoices || []).find(i => 
-        (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
+      const inv = (erpState.invoices || []).find(i =>
+        (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)
       );
       const isPaid = inv && inv.status === "paid";
-      const isOverdue = !isPaid && sub.billingDay < 18;
+      const isOverdue = !isPaid && sub.billingDay < new Date().getDate();
 
-      let statusBadge = isPaid 
+      let statusBadge = isPaid
         ? `<span class="badge" style="background:rgba(138,206,0,0.15); color:#8ACE00; border-color:#8ACE00;"><i data-lucide="check" style="width:12px;"></i> Paid (${currentPeriod})</span>`
-        : isOverdue 
+        : isOverdue
           ? `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;"><i data-lucide="alert-circle" style="width:12px;"></i> Overdue</span>`
           : `<span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-primary);"><i data-lucide="clock" style="width:12px;"></i> Due Day ${sub.billingDay}</span>`;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
-          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${sub.name}</div>
-          <div class="text-muted" style="font-size:0.75rem;">${sub.phone} • ${sub.location || 'Mombasa'}</div>
+          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${escapeHtml(sub.name)}</div>
+          <div class="text-muted" style="font-size:0.75rem;">${escapeHtml(sub.phone)} • ${sub.location || 'Mombasa'}</div>
         </td>
         <td>
-          <span class="badge" style="font-size:0.75rem;">${sub.package}</span>
+          <span class="badge" style="font-size:0.75rem;">${escapeHtml(sub.package)}</span>
         </td>
         <td style="font-family:var(--font-mono); font-weight:700; color:#8ACE00; font-size:0.95rem;">
           KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()}
@@ -2590,14 +2733,15 @@
           <span class="job-status-badge ${statusBadgeClass}">${statusLabel}</span>
         </div>
 
-        <h4 class="job-title">${job.title}</h4>
+        <h4 class="job-title">${escapeHtml(job.title)}</h4>
         <div class="job-meta-row">
-          <span><i data-lucide="map-pin" style="width:14px; display:inline;"></i> ${job.clientName}</span>
-          <span><i data-lucide="user" style="width:14px; display:inline;"></i> ${job.technician}</span>
+          <span><i data-lucide="map-pin" style="width:14px; display:inline;"></i> ${escapeHtml(job.clientName)}</span>
+          <span><i data-lucide="user" style="width:14px; display:inline;"></i> ${escapeHtml(job.technician)}</span>
         </div>
 
         ${materialsHtml}
 
+<<<<<<< HEAD
         ${job.siteRequirements ? `
           <div style="background:rgba(0,0,0,0.03); border-radius:6px; padding:0.5rem 0.75rem; margin-bottom:0.65rem; font-size:0.8rem; border-left:3px solid var(--border-color);">
             <div style="font-weight:700; color:var(--text-primary); margin-bottom:0.15rem; display:flex; align-items:center; gap:0.35rem;">
@@ -2626,6 +2770,9 @@
         ` : ''}
 
         ${job.notes ? `<p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem; font-style:italic;">"${job.notes}"</p>` : ''}
+=======
+        ${job.notes ? `<p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem; font-style:italic;">"${escapeHtml(job.notes)}"</p>` : ''}
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
 
         <div class="job-cost-bar">
           <div>
@@ -2700,7 +2847,7 @@
       const matchSearch = (tx.description || "").toLowerCase().includes(search) ||
                           (tx.reference || "").toLowerCase().includes(search) ||
                           (tx.entity || "").toLowerCase().includes(search);
-      
+
       let matchCat = true;
       if (filterCat === "income") matchCat = tx.type === "income";
       else if (filterCat === "expense") matchCat = tx.type === "expense";
@@ -2723,14 +2870,14 @@
           ${tx.date || '2026-09-18'}
         </td>
         <td>
-          <div style="font-weight:600; color:var(--text-primary);">${tx.description}</div>
+          <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(tx.description)}</div>
           <div class="text-muted" style="font-size:0.75rem;">Ref: ${tx.reference || 'N/A'} • ${tx.entity || 'DATA PORT Core'}</div>
         </td>
         <td>
-          <span class="badge" style="font-size:0.75rem;">${tx.category}</span>
+          <span class="badge" style="font-size:0.75rem;">${escapeHtml(tx.category)}</span>
         </td>
         <td>
-          <span style="font-size:0.85rem; color:#EDEDED;">${tx.paymentMethod}</span>
+          <span style="font-size:0.85rem; color:#EDEDED;">${escapeHtml(tx.paymentMethod)}</span>
         </td>
         <td style="font-family:var(--font-mono); font-size:0.85rem; color:var(--text-muted);">
           ${tx.reference || 'N/A'}
@@ -3517,14 +3664,22 @@
         const payDate = document.getElementById("payDate").value || new Date().toISOString().split("T")[0];
 
         // Mark invoice paid or update partial deposit / installment
+<<<<<<< HEAD
         let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period.includes(monthNames[currentMonth])));
+=======
+        let invoice = (erpState.invoices || []).find(i => i.id === invId || (i.subId === subId && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)));
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
         if (invoice) {
           const invGrandTotal = Number(invoice.grandTotal || invoice.amount) || amount;
           const prevPaid = Number(invoice.totalPaid || (invoice.status === "paid" ? invGrandTotal : invoice.depositAmount)) || 0;
           const newTotalPaid = prevPaid + amount;
           invoice.totalPaid = newTotalPaid;
           invoice.balanceDue = Math.max(0, invGrandTotal - newTotalPaid);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
           if (!invoice.installments) invoice.installments = [];
           invoice.installments.push({
             label: `${invoice.installments.length + 1} ST Installment`,
@@ -3561,6 +3716,7 @@
         erpState.ledger.unshift({
           id: "tx_" + Date.now(),
           date: payDate,
+          invoiceId: invoice.id,
           description: `Subscription Settlement - ${clientName} (${invoice.invoiceNo})`,
           category: "ISP Subscription Income",
           type: "income",
@@ -3756,7 +3912,8 @@
     if (triggerSyncApiBtn) {
       triggerSyncApiBtn.addEventListener("click", async () => {
         saveDatabase();
-        showToast("Database safely persisted to LocalStorage & Ready for Cloud Sync.");
+        clearTimeout(syncTimer);
+        await persistDatabase();
       });
     }
 
@@ -3834,7 +3991,7 @@
     if (!sub) return;
 
     document.getElementById("subEditId").value = sub.id;
-    document.getElementById("subModalTitle").textContent = `Edit Client: ${sub.name}`;
+    document.getElementById("subModalTitle").textContent = `Edit Client: ${escapeHtml(sub.name)}`;
     document.getElementById("subName").value = sub.name || "";
     document.getElementById("subCompany").value = sub.company || "";
     document.getElementById("subPhone").value = sub.phone || "";
@@ -3857,9 +4014,9 @@
     const sub = (erpState.subscribers || []).find(s => s.id === subId);
     if (!sub) return;
 
-    const inv = invId 
+    const inv = invId
       ? (erpState.invoices || []).find(i => i.id === invId)
-      : (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth]));
+      : (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear));
 
     document.getElementById("paySubId").value = sub.id;
     document.getElementById("payInvoiceId").value = inv ? inv.id : "";
@@ -3898,8 +4055,8 @@
     } else {
       let html = `<div style="display:flex; flex-direction:column; gap:0.75rem;">`;
       daySubs.forEach(sub => {
-        const inv = (erpState.invoices || []).find(i => 
-          (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth])
+        const inv = (erpState.invoices || []).find(i =>
+          (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear)
         );
         const isPaid = inv && inv.status === "paid";
         const statusBadge = isPaid
@@ -3909,8 +4066,8 @@
         html += `
           <div class="glass-panel" style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
             <div>
-              <strong style="font-size:1rem; color:var(--text-primary);">${sub.name}</strong>
-              <div class="text-muted" style="font-size:0.78rem;">${sub.package} • Phone: ${sub.phone}</div>
+              <strong style="font-size:1rem; color:var(--text-primary);">${escapeHtml(sub.name)}</strong>
+              <div class="text-muted" style="font-size:0.78rem;">${escapeHtml(sub.package)} • Phone: ${escapeHtml(sub.phone)}</div>
               <div style="font-family:var(--font-mono); font-size:0.85rem; color:var(--lime); margin-top:0.2rem;">
                 KSh ${(sub.monthlyRate || sub.price || 0).toLocaleString()} • ${statusBadge}
               </div>
@@ -3939,7 +4096,7 @@
     if (!sub) return;
 
     // Check or create current month invoice
-    let inv = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period.includes(monthNames[currentMonth]));
+    let inv = (erpState.invoices || []).find(i => (i.subId === sub.id || i.clientName === sub.name) && i.period && i.period === (monthNames[currentMonth] + " " + currentYear));
     if (!inv) {
       inv = {
         id: "inv_" + Date.now(),
@@ -3991,18 +4148,18 @@
         const cleanPhone = (sub.phone || "").replace(/[^0-9]/g, "");
         const formattedPhone = cleanPhone.startsWith("0") ? "254" + cleanPhone.substring(1) : cleanPhone;
         const msg = `*DATA PORT LIMITED - INVOICE NOTICE*\n\n` +
-          `Dear *${sub.name}*,\n` +
+          `Dear *${escapeHtml(sub.name)}*,\n` +
           `Your service proforma for *${inv.period}* is ready.\n\n` +
-          `• *Package:* ${sub.package}\n` +
+          `• *Package:* ${escapeHtml(sub.package)}\n` +
           `• *Amount Due:* KSh ${Number(inv.amount).toLocaleString()}\n` +
           `• *Due Date:* ${inv.dueDate}\n` +
           `• *Invoice Ref:* ${inv.invoiceNo}\n\n` +
           `*Official Payment Channel:*\n` +
           `M-PESA Paybill: *247247*\n` +
-          `Account No: *${sub.phone}*\n\n` +
+          `Account No: *${escapeHtml(sub.phone)}*\n\n` +
           `Thank you for choosing Data Port Limited. High-speed internet SLA is guaranteed.`;
         window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, "_blank");
-        showToast(`WhatsApp billing dispatch initiated for ${sub.name}.`);
+        showToast(`WhatsApp billing dispatch initiated for ${escapeHtml(sub.name)}.`);
       };
     }
 
@@ -4011,7 +4168,7 @@
     if (emailBtn) {
       emailBtn.onclick = () => {
         const subject = `DATA PORT LIMITED: Proforma Invoice ${inv.invoiceNo} - ${inv.period}`;
-        const body = `Dear ${sub.name},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount Due: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${sub.phone})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
+        const body = `Dear ${escapeHtml(sub.name)},\n\nPlease find attached your Internet Subscription proforma invoice for ${inv.period}.\n\nAmount Due: KSh ${Number(inv.amount).toLocaleString()}\nDue Date: ${inv.dueDate}\nPaybill: 247247 (Acc: ${escapeHtml(sub.phone)})\n\nThank you,\nDATA PORT LIMITED Billing Team`;
         window.location.href = `mailto:${sub.email || 'accounts@dpinc.top'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       };
     }
@@ -4030,12 +4187,12 @@
     if (togglePaidBtn) {
       togglePaidBtn.onclick = () => {
         inv.status = inv.status === "paid" ? "unpaid" : "paid";
-        
+
         if (inv.status === "paid") {
           erpState.ledger.unshift({
             id: "tx_" + Date.now(),
             date: new Date().toISOString().split("T")[0],
-            description: `Payment Received - ${sub.name} (${inv.invoiceNo})`,
+            description: `Payment Received - ${escapeHtml(sub.name)} (${inv.invoiceNo})`,
             type: "income",
             amount: Number(inv.amount),
             category: "ISP Subscription Income",
@@ -4047,7 +4204,7 @@
         } else {
           showToast(`Invoice marked Unpaid.`);
         }
-        
+
         saveDatabase();
         renderAll();
         document.getElementById("invoiceDrawerModal").style.display = "none";
@@ -4072,7 +4229,7 @@
           status: inv.status || "unpaid",
           items: [
             {
-              title: `${sub.package} — Monthly Dedicated Internet Subscription`,
+              title: `${escapeHtml(sub.package)} — Monthly Dedicated Internet Subscription`,
               qty: "1 Month",
               rate: Number(inv.amount) || sub.monthlyRate || sub.price || 3500
             }
@@ -4133,7 +4290,7 @@
     rule.active = !rule.active;
     saveDatabase();
     renderVaultDetails();
-    showToast(`Rule "${rule.name}" is now ${rule.active ? 'Active' : 'Disabled'}.`);
+    showToast(`Rule "${escapeHtml(rule.name)}" is now ${rule.active ? 'Active' : 'Disabled'}.`);
   };
 
   window.dpDeleteSub = async function (subId) {
@@ -4661,6 +4818,7 @@
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+<<<<<<< HEAD
       
       // Dual background sync to SQL database backends (Next.js & XAMPP MySQL)
       Object.keys(current).forEach(group => {
@@ -4689,6 +4847,11 @@
       });
 
       showToast("✓ All Commercial Tariffs saved & synced to MySQL dpinc.top_db!");
+=======
+      erpState.tariffs = current;
+      saveDatabase();
+      showToast("✓ Commercial Tariffs successfully saved and synchronized live!");
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
     } catch (err) {
       console.error("Failed to save tariffs to localStorage:", err);
       showToast("Error saving tariffs. Check browser storage permissions.");
@@ -4697,7 +4860,9 @@
 
   function resetTariffsToDefault() {
     if (confirm("Are you sure you want to reset all service charges to default factory pricing?")) {
-      localStorage.removeItem(STORAGE_KEYS.TARIFFS);
+      erpState.tariffs = JSON.parse(JSON.stringify(DEFAULT_COMMERCIAL_TARIFFS));
+      localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(erpState.tariffs));
+      saveDatabase();
       renderTariffManager();
       showToast("✓ Tariffs reset to factory default rates.");
     }
@@ -4747,6 +4912,7 @@
 
     try {
       localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+<<<<<<< HEAD
 
       const payload = {
         id: newId,
@@ -4770,6 +4936,10 @@
         }).catch(() => {});
       });
 
+=======
+      erpState.tariffs = current;
+      saveDatabase();
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
       renderTariffManager();
       showToast(`✓ Added custom item "${name.trim()}"!`);
     } catch (err) {
@@ -4794,12 +4964,17 @@
       current[group] = current[group].filter(i => i.id !== id);
       try {
         localStorage.setItem(STORAGE_KEYS.TARIFFS, JSON.stringify(current));
+<<<<<<< HEAD
 
         // Sync DELETE to both Next.js and XAMPP PHP APIs
         fetch(`/api/services/${id}`, { method: "DELETE" }).catch(() => {
           fetch(`api/services.php?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
         });
 
+=======
+      erpState.tariffs = current;
+      saveDatabase();
+>>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
         renderTariffManager();
         showToast("✓ Service item removed from catalog.");
       } catch (err) {
