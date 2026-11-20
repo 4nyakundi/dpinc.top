@@ -805,6 +805,7 @@
     setupDirectoryFilters();
     setupLedgerFilters();
     initTariffManager();
+    initWebsitesCatalog();
     renderAll();
   }
 
@@ -947,7 +948,7 @@
           const demoSubIds = ['sub-101', 'sub-102', 'sub-103', 'sub-104', 'sub-105', 'sub-106', 'sub-107'];
           const demoInvIds = ['inv-001', 'inv-002', 'inv-003', 'inv-004', 'inv-005', 'inv-006', 'inv-007', 'inv-008'];
           erpState.subscribers = erpState.subscribers.filter(s => !demoSubIds.includes(s.id) && !(s.name && s.name.includes("Mombasa Ocean View")));
-          erpState.invoices = erpState.invoices.filter(i => !demoInvIds.includes(i.id) && !(i.invoiceNo && i.invoiceNo.startsWith("PROF-2026-")));
+          erpState.invoices = erpState.invoices.filter(i => !demoInvIds.includes(i.id));
           saveDatabase(false);
           return;
         }
@@ -2310,11 +2311,11 @@
   /* =========================================================================
      INVOICES HUB RENDERING & MANAGEMENT
      ========================================================================= */
-  function renderInvoicesHub() {
+    function renderInvoicesHub() {
     const tbody = document.getElementById("invoicesMasterTableBody");
-    const invoices = erpState.invoices || [];
+    const invoices = (erpState && Array.isArray(erpState.invoices)) ? erpState.invoices : [];
 
-    // Compute Metrics
+    // Compute Metrics safely
     let totalBilled = 0;
     let totalPaid = 0;
     let partialDeposits = 0;
@@ -2326,22 +2327,23 @@
     let countPaid = 0;
 
     invoices.forEach(inv => {
-      const gTotal = Number(inv.grandTotal || inv.amount) || 0;
-      const tPaid = Number(inv.totalPaid || (inv.status === "paid" ? gTotal : inv.depositAmount)) || 0;
+      if (!inv) return;
+      const gTotal = Number(inv.grandTotal || inv.total || inv.amount) || 0;
+      const tPaid = Number(inv.totalPaid !== undefined ? inv.totalPaid : (inv.status === "paid" ? gTotal : (inv.depositAmount || 0))) || 0;
       const bal = Number(inv.balanceDue !== undefined ? inv.balanceDue : Math.max(0, gTotal - tPaid)) || 0;
 
       totalBilled += gTotal;
 
-      if (inv.status === "paid" || tPaid >= gTotal && gTotal > 0) {
+      if (inv.status === "paid" || (bal === 0 && gTotal > 0)) {
         totalPaid += gTotal;
         countPaid++;
-      } else if (inv.status === "partial" || tPaid > 0) {
+      } else if (inv.status === "partial" || (tPaid > 0 && bal > 0)) {
         totalPaid += tPaid;
         partialDeposits += tPaid;
         pendingReceivables += bal;
         countPartial++;
       } else {
-        pendingReceivables += gTotal;
+        pendingReceivables += (bal > 0 ? bal : gTotal);
         countUnpaid++;
       }
     });
@@ -2352,20 +2354,20 @@
     const elPartial = document.getElementById("invStatPartialDeposits");
     const elPending = document.getElementById("invStatPendingBalance");
 
-    if (elBilled) elBilled.textContent = `KSh ${totalBilled.toLocaleString()}`;
-    if (elPaid) elPaid.textContent = `KSh ${totalPaid.toLocaleString()}`;
-    if (elPartial) elPartial.textContent = `KSh ${partialDeposits.toLocaleString()}`;
-    if (elPending) elPending.textContent = `KSh ${pendingReceivables.toLocaleString()}`;
+    if (elBilled) elBilled.textContent = 'KSh ' + totalBilled.toLocaleString();
+    if (elPaid) elPaid.textContent = 'KSh ' + totalPaid.toLocaleString();
+    if (elPartial) elPartial.textContent = 'KSh ' + partialDeposits.toLocaleString();
+    if (elPending) elPending.textContent = 'KSh ' + pendingReceivables.toLocaleString();
 
     const elTotalCount = document.getElementById("invStatTotalCount");
     const elPaidCount = document.getElementById("invStatPaidCount");
     const elPartialCount = document.getElementById("invStatPartialCount");
     const elDueCount = document.getElementById("invStatDueCount");
 
-    if (elTotalCount) elTotalCount.textContent = `${countAll} Invoices Recorded`;
-    if (elPaidCount) elPaidCount.textContent = `${countPaid} Cleared Full`;
-    if (elPartialCount) elPartialCount.textContent = `${countPartial} Active Plans`;
-    if (elDueCount) elDueCount.textContent = `${countUnpaid} Due / Unpaid`;
+    if (elTotalCount) elTotalCount.textContent = countAll + ' Invoices Recorded';
+    if (elPaidCount) elPaidCount.textContent = countPaid + ' Cleared Full';
+    if (elPartialCount) elPartialCount.textContent = countPartial + ' Active Plans';
+    if (elDueCount) elDueCount.textContent = countUnpaid + ' Due / Unpaid';
 
     // Update filter pill badges
     const pillAll = document.getElementById("pillCountAll");
@@ -2378,24 +2380,39 @@
     if (pillPartial) pillPartial.textContent = countPartial;
     if (pillPaid) pillPaid.textContent = countPaid;
 
+    const sideInvCount = document.getElementById("sideInvoicesCount");
+    if (sideInvCount) sideInvCount.textContent = countAll;
+
+    const tabInvCount = document.getElementById("tabInvoicesCount");
+    if (tabInvCount) tabInvCount.textContent = countAll;
+
     if (!tbody) return;
 
     // Filter Invoices
     let filtered = invoices.filter(inv => {
+      if (!inv) return false;
+      const gTotal = Number(inv.grandTotal || inv.total || inv.amount) || 0;
+      const tPaid = Number(inv.totalPaid !== undefined ? inv.totalPaid : (inv.status === "paid" ? gTotal : (inv.depositAmount || 0))) || 0;
+      const bal = Number(inv.balanceDue !== undefined ? inv.balanceDue : Math.max(0, gTotal - tPaid)) || 0;
+      const isPaid = (inv.status === "paid" || bal === 0);
+      const isPartial = (inv.status === "partial" || (tPaid > 0 && bal > 0));
+      const isUnpaid = (inv.status === "unpaid" || (bal > 0 && tPaid === 0));
+
       // Status filter
-      if (currentInvoiceFilter === "unpaid" && inv.status !== "unpaid") return false;
-      if (currentInvoiceFilter === "partial" && inv.status !== "partial") return false;
-      if (currentInvoiceFilter === "paid" && inv.status !== "paid") return false;
+      if (currentInvoiceFilter === "unpaid" && !isUnpaid) return false;
+      if (currentInvoiceFilter === "partial" && !isPartial) return false;
+      if (currentInvoiceFilter === "paid" && !isPaid) return false;
 
       // Type filter
-      if (currentInvoiceTypeFilter === "subscriber" && inv.clientType === "general") return false;
-      if (currentInvoiceTypeFilter === "general" && inv.clientType === "subscriber") return false;
+      const clientType = (inv.clientType || inv.client_type || "subscriber").toLowerCase();
+      if (currentInvoiceTypeFilter === "subscriber" && clientType.includes("general")) return false;
+      if (currentInvoiceTypeFilter === "general" && !clientType.includes("general")) return false;
 
       // Search term
       if (currentInvoiceSearchTerm) {
         const query = currentInvoiceSearchTerm;
-        const matchesClient = (inv.clientName || "").toLowerCase().includes(query);
-        const matchesNo = (inv.invoiceNo || "").toLowerCase().includes(query);
+        const matchesClient = (inv.clientName || inv.client_name || "").toLowerCase().includes(query);
+        const matchesNo = (inv.invoiceNo || inv.invoice_no || "").toLowerCase().includes(query);
         const matchesPhone = (inv.phone || "").toLowerCase().includes(query);
         if (!matchesClient && !matchesNo && !matchesPhone) return false;
       }
@@ -2404,94 +2421,107 @@
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center text-muted" style="padding:2.5rem;">
-            No invoices found matching current filter criteria. Click "+ Create New Invoice" to bill clients.
-          </td>
-        </tr>
-      `;
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:3.5rem 1.5rem; color:var(--text-muted);">' +
+        '<div style="max-width:420px; margin:0 auto; text-align:center;">' +
+        '<i data-lucide="inbox" style="width:42px; height:42px; margin-bottom:0.75rem; color:var(--text-muted); opacity:0.5;"></i>' +
+        '<h4 style="font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">No Invoices Found</h4>' +
+        '<p style="font-size:0.875rem; line-height:1.5; margin-bottom:1.25rem;">No client invoices match the active filter. You can create a new invoice or switch the status filter.</p>' +
+        '<button class="btn btn-primary btn-sm" onclick="window.dpOpenCreateInvoice()"><i data-lucide="plus" style="width:14px; height:14px;"></i> Create New Invoice</button>' +
+        '</div></td></tr>';
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
 
     tbody.innerHTML = filtered.map(inv => {
-      const gTotal = Number(inv.grandTotal || inv.amount) || 0;
-      const tPaid = Number(inv.totalPaid || (inv.status === "paid" ? gTotal : inv.depositAmount)) || 0;
+      const gTotal = Number(inv.grandTotal || inv.total || inv.amount) || 0;
+      const tPaid = Number(inv.totalPaid !== undefined ? inv.totalPaid : (inv.status === "paid" ? gTotal : (inv.depositAmount || 0))) || 0;
       const bal = Number(inv.balanceDue !== undefined ? inv.balanceDue : Math.max(0, gTotal - tPaid)) || 0;
+
+      const isPaid = (inv.status === "paid" || bal === 0);
+      const isPartial = (inv.status === "partial" || (tPaid > 0 && bal > 0));
+      const isOverdue = (bal > 0);
 
       // Status pill
       let statusBadge = "";
-      if (inv.status === "paid") {
-        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(34,197,94,0.15); border:1px solid #22c55e; color:#15803d;">PAID IN FULL</span>`;
-      } else if (inv.status === "partial") {
-        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(234,179,8,0.15); border:1px solid #eab308; color:#a16207;">PARTIAL DEPOSIT</span>`;
+      if (isPaid) {
+        statusBadge = '<span class="badge" style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(34,197,94,0.12); border:1px solid #22c55e; color:#15803d;">' +
+          '<i data-lucide="check-circle" style="width:12px; height:12px;"></i> PAID IN FULL</span>';
+      } else if (isPartial) {
+        statusBadge = '<span class="badge" style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(234,179,8,0.12); border:1px solid #eab308; color:#a16207;">' +
+          '<i data-lucide="clock" style="width:12px; height:12px;"></i> PARTIAL DEPOSIT</span>';
       } else {
-        statusBadge = `<span style="display:inline-block; padding:3px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#b91c1c;">UNPAID / DUE</span>`;
+        statusBadge = '<span class="badge" style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; font-weight:800; font-size:0.75rem; text-transform:uppercase; background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#b91c1c;">' +
+          '<i data-lucide="alert-triangle" style="width:12px; height:12px;"></i> OVERDUE</span>';
       }
 
       // Client type pill
-      const typeBadge = inv.clientType === "general" 
-        ? `<span class="badge" style="font-size:0.68rem; background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.3); color:#3b82f6;">General ICT</span>`
-        : `<span class="badge" style="font-size:0.68rem; background:rgba(92,148,0,0.1); border-color:rgba(92,148,0,0.3); color:var(--lime);">ISP Subscriber</span>`;
+      const clientType = (inv.clientType || inv.client_type || "subscriber").toLowerCase();
+      const typeBadge = clientType.includes("general")
+        ? '<span class="badge" style="font-size:0.68rem; padding:1px 6px; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); color:#3b82f6;">GENERAL ICT</span>'
+        : '<span class="badge" style="font-size:0.68rem; padding:1px 6px; background:rgba(92,148,0,0.12); border:1px solid rgba(92,148,0,0.3); color:var(--lime);">ISP SUBSCRIBER</span>';
 
       // Scope summary
-      const itemsCount = inv.items ? inv.items.length : 1;
-      const firstItemTitle = inv.items && inv.items[0] ? inv.items[0].title : (inv.package || "Internet Subscription");
-      const summaryText = itemsCount > 1 ? `${firstItemTitle} (+${itemsCount - 1} more)` : firstItemTitle;
+      const itemsCount = (inv.items && Array.isArray(inv.items)) ? inv.items.length : 1;
+      const firstItemTitle = (inv.items && inv.items[0] && inv.items[0].title) ? inv.items[0].title : (inv.package || "Fiber Internet Subscription");
+      const summaryText = itemsCount > 1 ? firstItemTitle + ' (+' + (itemsCount - 1) + ' more)' : firstItemTitle;
 
-      return `
-        <tr style="border-bottom:1px solid var(--border-color);">
-          <td>
-            <div style="font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary);">${escapeHtml(inv.invoiceNo || '')}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">${escapeHtml(inv.docType || 'Invoice')}</div>
-          </td>
-          <td>
-            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:2px;">
-              <strong style="color:var(--text-primary); font-size:0.925rem;">${escapeHtml(inv.clientName || '')}</strong>
-              ${typeBadge}
-            </div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(inv.phone || '')} • ${escapeHtml(inv.location || 'Mombasa')}</div>
-          </td>
-          <td>
-            <div style="font-size:0.85rem; color:var(--text-primary);">${escapeHtml(summaryText)}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Due: ${inv.dueDate || '--'}</div>
-          </td>
-          <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:var(--text-primary);">
-            KSh ${gTotal.toLocaleString()}
-          </td>
-          <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#22c55e;">
-            KSh ${tPaid.toLocaleString()}
-          </td>
-          <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${bal > 0 ? '#ef4444' : '#22c55e'};">
-            KSh ${bal.toLocaleString()}
-          </td>
-          <td style="text-align:center;">
-            ${statusBadge}
-          </td>
-          <td style="text-align:right;">
-            <div style="display:flex; justify-content:flex-end; gap:0.35rem; flex-wrap:wrap;">
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Live A4 Preview" onclick="window.dpOpenPreviewInvoice('${inv.id}')">
-                <i data-lucide="eye" style="width:13px; height:13px;"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Print / Save PDF" onclick="window.dpPrintInvoice('${inv.id}')">
-                <i data-lucide="printer" style="width:13px; height:13px;"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#22c55e;" title="Record Payment / Deposit" onclick="window.dpRecordInvoicePayment('${inv.id}')">
-                <i data-lucide="wallet" style="width:13px; height:13px;"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#25D366;" title="Send WhatsApp Bill" onclick="window.dpDispatchInvoiceWhatsApp('${inv.id}')">
-                <i data-lucide="message-square" style="width:13px; height:13px;"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem;" title="Edit Invoice" onclick="window.dpOpenCreateInvoice(null, '${inv.id}')">
-                <i data-lucide="edit-3" style="width:13px; height:13px;"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.6rem; color:#ef4444;" title="Delete Invoice" onclick="window.dpDeleteInvoice('${inv.id}')">
-                <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
+      const dueDateText = inv.dueDate || inv.due_date || "--";
+      const billingPeriodText = inv.billingPeriod || inv.billing_period || "";
+
+      return '<tr style="border-bottom:1px solid var(--border-color); transition:background 0.15s ease;">' +
+        '<td>' +
+          '<div style="font-family:var(--font-mono); font-weight:800; font-size:0.9rem; color:var(--text-primary); letter-spacing:-0.02em;">' + escapeHtml(inv.invoiceNo || inv.invoice_no || '') + '</div>' +
+          '<div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-top:2px;">' + escapeHtml(inv.docType || inv.doc_type || 'INVOICE') + (billingPeriodText ? ' • ' + escapeHtml(billingPeriodText) : '') + '</div>' +
+        '</td>' +
+        '<td>' +
+          '<div style="display:flex; align-items:center; gap:0.45rem; margin-bottom:2px; flex-wrap:wrap;">' +
+            '<strong style="color:var(--text-primary); font-size:0.925rem; font-weight:700;">' + escapeHtml(inv.clientName || inv.client_name || 'Client') + '</strong>' +
+            typeBadge +
+          '</div>' +
+          '<div style="font-size:0.8rem; color:var(--text-muted);">' + escapeHtml(inv.phone || 'No phone') + ' • ' + escapeHtml(inv.location || 'Mombasa') + '</div>' +
+        '</td>' +
+        '<td>' +
+          '<div style="font-size:0.875rem; color:var(--text-primary); font-weight:600;">' + escapeHtml(summaryText) + '</div>' +
+          '<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px; display:flex; align-items:center; gap:4px;">' +
+            '<span>Due: ' + escapeHtml(dueDateText) + '</span>' +
+            (isOverdue ? '<span style="color:#ef4444; font-weight:800; font-size:0.72rem; text-transform:uppercase; background:rgba(239,68,68,0.1); padding:1px 5px; border-radius:4px;">Action Required</span>' : '') +
+          '</div>' +
+        '</td>' +
+        '<td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:var(--text-primary); font-size:0.95rem;">' +
+          'KSh ' + gTotal.toLocaleString() +
+        '</td>' +
+        '<td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#15803d; font-size:0.95rem;">' +
+          'KSh ' + tPaid.toLocaleString() +
+        '</td>' +
+        '<td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:' + (bal > 0 ? '#ef4444' : '#15803d') + '; font-size:0.95rem;">' +
+          'KSh ' + bal.toLocaleString() +
+        '</td>' +
+        '<td style="text-align:center;">' +
+          statusBadge +
+        '</td>' +
+        '<td style="text-align:right;">' +
+          '<div style="display:flex; justify-content:flex-end; gap:0.35rem; flex-wrap:wrap;">' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem;" title="Live A4 Preview" onclick="window.dpOpenPreviewInvoice(\'' + inv.id + '\')">' +
+              '<i data-lucide="eye" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem;" title="Print / Save PDF" onclick="window.dpPrintInvoice(\'' + inv.id + '\')">' +
+              '<i data-lucide="printer" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem; color:#15803d; border-color:rgba(34,197,94,0.3);" title="Record Payment / Deposit" onclick="window.dpRecordInvoicePayment(\'' + inv.id + '\')">' +
+              '<i data-lucide="wallet" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem; color:#25D366; border-color:rgba(37,211,102,0.3);" title="Send WhatsApp Bill" onclick="window.dpDispatchInvoiceWhatsApp(\'' + inv.id + '\')">' +
+              '<i data-lucide="message-square" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem;" title="Edit Invoice" onclick="window.dpOpenCreateInvoice(null, \'' + inv.id + '\')">' +
+              '<i data-lucide="edit-3" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" style="padding:0.35rem 0.5rem; color:#ef4444; border-color:rgba(239,68,68,0.3);" title="Delete Invoice" onclick="window.dpDeleteInvoice(\'' + inv.id + '\')">' +
+              '<i data-lucide="trash-2" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
     }).join("");
 
     if (window.lucide) window.lucide.createIcons();
@@ -2736,7 +2766,7 @@
         const demoInvIds = ['inv-001', 'inv-002', 'inv-003', 'inv-004', 'inv-005', 'inv-006', 'inv-007', 'inv-008'];
 
         erpState.subscribers = (erpState.subscribers || []).filter(s => !demoSubIds.includes(s.id));
-        erpState.invoices = (erpState.invoices || []).filter(i => !demoInvIds.includes(i.id) && !i.invoiceNo.startsWith("PROF-2026-"));
+        erpState.invoices = (erpState.invoices || []).filter(i => !demoInvIds.includes(i.id));
 
         saveDatabase();
         renderAll();
@@ -5229,6 +5259,551 @@
 
     if (window.lucide) window.lucide.createIcons();
   };
+
+  
+  /* =========================================================================
+     13B. WEBSITES & DIGITAL PROJECTS CATALOGUE & PREVIEW CONTROLLER
+     ========================================================================= */
+  const DP_PROJECTS_CATALOG = [
+  {
+    "id": "proj-mombasa-mall",
+    "name": "Mombasa Mall 2.0 Commercial Platform",
+    "repo": "4nyakundi/MOMBASA-MALL",
+    "repoUrl": "https://github.com/4nyakundi/MOMBASA-MALL",
+    "liveUrl": "https://mombasamall.co.ke",
+    "category": "ecommerce",
+    "categoryLabel": "E-Commerce & Retail",
+    "badge": "Production Deployment",
+    "badgeColor": "#10b981",
+    "desc": "Multi-tenant commercial retail mall platform featuring tenant directories, interactive shop floor mapping, promotional flash sales, and customer footfall analytics.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "JavaScript",
+      "E-Commerce",
+      "Multi-Tenant",
+      "M-Pesa API"
+    ],
+    "icon": "shopping-bag",
+    "features": [
+      "Store directory & floor guide",
+      "Tenant management dashboard",
+      "Live event promotional alerts",
+      "Integrated Daraja M-Pesa billing"
+    ]
+  },
+  {
+    "id": "proj-catch-sec",
+    "name": "Catch Security Links Ltd",
+    "repo": "4nyakundi/catchsecuritylinksltd.co.ke",
+    "repoUrl": "https://github.com/4nyakundi/catchsecuritylinksltd.co.ke",
+    "liveUrl": "https://catchsecuritylinks.co.ke",
+    "category": "security",
+    "categoryLabel": "Security & IoT",
+    "badge": "Enterprise SLA",
+    "badgeColor": "#3b82f6",
+    "desc": "Corporate portal for leading security and surveillance provider in Mombasa. Covers IP CCTV camera monitoring, biometric access control, and alarm response dispatch.",
+    "tags": [
+      "PHP",
+      "JavaScript",
+      "Security IoT",
+      "CCTV Integration",
+      "Tailwind CSS"
+    ],
+    "icon": "shield-check",
+    "features": [
+      "Live service ticketing",
+      "CCTV equipment catalog",
+      "AMC contract management",
+      "NOC status reporting"
+    ]
+  },
+  {
+    "id": "proj-modoria",
+    "name": "Modoria Media & Tech Agency",
+    "repo": "4nyakundi/modoria.co.ke",
+    "repoUrl": "https://github.com/4nyakundi/modoria.co.ke",
+    "liveUrl": "https://modoria.co.ke",
+    "category": "creative",
+    "categoryLabel": "Creative & Media",
+    "badge": "Live Agency Portal",
+    "badgeColor": "#8b5cf6",
+    "desc": "Modern digital agency website showcasing enterprise software engineering, brand identity design, high-resolution photography, and digital marketing portfolios.",
+    "tags": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "GSAP Animations",
+      "UI/UX Design"
+    ],
+    "icon": "sparkles",
+    "features": [
+      "Case studies showcase",
+      "Interactive client portfolio",
+      "Lead intake & proposal engine",
+      "SEO-optimized structure"
+    ]
+  },
+  {
+    "id": "proj-ace-vet",
+    "name": "Ace Vet Care Kenya",
+    "repo": "4nyakundi/acevetcarekenya",
+    "repoUrl": "https://github.com/4nyakundi/acevetcarekenya",
+    "liveUrl": "https://acevetcarekenya.co.ke",
+    "category": "booking",
+    "categoryLabel": "Healthcare & Veterinary",
+    "badge": "Active Health System",
+    "badgeColor": "#06b6d4",
+    "desc": "Full-stack veterinary healthcare portal providing animal treatment histories, surgical appointment scheduling, vaccination reminders, and pharmacy management.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Appointment Engine",
+      "Medical Records",
+      "Bootstrap"
+    ],
+    "icon": "activity",
+    "features": [
+      "Patient medical history logs",
+      "Automated SMS appointment reminders",
+      "Pet vaccination passport tracker",
+      "Tele-triage intake"
+    ]
+  },
+  {
+    "id": "proj-azurite-rental",
+    "name": "Azurite Property Rental System",
+    "repo": "4nyakundi/Azurite-Rental-System",
+    "repoUrl": "https://github.com/4nyakundi/Azurite-Rental-System",
+    "liveUrl": "https://azuriterentals.co.ke",
+    "category": "enterprise",
+    "categoryLabel": "Real Estate & Leasing",
+    "badge": "SaaS Portal",
+    "badgeColor": "#10b981",
+    "desc": "End-to-end residential and commercial property management system. Handles automated tenant leasing, unit vacancy tracking, rent billing, and maintenance tickets.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Property ERP",
+      "M-Pesa Auto-Reconcile",
+      "PDF Invoicing"
+    ],
+    "icon": "home",
+    "features": [
+      "Tenant automated monthly invoicing",
+      "Landlord payout statements",
+      "Maintenance request ticketing",
+      "Vacant unit showcase"
+    ]
+  },
+  {
+    "id": "proj-starlash",
+    "name": "Starlash Kenya Beauty Studio",
+    "repo": "4nyakundi/starlashkenya",
+    "repoUrl": "https://github.com/4nyakundi/starlashkenya",
+    "liveUrl": "https://starlashkenya.co.ke",
+    "category": "booking",
+    "categoryLabel": "Beauty & Lifestyle",
+    "badge": "E-Commerce & Booking",
+    "badgeColor": "#ec4899",
+    "desc": "Boutique beauty studio appointment booking and cosmetics retail store. Includes therapist slot calendar, deposit processing, and product catalog.",
+    "tags": [
+      "JavaScript",
+      "Tailwind CSS",
+      "Booking Calendar",
+      "Product Shop"
+    ],
+    "icon": "heart",
+    "features": [
+      "Time-slot reservation engine",
+      "Deposit payment collection",
+      "Cosmetics online shopping",
+      "Client review gallery"
+    ]
+  },
+  {
+    "id": "proj-tudor-cleaners",
+    "name": "Tudor Carpet Cleaners",
+    "repo": "4nyakundi/Tudorcarpetcleaners",
+    "repoUrl": "https://github.com/4nyakundi/Tudorcarpetcleaners",
+    "liveUrl": "https://tudorcleaners.co.ke",
+    "category": "booking",
+    "categoryLabel": "Commercial Services",
+    "badge": "Dispatch System",
+    "badgeColor": "#f59e0b",
+    "desc": "Field service dispatch and on-demand carpet & upholstery cleaning booking engine for residential homes and corporate offices across Mombasa Island.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Dispatch Logistics",
+      "Service Estimator"
+    ],
+    "icon": "droplet",
+    "features": [
+      "Instant area square-meter cost estimator",
+      "Van dispatch scheduling",
+      "Before & after cleaning showcase",
+      "WhatsApp instant confirmation"
+    ]
+  },
+  {
+    "id": "proj-car-rental",
+    "name": "Coastal Car Rental System",
+    "repo": "4nyakundi/Car-Rental-System-",
+    "repoUrl": "https://github.com/4nyakundi/Car-Rental-System-",
+    "liveUrl": "https://coastalcarrental.co.ke",
+    "category": "enterprise",
+    "categoryLabel": "Automotive & Fleet",
+    "badge": "Fleet Management",
+    "badgeColor": "#6366f1",
+    "desc": "Vehicle fleet leasing, reservation, and driver tracking management system. Includes daily rate calculations, security deposit handling, and GPS fleet inspection.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Fleet Management",
+      "Contract Generator",
+      "REST API"
+    ],
+    "icon": "truck",
+    "features": [
+      "Live vehicle availability grid",
+      "Digital rental contract signing",
+      "Driver allocation system",
+      "Automated return condition audits"
+    ]
+  },
+  {
+    "id": "proj-6am-kenya",
+    "name": "6AM Kenya Coastal Guide",
+    "repo": "4nyakundi/6amkenya",
+    "repoUrl": "https://github.com/4nyakundi/6amkenya",
+    "liveUrl": "https://6amkenya.co.ke",
+    "category": "creative",
+    "categoryLabel": "Media & Entertainment",
+    "badge": "Digital Media",
+    "badgeColor": "#f43f5e",
+    "desc": "Lifestyle, tourism, and nightlife discovery guide for Mombasa and the Kenyan coast. Features ticket sales, venue directories, and event coverage.",
+    "tags": [
+      "Next.js",
+      "Tailwind",
+      "Event Ticketing",
+      "Media Player"
+    ],
+    "icon": "music",
+    "features": [
+      "Event ticket checkout engine",
+      "Interactive venue map",
+      "Artist & performer spotlights",
+      "Push notifications for events"
+    ]
+  },
+  {
+    "id": "proj-r3-realtors",
+    "name": "R3 Realtors Coastal Realty",
+    "repo": "4nyakundi/r3-realtors",
+    "repoUrl": "https://github.com/4nyakundi/r3-realtors",
+    "liveUrl": "https://r3realtors.co.ke",
+    "category": "enterprise",
+    "categoryLabel": "Real Estate & Land",
+    "badge": "Listing Portal",
+    "badgeColor": "#14b8a6",
+    "desc": "Luxury coastal property brokerage platform featuring prime beachfront land, executive villas in Nyali & Diani, and commercial leasing listings with virtual tours.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Property Listings",
+      "Search Filters",
+      "Inquiry CRM"
+    ],
+    "icon": "map-pin",
+    "features": [
+      "Advanced price & location filters",
+      "Direct agent WhatsApp scheduling",
+      "Title deed verification badges",
+      "Virtual photo walkthroughs"
+    ]
+  },
+  {
+    "id": "proj-edocs",
+    "name": "eDocs Appointment System",
+    "repo": "4nyakundi/edocs-appointment-sys",
+    "repoUrl": "https://github.com/4nyakundi/edocs-appointment-sys",
+    "liveUrl": "https://edocs.co.ke",
+    "category": "booking",
+    "categoryLabel": "Health & Telemedicine",
+    "badge": "Medical Portal",
+    "badgeColor": "#0284c7",
+    "desc": "Medical specialist appointment booking and electronic medical intake system designed for clinics, private practices, and diagnostic centers.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "HIPAA Compliant",
+      "Doctor Rostering",
+      "Audit Logs"
+    ],
+    "icon": "file-text",
+    "features": [
+      "Specialist doctor calendar slots",
+      "Intake symptom pre-screening",
+      "Digital prescription storage",
+      "Patient queue management"
+    ]
+  },
+  {
+    "id": "proj-playon",
+    "name": "Play-On Gaming Lounge",
+    "repo": "4nyakundi/Play-On",
+    "repoUrl": "https://github.com/4nyakundi/Play-On",
+    "liveUrl": "https://playonlounge.co.ke",
+    "category": "creative",
+    "categoryLabel": "Gaming & Esports",
+    "badge": "Console & Tournament Hub",
+    "badgeColor": "#a855f7",
+    "desc": "Esports gaming lounge management system controlling PlayStation 5, Xbox Series X, and PC gaming station timers, snack bar billing, and tournament brackets.",
+    "tags": [
+      "JavaScript",
+      "Node.js",
+      "Timer System",
+      "POS Terminal",
+      "WebSocket"
+    ],
+    "icon": "tv",
+    "features": [
+      "Station countdown timer billing",
+      "Tournament leaderboard brackets",
+      "Snack bar & cafe POS",
+      "Member credit wallet"
+    ]
+  },
+  {
+    "id": "proj-frynation",
+    "name": "Fry Nation Quick Kitchen",
+    "repo": "shimix-del/frynation",
+    "repoUrl": "https://github.com/shimix-del/frynation",
+    "liveUrl": "https://frynation.co.ke",
+    "category": "ecommerce",
+    "categoryLabel": "Food & Restaurant POS",
+    "badge": "Fast-Food POS",
+    "badgeColor": "#ea580c",
+    "desc": "Fast-casual restaurant food ordering, kitchen display system (KDS), and cash drawer tracking engine with automated thermal receipt printing.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Kitchen KDS",
+      "M-Pesa POS",
+      "Receipt Printing"
+    ],
+    "icon": "coffee",
+    "features": [
+      "Digital menu ordering screen",
+      "Kitchen prep display screen",
+      "Daily till cash balance audit",
+      "Combo meal discount rules"
+    ]
+  },
+  {
+    "id": "proj-artbyoture",
+    "name": "Art By Oture Canvas Gallery",
+    "repo": "4nyakundi/artbyoture_ABO26",
+    "repoUrl": "https://github.com/4nyakundi/artbyoture_ABO26",
+    "liveUrl": "https://artbyoture.co.ke",
+    "category": "creative",
+    "categoryLabel": "Art & Exhibition",
+    "badge": "Fine Art Portfolio",
+    "badgeColor": "#d946ef",
+    "desc": "Original oil on canvas paintings, African contemporary portraiture, and commissioned artwork showcase with international delivery cost calculation.",
+    "tags": [
+      "JavaScript",
+      "CSS3",
+      "Art Gallery",
+      "Commission Form"
+    ],
+    "icon": "feather",
+    "features": [
+      "High-res canvas zoom viewer",
+      "Bespoke commission request form",
+      "Framing option customizer",
+      "Artist bio and exhibits"
+    ]
+  },
+  {
+    "id": "proj-parking",
+    "name": "Smart Parking Management System",
+    "repo": "4nyakundi/parking",
+    "repoUrl": "https://github.com/4nyakundi/parking",
+    "liveUrl": "https://parking.dpinc.top",
+    "category": "security",
+    "categoryLabel": "IoT & Access Control",
+    "badge": "Hardware & Gate Barrier",
+    "badgeColor": "#059669",
+    "desc": "Automated vehicle barrier gate and smart parking ticket management system. Tracks license plates (ANPR), hourly tariff rates, and automated exit validation.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Barrier Gate IoT",
+      "Ticket Barcode",
+      "Hourly Billing"
+    ],
+    "icon": "compass",
+    "features": [
+      "Automatic number plate logging",
+      "Barcode ticket validation",
+      "Cash & M-Pesa exit toll",
+      "Occupancy bay live counter"
+    ]
+  },
+  {
+    "id": "proj-paws-hooves",
+    "name": "Paws & Hooves Wildlife Sanctuary",
+    "repo": "4nyakundi/Paws-Hooves",
+    "repoUrl": "https://github.com/4nyakundi/Paws-Hooves",
+    "liveUrl": "https://pawsandhooves.co.ke",
+    "category": "booking",
+    "categoryLabel": "Animal Sanctuary & Care",
+    "badge": "Rescue & Shelter ERP",
+    "badgeColor": "#10b981",
+    "desc": "Animal rescue, veterinary surgery, and sanctuary registry. Manages adoption listings, rescue dispatch, donor contributions, and veterinary care charts.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Adoption Portal",
+      "Donations",
+      "Animal Health"
+    ],
+    "icon": "shield",
+    "features": [
+      "Pet adoption matching intake",
+      "Animal rescue ambulance dispatch",
+      "Medical treatment records",
+      "Online donor sponsorship portal"
+    ]
+  }
+];
+
+  let currentWebCatFilter = "all";
+  let currentWebSearchTerm = "";
+
+  function initWebsitesCatalog() {
+    const filterGroup = document.getElementById("websitesCategoryFilterGroup");
+    if (filterGroup) {
+      filterGroup.querySelectorAll(".cal-filter-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          filterGroup.querySelectorAll(".cal-filter-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          currentWebCatFilter = pill.getAttribute("data-web-cat") || "all";
+          renderWebsitesCatalog();
+        });
+      });
+    }
+
+    const searchInput = document.getElementById("websitesSearchInput");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        currentWebSearchTerm = e.target.value.toLowerCase().trim();
+        renderWebsitesCatalog();
+      });
+    }
+  }
+
+  function renderWebsitesCatalog() {
+    const grid = document.getElementById("websitesCatalogGrid");
+    if (!grid) return;
+
+    const filtered = DP_PROJECTS_CATALOG.filter(p => {
+      if (currentWebCatFilter !== "all" && p.category !== currentWebCatFilter) return false;
+      if (currentWebSearchTerm) {
+        const query = currentWebSearchTerm;
+        const matchesName = (p.name || "").toLowerCase().includes(query);
+        const matchesRepo = (p.repo || "").toLowerCase().includes(query);
+        const matchesDesc = (p.desc || "").toLowerCase().includes(query);
+        const matchesTags = (p.tags || []).some(t => t.toLowerCase().includes(query));
+        if (!matchesName && !matchesRepo && !matchesDesc && !matchesTags) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:3rem; color:var(--text-muted);">' +
+        '<i data-lucide="search-x" style="width:36px; height:36px; opacity:0.5; margin-bottom:0.75rem;"></i>' +
+        '<h4 style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">No Matching Projects</h4>' +
+        '<p style="font-size:0.875rem;">Try adjusting your search keywords or select "All Projects (16)".</p>' +
+        '</div>';
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const tagsHtml = (p.tags || []).map(t => '<span class="tag" style="font-size:0.72rem; padding:2px 7px; border-radius:6px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-secondary); font-weight:600;">' + escapeHtml(t) + '</span>').join(" ");
+      const featuresHtml = (p.features || []).map(f => '<li style="font-size:0.78rem; color:var(--text-muted); margin-bottom:3px; display:flex; align-items:center; gap:6px;"><i data-lucide="check" style="width:11px; height:11px; color:var(--lime); flex-shrink:0;"></i> ' + escapeHtml(f) + '</li>').join("");
+
+      return '<div class="glass-panel project-hub-card" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-color); transition:all 0.2s ease;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; gap:0.5rem;">' +
+          '<span class="badge" style="font-size:0.7rem; font-weight:700; background:rgba(92,148,0,0.12); color:var(--lime); border:1px solid rgba(92,148,0,0.3);">' +
+            escapeHtml(p.categoryLabel) +
+          '</span>' +
+          '<span class="badge" style="font-size:0.68rem; font-weight:700; background:rgba(255,255,255,0.05); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '40;">' +
+            escapeHtml(p.badge) +
+          '</span>' +
+        '</div>' +
+        '<h3 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0 0 0.35rem 0; line-height:1.3;">' + escapeHtml(p.name) + '</h3>' +
+        '<div style="display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:0.75rem; color:var(--lime); font-weight:700; margin-bottom:0.75rem;">' +
+          '<i data-lucide="github" style="width:13px; height:13px;"></i> ' + escapeHtml(p.repo) +
+        '</div>' +
+        '<p style="font-size:0.835rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.85rem; flex:1;">' +
+          escapeHtml(p.desc) +
+        '</p>' +
+        '<ul style="list-style:none; padding:0; margin:0 0 1rem 0;">' +
+          featuresHtml +
+        '</ul>' +
+        '<div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:1.15rem;">' +
+          tagsHtml +
+        '</div>' +
+        '<div style="display:flex; gap:0.5rem; margin-top:auto; pt:0.5rem; border-top:1px solid var(--border-color); padding-top:0.75rem;">' +
+          '<button type="button" class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpOpenSitePreview(\'' + escapeHtml(p.liveUrl) + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.repoUrl) + '\')">' +
+            '<i data-lucide="monitor" style="width:14px; height:14px;"></i> Live Preview' +
+          '</button>' +
+          '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="View Source Code on GitHub">' +
+            '<i data-lucide="github" style="width:14px; height:14px;"></i> Code' +
+          '</a>' +
+          '<a href="' + escapeHtml(p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Open Live Site in New Tab">' +
+            '<i data-lucide="external-link" style="width:14px; height:14px;"></i>' +
+          '</a>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // Live Site Preview Modal Controller
+  window.dpOpenSitePreview = function(url, title, repoUrl) {
+    const modal = document.getElementById("sitePreviewModal");
+    const iframe = document.getElementById("sitePreviewIframe");
+    const urlBar = document.getElementById("previewUrlBar");
+    const repoBtn = document.getElementById("previewRepoBtn");
+    const newTabBtn = document.getElementById("previewNewTabBtn");
+
+    if (!modal) return;
+
+    if (urlBar) urlBar.textContent = url || "https://...";
+    if (repoBtn) {
+      repoBtn.href = repoUrl || "https://github.com/4nyakundi";
+      repoBtn.style.display = repoUrl ? "inline-flex" : "none";
+    }
+    if (newTabBtn) {
+      newTabBtn.href = url || "#";
+    }
+
+    if (iframe) {
+      iframe.src = url || "about:blank";
+    }
+
+    window.dpSetPreviewDevice("desktop");
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
 
   window.dpSetPreviewDevice = function(mode) {
     const iframe = document.getElementById("sitePreviewIframe");

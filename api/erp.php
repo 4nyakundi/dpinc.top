@@ -31,7 +31,12 @@ try {
             $inv['items'] = $items;
             $inv['invoiceNo'] = $inv['invoice_no'];
             $inv['clientName'] = $inv['client_name'];
-            $inv['docType'] = $inv['doc_type'];
+            $inv['clientType'] = !empty($inv['client_type']) ? $inv['client_type'] : 'subscriber';
+            $inv['status'] = !empty($inv['status']) ? $inv['status'] : 'unpaid';
+            $inv['phone'] = $inv['phone'] ?? '';
+            $inv['email'] = $inv['email'] ?? '';
+            $inv['location'] = !empty($inv['location']) ? $inv['location'] : 'Mombasa';
+            $inv['docType'] = $inv['doc_type'] ?? 'Invoice';
             $inv['issueDate'] = $inv['issue_date'];
             $inv['dueDate'] = $inv['due_date'];
             $inv['billingPeriod'] = $inv['billing_period'];
