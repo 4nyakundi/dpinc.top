@@ -5264,7 +5264,7 @@
     /* =========================================================================
      13B. WEBSITES & DIGITAL PROJECTS CATALOGUE & LIVE SIMULATOR CONTROLLER
      ========================================================================= */
-  const DP_PROJECTS_CATALOG = [
+  let DP_PROJECTS_CATALOG = [
   {
     "id": "proj-mombasa-mall",
     "name": "Mombasa Mall 2.0 Commercial Platform",
@@ -5712,16 +5712,96 @@
   }
 ];
 
+  const AUTHENTIC_COVERS = [
+    { name: "Mombasa Mall", path: "public/projects/mombasa-mall-hero.jpg" },
+    { name: "Catch Security", path: "public/projects/catch-security-hero.jpg" },
+    { name: "Ace Vet Care", path: "public/projects/ace-vet-hero.jpg" },
+    { name: "eDocs Medical", path: "public/projects/edocs-hero.jpg" },
+    { name: "Modoria Living", path: "public/projects/modoria-hero.jpg" },
+    { name: "Fry Nation POS", path: "public/projects/frynation-hero.jpg" },
+    { name: "R3 Realtors", path: "public/projects/r3realtors-hero.jpg" },
+    { name: "Star Lash", path: "public/projects/starlash-hero.jpg" },
+    { name: "Tudor Carpet", path: "public/projects/tudor-hero.webp" },
+    { name: "6AM Kenya", path: "public/projects/6amkenya-hero.jpg" },
+    { name: "Azurite Rental", path: "public/projects/azurite-hero.jpg" },
+    { name: "Art By Oture", path: "public/projects/artbyoture-hero.jpg" }
+  ];
+
+  const AUTHENTIC_LOGOS = [
+    { name: "Mombasa Mall", path: "public/projects/mombasa-mall-logo.png" },
+    { name: "Catch Security", path: "public/projects/catch-security-logo.jpg" },
+    { name: "Ace Vet Care", path: "public/projects/ace-vet-logo.png" },
+    { name: "Parking LPR", path: "public/projects/parking-logo.png" },
+    { name: "Paws & Hooves", path: "public/projects/paws-hooves-logo.png" },
+    { name: "Modoria", path: "public/projects/modoria-logo.png" },
+    { name: "Fry Nation", path: "public/projects/frynation-logo.jpg" },
+    { name: "Art By Oture", path: "public/projects/artbyoture-logo.png" },
+    { name: "Play-On", path: "public/projects/playon-logo.png" },
+    { name: "Star Lash", path: "public/projects/starlash-logo.jpg" },
+    { name: "Data Port", path: "public/dp-logo.png" }
+  ];
+
+  let currentWebVisFilter = "all"; // "all" | "visible" | "hidden"
   let currentWebCatFilter = "all";
   let currentWebSearchTerm = "";
   let currentActiveStageProjectId = "proj-mombasa-mall";
 
+  async function loadProjectsFromApi() {
+    try {
+      const endpoints = ["api/projects.php", "/api/projects"];
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
+              DP_PROJECTS_CATALOG = data.projects;
+              try {
+                localStorage.setItem("DP_PORTFOLIO_PROJECTS", JSON.stringify(DP_PROJECTS_CATALOG));
+              } catch (_) {}
+              renderWebsitesCatalog();
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+    } catch (e) {
+      console.warn("Portfolio API load notice:", e);
+    }
+
+    // Fallback to localStorage cache
+    try {
+      const cached = localStorage.getItem("DP_PORTFOLIO_PROJECTS");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          DP_PROJECTS_CATALOG = parsed;
+          renderWebsitesCatalog();
+        }
+      }
+    } catch (_) {}
+  }
+
   function initWebsitesCatalog() {
-    const filterGroup = document.getElementById("websitesCategoryFilterGroup");
-    if (filterGroup) {
-      filterGroup.querySelectorAll(".cal-filter-pill").forEach(pill => {
+    // 1. Visibility Filter Group
+    const visGroup = document.getElementById("websitesVisibilityFilterGroup");
+    if (visGroup) {
+      visGroup.querySelectorAll(".cal-filter-pill").forEach(pill => {
         pill.addEventListener("click", () => {
-          filterGroup.querySelectorAll(".cal-filter-pill").forEach(p => p.classList.remove("active"));
+          visGroup.querySelectorAll(".cal-filter-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          currentWebVisFilter = pill.getAttribute("data-web-vis") || "all";
+          renderWebsitesCatalog();
+        });
+      });
+    }
+
+    // 2. Category Filter Group
+    const catGroup = document.getElementById("websitesCategoryFilterGroup");
+    if (catGroup) {
+      catGroup.querySelectorAll(".cal-filter-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          catGroup.querySelectorAll(".cal-filter-pill").forEach(p => p.classList.remove("active"));
           pill.classList.add("active");
           currentWebCatFilter = pill.getAttribute("data-web-cat") || "all";
           renderWebsitesCatalog();
@@ -5729,6 +5809,7 @@
       });
     }
 
+    // 3. Search Input
     const searchInput = document.getElementById("websitesSearchInput");
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
@@ -5737,25 +5818,336 @@
       });
     }
 
-    // Initialize in-page live simulator with primary project
+    // 4. Setup Modal Presets & Form
+    initProjectModalPresets();
+    setupEditProjectForm();
+
+    // 5. Load latest live data from database
+    loadProjectsFromApi();
+
+    // 6. Initialize in-page live simulator with primary project
     if (DP_PROJECTS_CATALOG.length > 0) {
       window.dpLoadProjectIntoInPageStage(DP_PROJECTS_CATALOG[0].id);
     }
   }
 
+  function initProjectModalPresets() {
+    const coverContainer = document.getElementById("coverPresetPickerContainer");
+    if (coverContainer) {
+      coverContainer.innerHTML = AUTHENTIC_COVERS.map(c => {
+        return '<button type="button" onclick="window.dpSelectPresetHero(\'' + c.path + '\')" ' +
+          'style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:3px; padding:3px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; cursor:pointer; transition:all 0.15s ease;" ' +
+          'title="Set cover to ' + c.name + '">' +
+          '<img src="' + c.path + '" alt="" style="width:58px; height:34px; object-fit:cover; border-radius:4px;" onerror="this.src=\'public/dp-logo.png\'">' +
+          '<span style="font-size:0.65rem; color:var(--text-muted); max-width:60px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + c.name + '</span>' +
+        '</button>';
+      }).join("");
+    }
+
+    const logoContainer = document.getElementById("logoPresetPickerContainer");
+    if (logoContainer) {
+      logoContainer.innerHTML = AUTHENTIC_LOGOS.map(l => {
+        return '<button type="button" onclick="window.dpSelectPresetLogo(\'' + l.path + '\')" ' +
+          'style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:3px; padding:4px 6px; background:#FFFFFF; border:1px solid var(--border-color); border-radius:6px; cursor:pointer; transition:all 0.15s ease;" ' +
+          'title="Set logo to ' + l.name + '">' +
+          '<img src="' + l.path + '" alt="" style="width:28px; height:28px; object-fit:contain;" onerror="this.src=\'public/dp-logo.png\'">' +
+          '<span style="font-size:0.65rem; color:#0F172A; max-width:55px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;">' + l.name + '</span>' +
+        '</button>';
+      }).join("");
+    }
+
+    // Sync color picker with text input
+    const colorPicker = document.getElementById("editProjBadgeColor");
+    const colorText = document.getElementById("editProjBadgeColorText");
+    if (colorPicker && colorText) {
+      colorPicker.addEventListener("input", (e) => { colorText.value = e.target.value; });
+      colorText.addEventListener("input", (e) => { colorPicker.value = e.target.value; });
+    }
+  }
+
+  window.dpSelectPresetHero = function(path) {
+    const input = document.getElementById("editProjHero");
+    const preview = document.getElementById("editProjHeroPreview");
+    if (input) input.value = path;
+    if (preview) preview.src = path;
+  };
+
+  window.dpSelectPresetLogo = function(path) {
+    const input = document.getElementById("editProjLogo");
+    const preview = document.getElementById("editProjLogoPreview");
+    if (input) input.value = path;
+    if (preview) preview.src = path;
+  };
+
+  function setupEditProjectForm() {
+    const form = document.getElementById("editProjectForm");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById("editProjId").value.trim() || ("proj-" + Date.now());
+      const name = document.getElementById("editProjName").value.trim();
+      const category = document.getElementById("editProjCategory").value;
+      const categoryLabel = document.getElementById("editProjCategoryLabel").value.trim() || "Web Application";
+      const liveUrl = document.getElementById("editProjLiveUrl").value.trim();
+      const localUrl = document.getElementById("editProjLocalUrl").value.trim() || liveUrl;
+      const repo = document.getElementById("editProjRepo").value.trim();
+      const repoUrl = document.getElementById("editProjRepoUrl").value.trim();
+      const hero = document.getElementById("editProjHero").value.trim() || "public/projects/mombasa-mall-hero.jpg";
+      const logo = document.getElementById("editProjLogo").value.trim() || "public/projects/mombasa-mall-logo.png";
+      const badge = document.getElementById("editProjBadge").value.trim() || "Live Project";
+      const badgeColor = document.getElementById("editProjBadgeColor").value || "#10b981";
+      const desc = document.getElementById("editProjDesc").value.trim();
+      const tagsRaw = document.getElementById("editProjTags").value.trim();
+      const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
+      const isVisible = document.getElementById("editProjVisible").checked;
+
+      const projectData = {
+        id,
+        name,
+        category,
+        categoryLabel,
+        liveUrl,
+        localUrl,
+        repo,
+        repoUrl,
+        hero,
+        logo,
+        badge,
+        badgeColor,
+        desc,
+        tags,
+        features: [
+          "Responsive multi-device layouts",
+          "Production-ready backend API",
+          "Integrated database persistence"
+        ],
+        isVisible,
+        isFeatured: true
+      };
+
+      // Check if existing in memory
+      const existingIdx = DP_PROJECTS_CATALOG.findIndex(p => p.id === id);
+      if (existingIdx >= 0) {
+        DP_PROJECTS_CATALOG[existingIdx] = Object.assign({}, DP_PROJECTS_CATALOG[existingIdx], projectData);
+      } else {
+        DP_PROJECTS_CATALOG.unshift(projectData);
+      }
+
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem("DP_PORTFOLIO_PROJECTS", JSON.stringify(DP_PROJECTS_CATALOG));
+      } catch (_) {}
+
+      // Push to backend MySQL API
+      try {
+        await fetch("api/projects.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(projectData)
+        });
+      } catch (err) {
+        console.warn("Backend project save notice:", err);
+      }
+
+      // Close modal
+      const modal = document.getElementById("editProjectModal");
+      if (modal) modal.style.display = "none";
+
+      // Re-render UI
+      renderWebsitesCatalog();
+
+      // If editing current stage project, reload stage
+      if (currentActiveStageProjectId === id) {
+        window.dpLoadProjectIntoInPageStage(id);
+      }
+
+      showToast("Portfolio project '" + name + "' saved successfully!");
+    });
+  }
+
+  window.dpOpenCreateProject = function() {
+    const modal = document.getElementById("editProjectModal");
+    const form = document.getElementById("editProjectForm");
+    if (!modal || !form) return;
+
+    form.reset();
+    document.getElementById("editProjId").value = "proj-" + Date.now();
+    document.getElementById("editProjectModalTitle").textContent = "Add New Portfolio Link & Project";
+    document.getElementById("editProjCategory").value = "custom";
+    document.getElementById("editProjCategoryLabel").value = "Web Application";
+    document.getElementById("editProjBadge").value = "Live Project";
+    document.getElementById("editProjBadgeColor").value = "#10b981";
+    document.getElementById("editProjBadgeColorText").value = "#10b981";
+    document.getElementById("editProjHero").value = "public/projects/mombasa-mall-hero.jpg";
+    document.getElementById("editProjHeroPreview").src = "public/projects/mombasa-mall-hero.jpg";
+    document.getElementById("editProjLogo").value = "public/projects/mombasa-mall-logo.png";
+    document.getElementById("editProjLogoPreview").src = "public/projects/mombasa-mall-logo.png";
+    document.getElementById("editProjVisible").checked = true;
+
+    modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpOpenEditProject = function(projectId) {
+    const project = DP_PROJECTS_CATALOG.find(p => p.id === projectId);
+    if (!project) return;
+
+    const modal = document.getElementById("editProjectModal");
+    if (!modal) return;
+
+    document.getElementById("editProjId").value = project.id || "";
+    document.getElementById("editProjectModalTitle").textContent = "Edit Project: " + project.name;
+    document.getElementById("editProjName").value = project.name || "";
+    document.getElementById("editProjCategory").value = project.category || "custom";
+    document.getElementById("editProjCategoryLabel").value = project.categoryLabel || "Web Development";
+    document.getElementById("editProjLiveUrl").value = project.liveUrl || "";
+    document.getElementById("editProjLocalUrl").value = project.localUrl || "";
+    document.getElementById("editProjRepo").value = project.repo || "";
+    document.getElementById("editProjRepoUrl").value = project.repoUrl || "";
+    
+    const heroPath = project.hero || "public/projects/mombasa-mall-hero.jpg";
+    document.getElementById("editProjHero").value = heroPath;
+    document.getElementById("editProjHeroPreview").src = heroPath;
+
+    const logoPath = project.logo || "public/projects/mombasa-mall-logo.png";
+    document.getElementById("editProjLogo").value = logoPath;
+    document.getElementById("editProjLogoPreview").src = logoPath;
+
+    document.getElementById("editProjBadge").value = project.badge || "Live Project";
+    const badgeCol = project.badgeColor || "#10b981";
+    document.getElementById("editProjBadgeColor").value = badgeCol;
+    document.getElementById("editProjBadgeColorText").value = badgeCol;
+
+    document.getElementById("editProjDesc").value = project.desc || "";
+    document.getElementById("editProjTags").value = Array.isArray(project.tags) ? project.tags.join(", ") : "";
+    document.getElementById("editProjVisible").checked = (project.isVisible !== false);
+
+    modal.style.display = "flex";
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpEditCurrentStageProject = function() {
+    if (currentActiveStageProjectId) {
+      window.dpOpenEditProject(currentActiveStageProjectId);
+    }
+  };
+
+  window.dpToggleProjectVisibility = async function(projectId, event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    const project = DP_PROJECTS_CATALOG.find(p => p.id === projectId);
+    if (!project) return;
+
+    // Invert visibility
+    project.isVisible = (project.isVisible === false) ? true : false;
+
+    // Save to localStorage
+    try {
+      localStorage.setItem("DP_PORTFOLIO_PROJECTS", JSON.stringify(DP_PROJECTS_CATALOG));
+    } catch (_) {}
+
+    // Send PATCH to backend API
+    try {
+      await fetch("api/projects.php", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: projectId, isVisible: project.isVisible })
+      });
+    } catch (e) {
+      console.warn("Visibility sync notice:", e);
+    }
+
+    renderWebsitesCatalog();
+    showToast(project.name + " is now " + (project.isVisible ? "Visible on Portfolio" : "Hidden from Portfolio"));
+  };
+
+  window.dpSelectAllProjectsForPortfolio = async function(makeVisible) {
+    DP_PROJECTS_CATALOG.forEach(p => { p.isVisible = makeVisible; });
+    try {
+      localStorage.setItem("DP_PORTFOLIO_PROJECTS", JSON.stringify(DP_PROJECTS_CATALOG));
+    } catch (_) {}
+
+    renderWebsitesCatalog();
+
+    // Broadcast patch updates asynchronously
+    for (const p of DP_PROJECTS_CATALOG) {
+      fetch("api/projects.php", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id, isVisible: makeVisible })
+      }).catch(() => {});
+    }
+
+    showToast(makeVisible ? "All 16 systems enabled for portfolio view!" : "All systems set to draft/hidden from portfolio.");
+  };
+
+  window.dpDeleteProject = async function(projectId, event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    const project = DP_PROJECTS_CATALOG.find(p => p.id === projectId);
+    if (!project) return;
+
+    if (!confirm("Are you sure you want to delete '" + project.name + "' from your portfolio and websites catalogue?")) {
+      return;
+    }
+
+    DP_PROJECTS_CATALOG = DP_PROJECTS_CATALOG.filter(p => p.id !== projectId);
+    try {
+      localStorage.setItem("DP_PORTFOLIO_PROJECTS", JSON.stringify(DP_PROJECTS_CATALOG));
+    } catch (_) {}
+
+    try {
+      await fetch("api/projects.php?id=" + encodeURIComponent(projectId), {
+        method: "DELETE"
+      });
+    } catch (e) {
+      console.warn("Delete API notice:", e);
+    }
+
+    renderWebsitesCatalog();
+    showToast("Project '" + project.name + "' removed.");
+  };
+
   function renderWebsitesCatalog() {
     const grid = document.getElementById("websitesCatalogGrid");
     const pillsContainer = document.getElementById("inPageQuickSwitchPills");
+
+    // Update Counts on Badges and Filter Pills
+    const totalCount = DP_PROJECTS_CATALOG.length;
+    const visibleCount = DP_PROJECTS_CATALOG.filter(p => p.isVisible !== false).length;
+    const hiddenCount = totalCount - visibleCount;
+
+    const elTotal = document.getElementById("pillWebCountAll");
+    const elVis = document.getElementById("pillWebCountVisible");
+    const elHid = document.getElementById("pillWebCountHidden");
+    const elDashLive = document.getElementById("dashPortfolioLiveCount");
+    const elDashSel = document.getElementById("dashPortfolioSelectedCount");
+
+    if (elTotal) elTotal.textContent = totalCount;
+    if (elVis) elVis.textContent = visibleCount;
+    if (elHid) elHid.textContent = hiddenCount;
+    if (elDashLive) elDashLive.textContent = totalCount + " Live Deployments";
+    if (elDashSel) elDashSel.textContent = visibleCount + " Selected for Portfolio";
 
     // 1. Render Quick Switch Pills underneath stage
     if (pillsContainer) {
       pillsContainer.innerHTML = DP_PROJECTS_CATALOG.map(p => {
         const isActive = (p.id === currentActiveStageProjectId);
+        const isSelected = (p.isVisible !== false);
         return '<button type="button" class="btn btn-sm" onclick="window.dpLoadProjectIntoInPageStage(\'' + p.id + '\')" ' +
           'style="padding:0.35rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s ease; ' +
           (isActive ? 'background:var(--lime); color:#000; border:1px solid var(--lime); box-shadow:0 2px 8px rgba(92,148,0,0.3);' : 'background:var(--bg-card); color:var(--text-secondary); border:1px solid var(--border-color);') + '">' +
           '<img src="' + p.logo + '" alt="" style="width:14px; height:14px; object-fit:contain; border-radius:3px;" onerror="this.style.display=\'none\'">' +
           escapeHtml(p.name.split(" ")[0] + " " + (p.name.split(" ")[1] || "")) +
+          (!isSelected ? '<span style="width:6px; height:6px; border-radius:50%; background:#ef4444; display:inline-block;" title="Hidden from portfolio"></span>' : '') +
         '</button>';
       }).join("");
     }
@@ -5764,7 +6156,15 @@
 
     // 2. Filter Projects for the Grid
     const filtered = DP_PROJECTS_CATALOG.filter(p => {
+      // Visibility Filter
+      const isVisible = (p.isVisible !== false);
+      if (currentWebVisFilter === "visible" && !isVisible) return false;
+      if (currentWebVisFilter === "hidden" && isVisible) return false;
+
+      // Category Filter
       if (currentWebCatFilter !== "all" && p.category !== currentWebCatFilter) return false;
+
+      // Search Term
       if (currentWebSearchTerm) {
         const query = currentWebSearchTerm;
         const matchesName = (p.name || "").toLowerCase().includes(query);
@@ -5780,7 +6180,7 @@
       grid.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:3.5rem 1.5rem; color:var(--text-muted);">' +
         '<i data-lucide="search-x" style="width:38px; height:38px; opacity:0.5; margin-bottom:0.75rem;"></i>' +
         '<h4 style="font-weight:800; color:var(--text-primary); margin-bottom:0.35rem;">No Matching Deployments</h4>' +
-        '<p style="font-size:0.875rem;">Try another keyword or select "All Projects (16)" to view all live systems.</p>' +
+        '<p style="font-size:0.875rem;">Try another keyword or select "All Systems" to view all live projects.</p>' +
         '</div>';
       if (window.lucide) window.lucide.createIcons();
       return;
@@ -5788,6 +6188,7 @@
 
     grid.innerHTML = filtered.map(p => {
       const isCurrentStage = (p.id === currentActiveStageProjectId);
+      const isVisible = (p.isVisible !== false);
       const tagsHtml = (p.tags || []).map(t => '<span class="tag" style="font-size:0.72rem; padding:2px 7px; border-radius:6px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-secondary); font-weight:600;">' + escapeHtml(t) + '</span>').join(" ");
       const featuresHtml = (p.features || []).map(f => '<li style="font-size:0.78rem; color:var(--text-muted); margin-bottom:3px; display:flex; align-items:center; gap:6px;"><i data-lucide="check" style="width:11px; height:11px; color:var(--lime); flex-shrink:0;"></i> ' + escapeHtml(f) + '</li>').join("");
 
@@ -5810,16 +6211,31 @@
             '</div>' +
           '</div>' +
 
-          '<span class="badge" style="position:absolute; top:10px; right:10px; font-size:0.68rem; font-weight:700; background:rgba(15,23,42,0.75); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '60; backdrop-filter:blur(4px);">' +
-            escapeHtml(p.badge) +
-          '</span>' +
+          // Top Badges: Status Badge + Portfolio Visibility Pill
+          '<div style="position:absolute; top:10px; right:10px; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">' +
+            '<span class="badge" style="font-size:0.68rem; font-weight:700; background:rgba(15,23,42,0.85); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '60; backdrop-filter:blur(4px);">' +
+              escapeHtml(p.badge) +
+            '</span>' +
+            '<button type="button" onclick="window.dpToggleProjectVisibility(\'' + p.id + '\', event)" ' +
+              'style="border:none; cursor:pointer; padding:2px 8px; border-radius:12px; font-size:0.68rem; font-weight:800; display:inline-flex; align-items:center; gap:4px; backdrop-filter:blur(4px); transition:all 0.15s ease; ' +
+              (isVisible ? 'background:rgba(34,197,94,0.9); color:#FFFFFF;' : 'background:rgba(239,68,68,0.85); color:#FFFFFF;') + '" ' +
+              'title="Click to toggle whether this project is displayed on public portfolio.html">' +
+              (isVisible ? '<i data-lucide="check" style="width:10px; height:10px;"></i> On Portfolio' : '<i data-lucide="eye-off" style="width:10px; height:10px;"></i> Hidden') +
+            '</button>' +
+          '</div>' +
         '</div>' +
 
         // Title & GitHub link
-        '<h3 style="font-size:1.125rem; font-weight:800; color:var(--text-primary); margin:0 0 0.3rem 0; line-height:1.3;">' + escapeHtml(p.name) + '</h3>' +
-        '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:0.75rem; color:var(--lime); font-weight:700; margin-bottom:0.75rem; text-decoration:none;">' +
-          '<i data-lucide="github" style="width:13px; height:13px;"></i> ' + escapeHtml(p.repo) +
-        '</a>' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; margin-bottom:0.25rem;">' +
+          '<h3 style="font-size:1.125rem; font-weight:800; color:var(--text-primary); margin:0; line-height:1.3; flex:1;">' + escapeHtml(p.name) + '</h3>' +
+          '<button type="button" class="btn btn-secondary btn-sm" onclick="window.dpOpenEditProject(\'' + p.id + '\')" title="Edit Cover Picture, Logo & Links" style="padding:0.25rem 0.5rem; font-size:0.75rem; flex-shrink:0;">' +
+            '<i data-lucide="edit-3" style="width:12px; height:12px;"></i> Edit' +
+          '</button>' +
+        '</div>' +
+
+        (p.repoUrl ? '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:0.75rem; color:var(--lime); font-weight:700; margin-bottom:0.75rem; text-decoration:none;">' +
+          '<i data-lucide="github" style="width:13px; height:13px;"></i> ' + escapeHtml(p.repo || p.repoUrl.replace('https://github.com/', '')) +
+        '</a>' : '<div style="margin-bottom:0.5rem;"></div>') +
 
         '<p style="font-size:0.835rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.85rem; flex:1;">' +
           escapeHtml(p.desc) +
@@ -5833,20 +6249,23 @@
           tagsHtml +
         '</div>' +
 
-        // Action Buttons: Operate in Stage + Full Modal + External Link
+        // Action Buttons: Operate in Stage + Edit + Delete + External Link
         '<div style="display:flex; gap:0.45rem; margin-top:auto; padding-top:0.75rem; border-top:1px solid var(--border-color); flex-wrap:wrap;">' +
           '<button type="button" class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.65rem; font-size:0.8rem; font-weight:700;" onclick="window.dpLoadProjectIntoInPageStage(\'' + p.id + '\', true)">' +
             '<i data-lucide="play" style="width:13px; height:13px;"></i> Operate Live' +
           '</button>' +
+          '<button type="button" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Edit Cover, Logo & Links" onclick="window.dpOpenEditProject(\'' + p.id + '\')">' +
+            '<i data-lucide="image" style="width:13px; height:13px;"></i>' +
+          '</button>' +
           '<button type="button" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Full Screen Modal Preview" onclick="window.dpOpenSitePreview(\'' + escapeHtml(p.localUrl || p.liveUrl) + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.repoUrl) + '\')">' +
             '<i data-lucide="maximize-2" style="width:13px; height:13px;"></i>' +
           '</button>' +
-          '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="GitHub Source Code">' +
-            '<i data-lucide="github" style="width:13px; height:13px;"></i>' +
-          '</a>' +
-          '<a href="' + escapeHtml(p.localUrl || p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Open in New Tab">' +
+          (p.liveUrl ? '<a href="' + escapeHtml(p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Open Live Site">' +
             '<i data-lucide="external-link" style="width:13px; height:13px;"></i>' +
-          '</a>' +
+          '</a>' : '') +
+          '<button type="button" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem; color:#ef4444; border-color:rgba(239,68,68,0.3);" title="Delete Project" onclick="window.dpDeleteProject(\'' + p.id + '\', event)">' +
+            '<i data-lucide="trash-2" style="width:13px; height:13px;"></i>' +
+          '</button>' +
         '</div>' +
       '</div>';
     }).join("");

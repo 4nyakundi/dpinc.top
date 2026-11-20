@@ -260,7 +260,7 @@
           </div>
         </div>
 
-        <div class="portfolio-grid">
+        <div class="portfolio-grid" id="portfolioProjectsGrid">
 
           <!-- Project: Mombasa Mall 2.0 Commercial Platform -->
           <div class="glass-panel project-card" data-category="live-sites">
@@ -1217,7 +1217,7 @@
   <script src="js/main.js"></script>
 
   <script>
-    const PORT_PROJECTS = [
+    let PORT_PROJECTS = [
   {
     "id": "proj-mombasa-mall",
     "name": "Mombasa Mall 2.0 Commercial Platform",
@@ -1666,10 +1666,118 @@
 ];
     let activePortStageId = "proj-mombasa-mall";
 
+    // Sync custom selections, covers, logos and links from API / localStorage
+    async function syncDynamicPortfolio() {
+      try {
+        const endpoints = ["api/projects.php", "/api/projects"];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
+                PORT_PROJECTS = data.projects;
+                renderDynamicPortfolioGrid();
+                initPortStage();
+                return;
+              }
+            }
+          } catch (_) {}
+        }
+      } catch (e) {
+        console.warn("Portfolio sync notice:", e);
+      }
+
+      // Check localStorage cache
+      try {
+        const cached = localStorage.getItem("DP_PORTFOLIO_PROJECTS");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            PORT_PROJECTS = parsed;
+            renderDynamicPortfolioGrid();
+            initPortStage();
+          }
+        }
+      } catch (_) {}
+    }
+
+    // Render only the projects selected by the user in the dashboard
+    function renderDynamicPortfolioGrid() {
+      const grid = document.getElementById("portfolioProjectsGrid");
+      if (!grid) return;
+
+      const visibleProjects = PORT_PROJECTS.filter(p => p.isVisible !== false);
+      if (visibleProjects.length === 0) return;
+
+      grid.innerHTML = visibleProjects.map(p => {
+        const targetUrl = p.localUrl || p.liveUrl;
+        const tagsHtml = (p.tags || []).map(t => '<span class="tag">#' + escapeHtml(t.replace('#','')) + '</span>').join(" ");
+
+        return '<div class="glass-panel project-card" data-category="' + escapeHtml(p.category || 'live-sites') + '">' +
+          // Cover Picture Preview Thumb
+          '<div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">' +
+            '<img src="' + p.hero + '" alt="' + escapeHtml(p.name) + '" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src=\'public/projects/modoria-hero.jpg\'">' +
+            '<div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>' +
+            
+            // Brand Logo in bottom-left
+            '<div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">' +
+              '<div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">' +
+                '<img src="' + p.logo + '" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display=\'none\'">' +
+              '</div>' +
+              '<span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">' +
+                escapeHtml(p.categoryLabel || 'Web Development') +
+              '</span>' +
+            '</div>' +
+
+            '<span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '60; backdrop-filter:blur(4px);">' +
+              '<i data-lucide="globe" style="width:11px; height:11px;"></i> ' + escapeHtml(p.badge || 'Live Project') +
+            '</span>' +
+          '</div>' +
+
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">' +
+            '<span class="project-category" style="color:var(--lime);">' + escapeHtml(p.categoryLabel || 'Web Development') + '</span>' +
+            (p.repoUrl ? '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">' +
+              '<i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> ' + escapeHtml(p.repo || 'Repository') +
+            '</a>' : '') +
+          '</div>' +
+
+          '<h3 class="project-title" style="margin-bottom:0.4rem;">' + escapeHtml(p.name) + '</h3>' +
+          '<p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">' +
+            escapeHtml(p.desc || '') +
+          '</p>' +
+
+          '<div class="tag-list" style="margin-bottom:1.25rem;">' +
+            tagsHtml +
+          '</div>' +
+
+          '<div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">' +
+            '<button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage(\'' + p.id + '\', true)">' +
+              '<i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview(\'' + escapeHtml(targetUrl) + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.repoUrl) + '\')">' +
+              '<i data-lucide="eye" style="width:14px; height:14px;"></i>' +
+            '</button>' +
+            (p.repoUrl ? '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">' +
+              '<i data-lucide="github" style="width:14px; height:14px;"></i> Code' +
+            '</a>' : '') +
+            (p.liveUrl ? '<a href="' + escapeHtml(p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="Open Live Site">' +
+              '<i data-lucide="external-link" style="width:14px; height:14px;"></i>' +
+            '</a>' : '') +
+          '</div>' +
+        '</div>';
+      }).join("");
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
     function initPortStage() {
       const pillsContainer = document.getElementById("portQuickSwitchPills");
+      const visibleProjects = PORT_PROJECTS.filter(p => p.isVisible !== false);
+      const displayList = visibleProjects.length > 0 ? visibleProjects : PORT_PROJECTS;
+
       if (pillsContainer) {
-        pillsContainer.innerHTML = PORT_PROJECTS.map(p => {
+        pillsContainer.innerHTML = displayList.map(p => {
           const isActive = (p.id === activePortStageId);
           return '<button type="button" class="btn btn-sm" onclick="window.dpLoadPortStage(\'' + p.id + '\')" ' +
             'style="padding:0.35rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s ease; ' +
@@ -1680,8 +1788,42 @@
         }).join("");
       }
 
-      window.dpLoadPortStage(PORT_PROJECTS[0].id);
+      if (displayList.length > 0) {
+        const targetId = displayList.some(p => p.id === activePortStageId) ? activePortStageId : displayList[0].id;
+        window.dpLoadPortStage(targetId);
+      }
     }
+
+    // Helper escapeHtml
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Storage event listener for live multi-tab synchronization
+    window.addEventListener("storage", (e) => {
+      if (e.key === "DP_PORTFOLIO_PROJECTS" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            PORT_PROJECTS = parsed;
+            renderDynamicPortfolioGrid();
+            initPortStage();
+          }
+        } catch (_) {}
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      syncDynamicPortfolio();
+      initPortStage();
+      if (window.lucide) window.lucide.createIcons();
+    });
 
     window.dpLoadPortStage = function(projectId, scrollToStage = false) {
       const project = PORT_PROJECTS.find(p => p.id === projectId);
@@ -1765,10 +1907,7 @@
       }
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initPortStage();
-      if (window.lucide) window.lucide.createIcons();
-    });
+    // Stage initialization is handled by syncDynamicPortfolio above.
   </script>
 
 </body>

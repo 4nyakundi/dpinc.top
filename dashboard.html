@@ -177,7 +177,7 @@
           </button>
           <button class="dash-side-nav-btn" data-tab="websitesTab">
             <i data-lucide="globe" style="width:18px; height:18px;"></i>
-            <span class="nav-text">Websites & Projects</span>
+            <span class="nav-text">Portfolio & Websites</span>
             <span class="nav-badge" style="background:var(--lime); color:#000; font-weight:800;">16</span>
           </button>
           <button class="dash-side-nav-btn" data-tab="vaultTab">
@@ -1118,24 +1118,29 @@
           <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem); margin-bottom:1.5rem; border-left:4px solid var(--lime);">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
               <div>
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap;">
                   <span class="badge" style="background:rgba(92,148,0,0.15); color:var(--lime); border:1px solid rgba(92,148,0,0.3); font-weight:800;">
-                    <i data-lucide="folder-git-2" style="width:13px; height:13px; display:inline;"></i> Verified GitHub Deployments
+                    <i data-lucide="folder-git-2" style="width:13px; height:13px; display:inline;"></i> Portfolio & Links Management Studio
                   </span>
-                  <span class="badge" style="font-size:0.72rem; font-weight:700;">16 Real Projects Live</span>
+                  <span class="badge" id="dashPortfolioLiveCount" style="font-size:0.72rem; font-weight:700; background:rgba(34,197,94,0.12); color:#15803d; border:1px solid #22c55e;">
+                    16 Live Deployments
+                  </span>
+                  <span class="badge" id="dashPortfolioSelectedCount" style="font-size:0.72rem; font-weight:700; background:rgba(59,130,246,0.1); color:#3b82f6; border:1px solid rgba(59,130,246,0.3);">
+                    16 Selected for Portfolio
+                  </span>
                 </div>
-                <h2 style="font-size:1.6rem; font-weight:800; margin:0; color:var(--text-primary);">Websites & Digital Systems Catalogue</h2>
-                <p class="text-muted" style="font-size:0.875rem; margin-top:0.35rem; max-width:760px; line-height:1.5;">
-                  Browse and test live client websites, full-stack portals, commercial retail platforms, IoT parking gate systems, and veterinary medical applications engineered by Emmanuel Nyakundi and the Data Port tech team.
+                <h2 style="font-size:1.6rem; font-weight:800; margin:0; color:var(--text-primary);">Portfolio Links & Website Showcase Manager</h2>
+                <p class="text-muted" style="font-size:0.875rem; margin-top:0.35rem; max-width:780px; line-height:1.5;">
+                  Manage all client website links, customize their cover pictures and brand logos, select which systems to display on your public portfolio, and operate them live in the embedded interactive simulator.
                 </p>
               </div>
 
               <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
-                <a href="https://github.com/4nyakundi" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
-                  <i data-lucide="github" style="width:15px; height:15px;"></i> github.com/4nyakundi
-                </a>
-                <a href="https://github.com/shimix-del" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
-                  <i data-lucide="github" style="width:15px; height:15px;"></i> github.com/shimix-del
+                <button type="button" class="btn btn-primary" onclick="window.dpOpenCreateProject()" style="display:flex; align-items:center; gap:0.45rem; font-weight:700; padding:0.55rem 1rem;">
+                  <i data-lucide="plus-circle" style="width:16px; height:16px;"></i> Add Portfolio Link
+                </button>
+                <a href="portfolio.html" target="_blank" rel="noopener" class="btn btn-secondary" style="display:flex; align-items:center; gap:0.45rem; font-weight:600; padding:0.55rem 0.9rem;" title="View Live Public Portfolio">
+                  <i data-lucide="external-link" style="width:15px; height:15px;"></i> View Portfolio Site
                 </a>
               </div>
             </div>
@@ -1143,14 +1148,39 @@
 
           <!-- Quick Filters & Search Bar -->
           <div class="glass-panel" style="padding:1.25rem; margin-bottom:1.5rem;">
+            <!-- Row 1: Visibility Selector Tabs -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid var(--border-color);">
+              <div class="calendar-legend" id="websitesVisibilityFilterGroup" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="cal-filter-pill active" data-web-vis="all" id="pillBtnWebAll">
+                  All Systems (<span id="pillWebCountAll">16</span>)
+                </button>
+                <button class="cal-filter-pill" data-web-vis="visible" id="pillBtnWebVisible" style="border-color:rgba(34,197,94,0.3);">
+                  <span class="legend-dot dot-paid" style="background:#22c55e;"></span> Selected on Portfolio (<span id="pillWebCountVisible">16</span>)
+                </button>
+                <button class="cal-filter-pill" data-web-vis="hidden" id="pillBtnWebHidden" style="border-color:rgba(239,68,68,0.3);">
+                  <span class="legend-dot dot-overdue" style="background:#ef4444;"></span> Hidden / Drafts (<span id="pillWebCountHidden">0</span>)
+                </button>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpSelectAllProjectsForPortfolio(true)" title="Select all projects for portfolio view" style="font-size:0.75rem; padding:0.35rem 0.65rem;">
+                  <i data-lucide="check-square" style="width:13px; height:13px;"></i> Select All
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpSelectAllProjectsForPortfolio(false)" title="Hide all from portfolio" style="font-size:0.75rem; padding:0.35rem 0.65rem;">
+                  <i data-lucide="square" style="width:13px; height:13px;"></i> Deselect All
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 2: Category Filter & Search -->
             <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
               <div class="calendar-legend" id="websitesCategoryFilterGroup" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
-                <button class="cal-filter-pill active" data-web-cat="all">All Projects (16)</button>
-                <button class="cal-filter-pill" data-web-cat="ecommerce">E-Commerce & Retail (3)</button>
-                <button class="cal-filter-pill" data-web-cat="enterprise">Enterprise Systems (3)</button>
-                <button class="cal-filter-pill" data-web-cat="security">Security & IoT (2)</button>
-                <button class="cal-filter-pill" data-web-cat="booking">Booking & Health (4)</button>
-                <button class="cal-filter-pill" data-web-cat="creative">Creative & Media (4)</button>
+                <button class="cal-filter-pill active" data-web-cat="all">All Categories</button>
+                <button class="cal-filter-pill" data-web-cat="ecommerce">E-Commerce & Retail</button>
+                <button class="cal-filter-pill" data-web-cat="enterprise">Enterprise Systems</button>
+                <button class="cal-filter-pill" data-web-cat="security">Security & IoT</button>
+                <button class="cal-filter-pill" data-web-cat="booking">Booking & Health</button>
+                <button class="cal-filter-pill" data-web-cat="creative">Creative & Media</button>
               </div>
 
               <div style="min-width:260px; flex:1; max-width:380px;">
@@ -1203,6 +1233,9 @@
 
                 <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpReloadInPageFrame()" title="Reload Frame" style="padding:0.35rem 0.55rem;">
                   <i data-lucide="rotate-cw" style="width:14px; height:14px;"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpEditCurrentStageProject()" title="Edit Cover, Logo & Links" style="padding:0.35rem 0.65rem; font-size:0.78rem; font-weight:700; color:var(--lime); border-color:rgba(92,148,0,0.35);">
+                  <i data-lucide="edit-3" style="width:13px; height:13px;"></i> Edit Media
                 </button>
                 <a id="inPageStageRepoBtn" href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.65rem; font-size:0.78rem;">
                   <i data-lucide="github" style="width:13px; height:13px;"></i> Repo
@@ -2093,6 +2126,191 @@
           <button type="button" class="btn btn-secondary" data-close="vaultAllocationModal">Cancel</button>
           <button type="submit" class="btn btn-primary">
             <i data-lucide="shield-check"></i> Execute Allocation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: EDIT / ADD PORTFOLIO PROJECT & MEDIA (Cover Picture, Logo, Links)
+       ========================================================================= -->
+  <div id="editProjectModal" class="modal-overlay" style="display:none; z-index:1070;">
+    <div class="modal-dialog glass-panel" style="max-width:840px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="position:sticky; top:0; background:var(--bg-card); z-index:10; padding-bottom:1rem; border-bottom:1px solid var(--border-color);">
+        <div>
+          <span class="badge mb-2" style="background:rgba(92,148,0,0.15); color:var(--lime); border:1px solid rgba(92,148,0,0.3);">
+            <i data-lucide="globe" style="width:14px; height:14px;"></i> Portfolio Project & Media Studio
+          </span>
+          <h3 id="editProjectModalTitle" style="font-size:1.35rem; font-weight:800; margin:0;">Edit Portfolio Project & Media</h3>
+        </div>
+        <button class="modal-close-btn" data-close="editProjectModal">&times;</button>
+      </div>
+
+      <form id="editProjectForm" style="margin-top:1.25rem;">
+        <input type="hidden" id="editProjId" value="">
+
+        <!-- Basic Project Information -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Project Name / Platform Title *</label>
+            <input type="text" id="editProjName" class="form-input" required placeholder="e.g. Mombasa Mall 2.0 Commercial Platform">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="editProjCategory" class="form-select">
+              <option value="ecommerce">E-Commerce & Retail</option>
+              <option value="enterprise">Enterprise Systems</option>
+              <option value="security">Security & IoT</option>
+              <option value="booking">Healthcare & Veterinary / Booking</option>
+              <option value="creative">Creative & Media</option>
+              <option value="custom">Custom Web Application</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category Display Label</label>
+            <input type="text" id="editProjCategoryLabel" class="form-input" placeholder="e.g. E-Commerce & Retail">
+          </div>
+        </div>
+
+        <!-- Links Configuration -->
+        <div class="glass-panel" style="padding:1.15rem; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--lime); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; display:flex; align-items:center; gap:5px;">
+            <i data-lucide="link" style="width:14px; height:14px;"></i> Project Links & Hosting Endpoints
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label class="form-label">Live Public Website URL</label>
+              <input type="url" id="editProjLiveUrl" class="form-input" placeholder="https://mombasamall.co.ke">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Local Simulator URL / Preview Path</label>
+              <input type="text" id="editProjLocalUrl" class="form-input" placeholder="http://localhost/mombasamall.co.ke/index.html">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">GitHub Repository Short Name</label>
+              <input type="text" id="editProjRepo" class="form-input" placeholder="e.g. 4nyakundi/MOMBASA-MALL">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">GitHub Repository Full URL</label>
+              <input type="url" id="editProjRepoUrl" class="form-input" placeholder="https://github.com/4nyakundi/MOMBASA-MALL">
+            </div>
+          </div>
+        </div>
+
+        <!-- Cover Picture & Hero Image Selection -->
+        <div class="glass-panel" style="padding:1.15rem; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--lime); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; display:flex; align-items:center; gap:5px;">
+            <i data-lucide="image" style="width:14px; height:14px;"></i> Cover Picture (Hero Banner)
+          </div>
+
+          <div style="display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:0.85rem;">
+            <!-- Live Preview of Cover -->
+            <div style="width:180px; height:105px; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); background:#0F172A; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+              <img id="editProjHeroPreview" src="public/projects/mombasa-mall-hero.jpg" alt="Cover Preview" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='public/dp-logo.png'">
+            </div>
+
+            <div style="flex:1; min-width:240px;">
+              <label class="form-label">Cover Image Path or URL</label>
+              <input type="text" id="editProjHero" class="form-input" placeholder="public/projects/mombasa-mall-hero.jpg or https://..." oninput="document.getElementById('editProjHeroPreview').src=this.value">
+              <p class="text-muted" style="font-size:0.75rem; margin-top:4px;">
+                Enter a local asset path (e.g. <code>public/projects/...</code>) or any external image URL.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Authentic Cover Preset Selector -->
+          <div style="margin-top:0.6rem;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.4rem;">
+              Click to select from verified project covers:
+            </div>
+            <div id="coverPresetPickerContainer" style="display:flex; gap:0.45rem; overflow-x:auto; padding-bottom:0.4rem; -webkit-overflow-scrolling:touch;">
+              <!-- Populated dynamically with covers -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Brand Logo Selection -->
+        <div class="glass-panel" style="padding:1.15rem; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--lime); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; display:flex; align-items:center; gap:5px;">
+            <i data-lucide="award" style="width:14px; height:14px;"></i> Brand Logo / Wordmark
+          </div>
+
+          <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-bottom:0.85rem;">
+            <!-- Live Preview of Logo -->
+            <div style="width:64px; height:64px; border-radius:12px; background:#FFFFFF; padding:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border-color);">
+              <img id="editProjLogoPreview" src="public/projects/mombasa-mall-logo.png" alt="Logo Preview" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='public/dp-logo.png'">
+            </div>
+
+            <div style="flex:1; min-width:240px;">
+              <label class="form-label">Logo Image Path or URL</label>
+              <input type="text" id="editProjLogo" class="form-input" placeholder="public/projects/mombasa-mall-logo.png or https://..." oninput="document.getElementById('editProjLogoPreview').src=this.value">
+              <p class="text-muted" style="font-size:0.75rem; margin-top:4px;">
+                Enter a local logo asset (e.g. <code>public/projects/...</code>) or transparent PNG URL.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Authentic Logo Preset Selector -->
+          <div style="margin-top:0.6rem;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.4rem;">
+              Click to select from verified authentic logos:
+            </div>
+            <div id="logoPresetPickerContainer" style="display:flex; gap:0.45rem; overflow-x:auto; padding-bottom:0.4rem; -webkit-overflow-scrolling:touch;">
+              <!-- Populated dynamically with logos -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Badge & Description -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Status Badge Text</label>
+            <input type="text" id="editProjBadge" class="form-input" placeholder="e.g. Active Retail Portal">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Badge Accent Color</label>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <input type="color" id="editProjBadgeColor" class="form-input" value="#10b981" style="width:50px; height:38px; padding:2px; cursor:pointer;">
+              <input type="text" id="editProjBadgeColorText" class="form-input" value="#10b981" placeholder="#10b981" style="flex:1;">
+            </div>
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Project Scope & Description</label>
+            <textarea id="editProjDesc" class="form-input" rows="3" placeholder="Brief technical summary and key deliverables..."></textarea>
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Tech Stack Tags (Comma-Separated)</label>
+            <input type="text" id="editProjTags" class="form-input" placeholder="e.g. PHP, MySQL, JavaScript, E-Commerce, M-Pesa API">
+          </div>
+        </div>
+
+        <!-- Portfolio Selection Toggle -->
+        <div style="display:flex; align-items:center; gap:0.85rem; background:rgba(92,148,0,0.08); padding:1rem 1.25rem; border-radius:var(--radius-md); border:1px solid rgba(92,148,0,0.3); margin-bottom:1.5rem;">
+          <input type="checkbox" id="editProjVisible" style="width:22px; height:22px; accent-color:var(--lime); cursor:pointer;" checked>
+          <div>
+            <label for="editProjVisible" style="font-weight:800; color:var(--text-primary); cursor:pointer; font-size:0.95rem;">
+              Select to View on Public Portfolio (Visible on portfolio.html & main site)
+            </label>
+            <p style="margin:2px 0 0; font-size:0.8rem; color:var(--text-secondary); line-height:1.4;">
+              When checked, this project is published to your live portfolio. When unchecked, it remains in your private dashboard for testing.
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-color); padding-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close="editProjectModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="padding:0.6rem 1.4rem; font-weight:700;">
+            <i data-lucide="check-circle" style="width:16px; height:16px;"></i> Save Portfolio Project
           </button>
         </div>
       </form>

@@ -18,6 +18,12 @@ try {
         $ledger      = $pdo->query("SELECT * FROM ledger_entries ORDER BY date DESC, created_at DESC")->fetchAll();
         $jobCards    = $pdo->query("SELECT * FROM job_cards ORDER BY date DESC, created_at DESC")->fetchAll();
         $users       = $pdo->query("SELECT * FROM authorized_users ORDER BY created_at ASC")->fetchAll();
+        
+        $projects = [];
+        try {
+            $projStmt = $pdo->query("SELECT * FROM portfolio_projects ORDER BY display_order ASC, created_at ASC");
+            $projects = $projStmt->fetchAll();
+        } catch (Exception $e) {}
 
         // Fetch Invoices with Items
         $invStmt = $pdo->query("SELECT * FROM invoices ORDER BY created_at DESC");
@@ -63,6 +69,7 @@ try {
             'jobCards'    => $jobCards,
             'ledger'      => $ledger,
             'users'       => $users,
+            'projects'    => $projects,
             'timestamp'   => date('c')
         ]);
         exit();
@@ -259,7 +266,8 @@ try {
             'jobCard'    => 'job_cards',
             'ledger'     => 'ledger_entries',
             'service'    => 'services',
-            'invoice'    => 'invoices'
+            'invoice'    => 'invoices',
+            'project'    => 'portfolio_projects'
         ];
 
         if (!isset($tableMap[$type])) {
