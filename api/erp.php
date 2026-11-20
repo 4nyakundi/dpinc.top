@@ -17,6 +17,7 @@ try {
         $services    = $pdo->query("SELECT * FROM services WHERE active = 1 ORDER BY price ASC")->fetchAll();
         $ledger      = $pdo->query("SELECT * FROM ledger_entries ORDER BY date DESC, created_at DESC")->fetchAll();
         $jobCards    = $pdo->query("SELECT * FROM job_cards ORDER BY date DESC, created_at DESC")->fetchAll();
+        $users       = $pdo->query("SELECT * FROM authorized_users ORDER BY created_at ASC")->fetchAll();
 
         // Fetch Invoices with Items
         $invStmt = $pdo->query("SELECT * FROM invoices ORDER BY created_at DESC");
@@ -56,6 +57,7 @@ try {
             'invoices'    => $invoices,
             'jobCards'    => $jobCards,
             'ledger'      => $ledger,
+            'users'       => $users,
             'timestamp'   => date('c')
         ]);
         exit();

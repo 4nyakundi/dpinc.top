@@ -343,12 +343,60 @@
           provider.setCustomParameters({ prompt: "select_account" });
           const result = await auth.signInWithPopup(provider);
           if (result && result.user) {
-            localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
-            localStorage.setItem("dp_auth_user", JSON.stringify({ email: result.user.email, name: result.user.displayName }));
-            if (loginGate) loginGate.style.display = "none";
-            if (dashboardApp) dashboardApp.style.display = "block";
-            startMasterERP();
-            showToast(`NOC Access Granted: ${result.user.email}`);
+            const googleEmail = (result.user.email || "").toLowerCase().trim();
+
+            // Enforce Server-Side Authorization Whitelist Check
+            try {
+              const checkRes = await fetch("api/users.php?check_email=" + encodeURIComponent(googleEmail));
+              const checkData = await checkRes.json();
+
+              if (checkData.success && checkData.authorized) {
+                // User is permitted!
+                const authorizedRole = checkData.user.role || "noc_engineer";
+                const authUserData = {
+                  email: googleEmail,
+                  name: checkData.user.name || result.user.displayName || googleEmail,
+                  photoURL: result.user.photoURL,
+                  role: authorizedRole,
+                  permissions: checkData.user
+                };
+                localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+                localStorage.setItem("dp_auth_user", JSON.stringify(authUserData));
+                updateUserProfileUI(authUserData);
+                if (loginGate) loginGate.style.display = "none";
+                if (dashboardApp) dashboardApp.style.display = "block";
+                startMasterERP();
+                showToast(`NOC Access Granted: Welcome ${authUserData.name} (${authorizedRole.toUpperCase()})`);
+              } else {
+                // Access Denied! Email not on whitelist or suspended
+                await auth.signOut();
+                localStorage.removeItem(STORAGE_KEYS.SESSION);
+                localStorage.removeItem("dp_auth_user");
+                if (loginError) {
+                  loginError.style.display = "block";
+                  loginError.innerHTML = `<i data-lucide="shield-alert" style="width:16px; height:16px; display:inline;"></i> <strong>Access Denied:</strong> ${googleEmail} has not been granted permission. Please ask an administrator to authorize your email address.`;
+                  if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+                }
+              }
+            } catch (err) {
+              console.error("Authorization check error:", err);
+              // Fallback check against cached local users
+              const localUsers = (db && db.users) ? db.users : [];
+              const match = localUsers.find(u => (u.email || "").toLowerCase() === googleEmail && u.status === "active" && u.can_login_google);
+              if (match) {
+                localStorage.setItem(STORAGE_KEYS.SESSION, "authenticated");
+                localStorage.setItem("dp_auth_user", JSON.stringify({ email: googleEmail, name: match.name, role: match.role }));
+                if (loginGate) loginGate.style.display = "none";
+                if (dashboardApp) dashboardApp.style.display = "block";
+                startMasterERP();
+              } else {
+                await auth.signOut();
+                if (loginError) {
+                  loginError.style.display = "block";
+                  loginError.textContent = `Access Denied: ${googleEmail} is not authorized for DATA PORT NOC.`;
+                }
+              }
+            }
           }
         } catch (err) {
           console.error("Google Auth Error:", err);
@@ -411,6 +459,340 @@
   /* =========================================================================
      2. MASTER ERP STARTUP & DATA SYNC
      ========================================================================= */
+  async 
+  /* =========================================================================
+     15. AUTHORIZED USERS & TEAM ACCESS CONTROL ENGINE (RBAC / GMAIL WHITELIST)
+     ========================================================================= */
+  let userSearchQuery = "";
+  let userRoleFilterValue = "all";
+
+  function initUsersModule() {
+    const openBtn = document.getElementById("openAddUserModalBtn");
+    if (openBtn) {
+      openBtn.removeEventListener("click", () => openUserModal());
+      openBtn.addEventListener("click", () => openUserModal());
+    }
+
+    const closeBtn = document.getElementById("closeUserModalBtn");
+    if (closeBtn) {
+      closeBtn.removeEventListener("click", closeUserModal);
+      closeBtn.addEventListener("click", closeUserModal);
+    }
+
+    const cancelBtn = document.getElementById("cancelUserModalBtn");
+    if (cancelBtn) {
+      cancelBtn.removeEventListener("click", closeUserModal);
+      cancelBtn.addEventListener("click", closeUserModal);
+    }
+
+    const form = document.getElementById("userForm");
+    if (form) {
+      form.removeEventListener("submit", handleUserFormSubmit);
+      form.addEventListener("submit", handleUserFormSubmit);
+    }
+
+    const searchInput = document.getElementById("userSearchInput");
+    if (searchInput) {
+      searchInput.removeEventListener("input", handleUserSearch);
+      searchInput.addEventListener("input", handleUserSearch);
+    }
+
+    const roleFilter = document.getElementById("userRoleFilter");
+    if (roleFilter) {
+      roleFilter.removeEventListener("change", handleUserRoleFilter);
+      roleFilter.addEventListener("change", handleUserRoleFilter);
+    }
+  }
+
+  function handleUserSearch(e) {
+    userSearchQuery = e.target.value.toLowerCase().trim();
+    renderUsers();
+  }
+
+  function handleUserRoleFilter(e) {
+    userRoleFilterValue = e.target.value;
+    renderUsers();
+  }
+
+  async function loadUsersFromApi() {
+    try {
+      const res = await fetch("api/users.php");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.users)) {
+        if (!db) db = {};
+        db.users = data.users;
+        renderUsers();
+      }
+    } catch (err) {
+      console.warn("Could not load users from api/users.php:", err);
+    }
+  }
+
+  function renderUsers() {
+    const tbody = document.getElementById("authorizedUsersTableBody");
+    const sideCount = document.getElementById("sideUsersCount");
+    const statTotal = document.getElementById("usrStatTotal");
+    const statGoogle = document.getElementById("usrStatGoogle");
+    const statAdmins = document.getElementById("usrStatAdmins");
+
+    const users = (db && db.users) ? db.users : [];
+
+    if (sideCount) sideCount.textContent = users.length;
+    if (statTotal) statTotal.textContent = users.length;
+    if (statGoogle) statGoogle.textContent = users.filter(u => u.can_login_google == 1).length;
+    if (statAdmins) statAdmins.textContent = users.filter(u => u.role === "admin" || u.role === "noc_engineer").length;
+
+    if (!tbody) return;
+
+    // Filter users
+    const filtered = users.filter(u => {
+      if (userRoleFilterValue !== "all" && u.role !== userRoleFilterValue) {
+        return false;
+      }
+      if (userSearchQuery) {
+        const full = `${u.name} ${u.email} ${u.role} ${u.notes || ""}`.toLowerCase();
+        if (!full.includes(userSearchQuery)) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center text-muted" style="padding:2.5rem;">
+            No authorized users found matching your criteria.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    const roleBadges = {
+      admin: '<span class="badge" style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); font-weight:700;">Super Admin</span>',
+      noc_engineer: '<span class="badge" style="background:rgba(138,206,0,0.15); color:var(--lime); border:1px solid rgba(138,206,0,0.3); font-weight:700;">NOC Engineer</span>',
+      billing_agent: '<span class="badge" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3);">Billing & Finance</span>',
+      technician: '<span class="badge" style="background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3);">Field Tech</span>',
+      viewer: '<span class="badge" style="background:rgba(255,255,255,0.06); color:var(--text-secondary);">Observer</span>'
+    };
+
+    tbody.innerHTML = filtered.map(u => {
+      const initials = (u.name || u.email).substring(0, 2).toUpperCase();
+      const isActive = (u.status === "active");
+      const canGoogle = (u.can_login_google == 1);
+
+      const perms = [];
+      if (u.can_access_invoices == 1) perms.push("Billing");
+      if (u.can_access_subscribers == 1) perms.push("Subs");
+      if (u.can_access_ledger == 1) perms.push("Ledger");
+      if (u.can_access_vault == 1) perms.push("Vault");
+      const permsStr = perms.length ? perms.join(" • ") : "None";
+
+      const googleBadge = canGoogle
+        ? '<span class="badge" style="background:rgba(138,206,0,0.12); color:var(--lime);"><i data-lucide="check" style="width:11px; height:11px; display:inline;"></i> Gmail Auth Active</span>'
+        : '<span class="badge" style="background:rgba(239,68,68,0.12); color:#ef4444;"><i data-lucide="x" style="width:11px; height:11px; display:inline;"></i> Disabled</span>';
+
+      const statusBadge = isActive
+        ? '<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">Active</span>'
+        : '<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444;">Suspended</span>';
+
+      const lastLoginStr = u.last_login_at ? u.last_login_at.substring(0, 16) : "Never";
+
+      return `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="width:36px; height:36px; border-radius:50%; background:rgba(138,206,0,0.12); border:1px solid rgba(138,206,0,0.25); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8125rem; color:var(--lime);">
+                ${initials}
+              </div>
+              <div>
+                <strong style="color:var(--text-primary); font-size:0.875rem; display:block;">${u.name}</strong>
+                <span class="text-muted" style="font-family:var(--font-mono); font-size:0.75rem;">${u.email}</span>
+              </div>
+            </div>
+          </td>
+          <td>${roleBadges[u.role] || u.role}</td>
+          <td>${googleBadge}</td>
+          <td style="font-size:0.75rem; color:var(--text-secondary);">${permsStr}</td>
+          <td>${statusBadge}</td>
+          <td style="font-size:0.75rem; font-family:var(--font-mono); color:var(--text-muted);">${lastLoginStr}</td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex; gap:0.35rem; align-items:center;">
+              <button class="btn btn-secondary btn-sm" onclick="window.dpEditUser('${u.id}')" title="Edit Permissions">
+                <i data-lucide="edit-3" style="width:13px; height:13px;"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="window.dpToggleUserStatus('${u.id}', '${u.status}')" title="${isActive ? 'Suspend Access' : 'Activate Access'}">
+                <i data-lucide="${isActive ? 'pause-circle' : 'play-circle'}" style="width:13px; height:13px; color:${isActive ? '#f59e0b' : 'var(--lime)'};"></i>
+              </button>
+              ${u.id !== 'usr-root-owner' ? `
+                <button class="btn btn-secondary btn-sm" onclick="window.dpDeleteUser('${u.id}', '${u.email}')" title="Revoke & Delete Access" style="color:#ef4444;">
+                  <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    if (window.lucide && window.lucide.createIcons) {
+      window.lucide.createIcons();
+    }
+  }
+
+  function openUserModal(userId = null) {
+    initUsersModule();
+    const modal = document.getElementById("userModal");
+    const title = document.getElementById("userModalTitle");
+    const formId = document.getElementById("usrFormId");
+    const formName = document.getElementById("usrFormName");
+    const formEmail = document.getElementById("usrFormEmail");
+    const formRole = document.getElementById("usrFormRole");
+    const formCanGoogle = document.getElementById("usrFormCanGoogle");
+    const formPermInv = document.getElementById("usrPermInvoices");
+    const formPermSub = document.getElementById("usrPermSubscribers");
+    const formPermLedger = document.getElementById("usrPermLedger");
+    const formPermVault = document.getElementById("usrPermVault");
+    const formNotes = document.getElementById("usrFormNotes");
+
+    if (!modal) return;
+
+    if (userId) {
+      const users = (db && db.users) ? db.users : [];
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        if (title) title.textContent = "Edit Authorized User Permissions";
+        if (formId) formId.value = user.id;
+        if (formName) formName.value = user.name || "";
+        if (formEmail) formEmail.value = user.email || "";
+        if (formRole) formRole.value = user.role || "noc_engineer";
+        if (formCanGoogle) formCanGoogle.checked = (user.can_login_google == 1);
+        if (formPermInv) formPermInv.checked = (user.can_access_invoices == 1);
+        if (formPermSub) formPermSub.checked = (user.can_access_subscribers == 1);
+        if (formPermLedger) formPermLedger.checked = (user.can_access_ledger == 1);
+        if (formPermVault) formPermVault.checked = (user.can_access_vault == 1);
+        if (formNotes) formNotes.value = user.notes || "";
+      }
+    } else {
+      if (title) title.textContent = "Authorize User for NOC Dashboard";
+      if (formId) formId.value = "";
+      if (formName) formName.value = "";
+      if (formEmail) formEmail.value = "";
+      if (formRole) formRole.value = "noc_engineer";
+      if (formCanGoogle) formCanGoogle.checked = true;
+      if (formPermInv) formPermInv.checked = true;
+      if (formPermSub) formPermSub.checked = true;
+      if (formPermLedger) formPermLedger.checked = true;
+      if (formPermVault) formPermVault.checked = false;
+      if (formNotes) formNotes.value = "";
+    }
+
+    modal.style.display = "flex";
+    if (formName) formName.focus();
+  }
+
+  function closeUserModal() {
+    const modal = document.getElementById("userModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  async function handleUserFormSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById("usrFormId").value;
+    const name = document.getElementById("usrFormName").value.trim();
+    const email = document.getElementById("usrFormEmail").value.trim().toLowerCase();
+    const role = document.getElementById("usrFormRole").value;
+    const canGoogle = document.getElementById("usrFormCanGoogle").checked ? 1 : 0;
+    const canInv = document.getElementById("usrPermInvoices").checked ? 1 : 0;
+    const canSub = document.getElementById("usrPermSubscribers").checked ? 1 : 0;
+    const canLedger = document.getElementById("usrPermLedger").checked ? 1 : 0;
+    const canVault = document.getElementById("usrPermVault").checked ? 1 : 0;
+    const notes = document.getElementById("usrFormNotes").value.trim();
+
+    if (!email) {
+      alert("Email address is required.");
+      return;
+    }
+
+    const payload = {
+      action: "save",
+      id: id || undefined,
+      name,
+      email,
+      role,
+      status: "active",
+      can_login_google: canGoogle,
+      can_access_invoices: canInv,
+      can_access_subscribers: canSub,
+      can_access_ledger: canLedger,
+      can_access_vault: canVault,
+      notes
+    };
+
+    try {
+      const res = await fetch("api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`User ${email} successfully authorized with Google sign-in.`);
+        closeUserModal();
+        await loadUsersFromApi();
+      } else {
+        alert("Error saving user: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Save user error:", err);
+      alert("Failed to connect to users API: " + err.message);
+    }
+  }
+
+  window.dpEditUser = function(id) {
+    openUserModal(id);
+  };
+
+  window.dpToggleUserStatus = async function(id, currentStatus) {
+    const newStatus = (currentStatus === "active") ? "suspended" : "active";
+    try {
+      const res = await fetch("api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggle_status", id, status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`User status updated to ${newStatus}.`);
+        await loadUsersFromApi();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  window.dpDeleteUser = async function(id, email) {
+    if (!confirm(`Are you sure you want to permanently revoke NOC access and delete ${email}?`)) {
+      return;
+    }
+    try {
+      const res = await fetch("api/users.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Revoked access for ${email}.`);
+        await loadUsersFromApi();
+      } else {
+        alert("Cannot delete user: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   async function startMasterERP() {
     startClock();
     await loadDatabase();
@@ -539,6 +921,7 @@
           invoices: mappedInvoices,
           jobCards: mappedJobs,
           ledger: mappedLedger,
+          users: liveData.users || [],
           inventory: (liveData.inventory && liveData.inventory.length) ? liveData.inventory : (INITIAL_ERP_DATA.inventory || []),
           lastUpdated: liveData.timestamp || new Date().toISOString()
         };
@@ -707,7 +1090,10 @@
           renderLedgerTable();
           renderAccountBalances();
         } else if (targetTabId === "calendarTab") {
-          renderCalendar();
+          initUsersModule();
+    loadUsersFromApi();
+    renderUsers();
+    renderCalendar();
         } else if (targetTabId === "vaultTab") {
           renderVaultDetails();
         } else if (targetTabId === "tariffsTab") {
@@ -4893,6 +5279,7 @@
     renderJobCards();
     renderLedgerTable();
     if (activeTab === "analyticsTab") renderAnalytics();
+    if (activeTab === "usersTab") renderUsers();
     if (activeTab === "vaultTab") renderVaultDetails();
     if (activeTab === "tariffsTab") renderTariffManager();
   }

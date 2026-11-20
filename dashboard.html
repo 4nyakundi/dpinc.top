@@ -988,6 +988,122 @@
           </div>
         </section>
 
+        <!-- =====================================================================
+             TAB 8: AUTHORIZED USERS & ACCESS CONTROL (GMAIL / RBAC ENGINE)
+             ===================================================================== -->
+        <section id="usersTab" class="dash-tab-pane">
+          <!-- Users Module Header -->
+          <div class="glass-panel" style="padding:1.5rem; margin-bottom:1.5rem; border-left:4px solid var(--lime);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                  <span class="badge" style="background:rgba(138,206,0,0.15); color:var(--lime); border:1px solid rgba(138,206,0,0.3); font-weight:700;">
+                    <i data-lucide="shield-check" style="width:12px; height:12px; display:inline;"></i> Google Auth & RBAC
+                  </span>
+                  <span class="badge" style="font-size:0.7rem;">Authorized Whitelist</span>
+                </div>
+                <h2 style="font-size:1.5rem; font-weight:800; margin:0; color:var(--text-primary);">Authorized Users & Access Control</h2>
+                <p class="text-muted" style="font-size:0.875rem; margin-top:0.25rem;">
+                  Authorize team members by Gmail or email to sign in via Google with granular NOC permissions.
+                </p>
+              </div>
+
+              <div style="display:flex; gap:0.75rem; align-items:center;">
+                <button id="openAddUserModalBtn" class="btn btn-primary btn-sm">
+                  <i data-lucide="user-plus"></i> Authorize New User
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Stats Cards -->
+          <div class="metrics-grid mb-8" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Total Authorized Staff</span>
+                <div class="metric-icon-box" style="background:rgba(138,206,0,0.12);"><i data-lucide="users" class="text-lime"></i></div>
+              </div>
+              <div class="metric-value" id="usrStatTotal">0</div>
+              <div class="metric-footer text-muted">Accounts on secure whitelist</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Google Sign-In Active</span>
+                <div class="metric-icon-box" style="background:rgba(59,130,246,0.12);"><i data-lucide="mail" style="color:#3b82f6;"></i></div>
+              </div>
+              <div class="metric-value text-lime" id="usrStatGoogle">0</div>
+              <div class="metric-footer text-muted">Permitted for Gmail 1-click auth</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Admins & Engineers</span>
+                <div class="metric-icon-box"><i data-lucide="shield"></i></div>
+              </div>
+              <div class="metric-value" id="usrStatAdmins">0</div>
+              <div class="metric-footer text-muted">Full operational control</div>
+            </div>
+
+            <div class="glass-panel metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Active Security State</span>
+                <div class="metric-icon-box" style="background:rgba(16,185,129,0.12);"><i data-lucide="check-circle" style="color:#10b981;"></i></div>
+              </div>
+              <div class="metric-value" style="font-size:1.15rem; color:#10b981;" id="usrStatSecurity">Enforced</div>
+              <div class="metric-footer text-muted">Non-whitelisted emails blocked</div>
+            </div>
+          </div>
+
+          <!-- Users Table Panel -->
+          <div class="glass-panel" style="padding:1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem;">
+              <div>
+                <h3 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text-primary);">
+                  Authorized Personnel Whitelist
+                </h3>
+                <p class="text-muted" style="font-size:0.8125rem; margin-top:0.25rem;">
+                  Only emails listed below can log in via Google. Unlisted accounts are denied immediately.
+                </p>
+              </div>
+
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                <div class="input-icon-wrapper" style="width:240px;">
+                  <i data-lucide="search" class="input-icon"></i>
+                  <input type="text" id="userSearchInput" class="form-input" placeholder="Search by name or email...">
+                </div>
+                <select id="userRoleFilter" class="form-input" style="width:auto;">
+                  <option value="all">All Roles</option>
+                  <option value="admin">Administrator</option>
+                  <option value="noc_engineer">NOC Engineer</option>
+                  <option value="billing_agent">Billing Specialist</option>
+                  <option value="technician">Field Tech</option>
+                  <option value="viewer">Viewer</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-container" style="overflow-x:auto;">
+              <table class="data-table" id="authorizedUsersTable">
+                <thead>
+                  <tr>
+                    <th>Authorized User</th>
+                    <th>Role</th>
+                    <th>Google Sign-In</th>
+                    <th>Permissions</th>
+                    <th>Status</th>
+                    <th>Last Active</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="authorizedUsersTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
     </div> <!-- /.dash-workspace-main -->
@@ -1915,6 +2031,104 @@
         </div>
         <iframe id="sitePreviewIframe" class="live-preview-iframe" src="" title="Site Live Preview" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       USER AUTHORIZATION MODAL (Add / Edit User & Gmail Whitelist)
+       ========================================================================= -->
+  <div id="userModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-card glass-panel" style="max-width:550px; width:95%;">
+      <div class="modal-header">
+        <div>
+          <h3 id="userModalTitle" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;">
+            Authorize User for NOC Dashboard
+          </h3>
+          <p class="text-muted" style="font-size:0.8125rem; margin-top:0.25rem;">
+            Grant Google Sign-In access and assign administrative privileges
+          </p>
+        </div>
+        <button type="button" id="closeUserModalBtn" class="btn-close-modal" title="Close">&times;</button>
+      </div>
+
+      <form id="userForm" style="padding:1.25rem;">
+        <input type="hidden" id="usrFormId" value="">
+
+        <div class="form-group mb-4">
+          <label class="form-label">Full Name <span style="color:#ef4444;">*</span></label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="usrFormName" class="form-input" placeholder="e.g. Sarah Mwangi" required>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label">Email Address (Gmail / Google Account) <span style="color:#ef4444;">*</span></label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" id="usrFormEmail" class="form-input" placeholder="e.g. sarah.mwangi@gmail.com" required>
+          </div>
+          <small class="text-muted" style="font-size:0.75rem; display:block; margin-top:0.25rem;">
+            The user will authenticate using this exact email address via the Google Sign-in button.
+          </small>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label">Assigned Role <span style="color:#ef4444;">*</span></label>
+          <select id="usrFormRole" class="form-input" style="font-weight:600;">
+            <option value="admin">Root Administrator (Full System Control)</option>
+            <option value="noc_engineer" selected>NOC Network Engineer (Network & Fiber Ops)</option>
+            <option value="billing_agent">Billing Specialist (Invoices & Subscriptions)</option>
+            <option value="technician">Field Operations Technician (Job Cards)</option>
+            <option value="viewer">Observer / Read-Only Auditor</option>
+          </select>
+        </div>
+
+        <div class="glass-panel mb-4" style="padding:1rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+            <div>
+              <strong style="font-size:0.875rem; color:var(--text-primary);">Allow Google Sign-In (Gmail Auth)</strong>
+              <div class="text-muted" style="font-size:0.75rem;">Permit user to authenticate via Google 1-Click popup</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="usrFormCanGoogle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:0.75rem 0;">
+
+          <div style="font-size:0.8125rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.5rem;">
+            Granular Module Permissions:
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.8125rem;">
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" id="usrPermInvoices" checked> Invoices & Billing
+            </label>
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" id="usrPermSubscribers" checked> Subscribers
+            </label>
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" id="usrPermLedger" checked> Financial Ledger
+            </label>
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" id="usrPermVault"> Executive Vault
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label">Account Notes / Department</label>
+          <input type="text" id="usrFormNotes" class="form-input" placeholder="e.g. Network Operations Team, Mombasa Hub">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" id="cancelUserModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveUserBtn">
+            <i data-lucide="shield-check"></i> Save Authorization
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </body>
