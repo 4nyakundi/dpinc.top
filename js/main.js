@@ -1036,3 +1036,53 @@ function initDynamicTariffSync() {
   }
 }
 
+/* ==========================================================================
+   22. PORTFOLIO LIVE SITE INTERACTIVE PREVIEW MODAL
+   ========================================================================== */
+window.dpOpenSitePreview = function(url, title, repoUrl) {
+  const modal = document.getElementById("sitePreviewModal");
+  const iframe = document.getElementById("sitePreviewIframe");
+  const urlBar = document.getElementById("previewUrlBar");
+  const newTabBtn = document.getElementById("previewNewTabBtn");
+  const repoBtn = document.getElementById("previewRepoBtn");
+
+  if (!modal || !iframe) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  if (urlBar) urlBar.textContent = url;
+  if (newTabBtn) newTabBtn.href = url;
+  if (repoBtn) {
+    if (repoUrl) {
+      repoBtn.href = repoUrl;
+      repoBtn.style.display = "inline-flex";
+    } else {
+      repoBtn.style.display = "none";
+    }
+  }
+
+  iframe.src = url;
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  if (window.lucide && typeof lucide.createIcons === "function") {
+    lucide.createIcons();
+  }
+};
+
+window.dpCloseSitePreview = function() {
+  const modal = document.getElementById("sitePreviewModal");
+  const iframe = document.getElementById("sitePreviewIframe");
+  if (modal) modal.style.display = "none";
+  if (iframe) iframe.src = "";
+  document.body.style.overflow = "";
+};
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    window.dpCloseSitePreview();
+  }
+});
+
+

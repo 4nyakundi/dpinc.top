@@ -21,7 +21,6 @@ import Navbar from "@/components/Navbar";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
-import CustomCursor from "@/components/CustomCursor";
 import ScrollProgress from "@/components/ScrollProgress";
 
 export default function RootLayout({
@@ -35,7 +34,6 @@ export default function RootLayout({
         className={`${inter.variable} ${spaceGrotesk.variable} antialiased bg-zinc-50 dark:bg-black text-black dark:text-white font-sans transition-colors duration-300`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <CustomCursor />
           <ScrollProgress />
           <Navbar />
           <main className="pt-24 min-h-screen">

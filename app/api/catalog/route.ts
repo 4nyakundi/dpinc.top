@@ -1,14 +1,4 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prismadb";
-
-export async function GET() {
-  try {
-    const items = await prisma.catalogItem.findMany({
-      orderBy: { name: "asc" },
-    });
-    return NextResponse.json({ items });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to fetch catalog items" }, { status: 500 });
-  }
-}
+import { NextRequest } from "next/server";
+import { admin, body, database, respond } from "@/lib/api";
+export async function GET() { return respond(async () => ({ items: await database.catalog() })); }
+export async function POST(req: NextRequest) { return respond(async () => { const actor = await admin(req); return { item: await database.saveCatalog(await body(req), actor) }; }); }

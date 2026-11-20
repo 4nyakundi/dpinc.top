@@ -187,15 +187,366 @@
       <div class="container">
         <!-- Interactive Filter Tabs -->
         <div class="filter-tabs" style="justify-content:center;">
-          <button class="filter-btn active" data-filter="all">All Projects</button>
+          <button class="filter-btn active" data-filter="all">All Projects & Sites</button>
+          <button class="filter-btn" data-filter="live-sites">Live Client Websites</button>
+          <button class="filter-btn" data-filter="software">Custom Web Apps & Portals</button>
           <button class="filter-btn" data-filter="infrastructure">Infrastructure & Security</button>
-          <button class="filter-btn" data-filter="software">Software & DevOps</button>
           <button class="filter-btn" data-filter="creative">Creative & Marketing</button>
         </div>
 
         <!-- Projects Grid -->
         <div class="portfolio-grid">
-          <!-- Project 1 -->
+
+          <!-- Live Site 1: MOMBASA MALL -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/equity-afya.jpg" alt="Mombasa Mall Online Portal" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="globe" style="width:12px; height:12px;"></i> Live Web Portal</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--lime);">E-Commerce & Commercial Retail</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: MOMBASA-MALL</span>
+            </div>
+            <h3 class="project-title">Mombasa Mall 2.0 Web Platform</h3>
+            <p class="project-desc">
+              Comprehensive multi-tenant commercial mall portal featuring tenant directory, live event booking, retail promotions catalog, and interactive floor plan discovery.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Next.js</span>
+              <span class="tag">#MultiTenant</span>
+              <span class="tag">#Retail Portal</span>
+              <span class="tag">#Payment Gateway</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://mombasamall.co.ke', 'Mombasa Mall 2.0 Platform', 'https://github.com/4nyakundi/MOMBASA-MALL')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 2: Paws & Hooves -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/paws-and-hooves.jpg" alt="Paws & Hooves by Wangari" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="globe" style="width:12px; height:12px;"></i> Veterinary & Pet Care</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--cyan);">Animal Health & Clinics</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Paws-Hooves</span>
+            </div>
+            <h3 class="project-title">Paws & Hooves Veterinary Clinic</h3>
+            <p class="project-desc">
+              Veterinary care and emergency pet services portal with automated medical appointments booking, patient registration, and interactive healthcare guidance.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Veterinary Clinic</span>
+              <span class="tag">#Booking Engine</span>
+              <span class="tag">#Mobile Responsive</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://pawsandhooves.co.ke', 'Paws & Hooves Veterinary Platform', 'https://github.com/4nyakundi/Paws-Hooves')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/Paws-Hooves" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 3: Catch Security Links Ltd -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/catch-security-links.png" alt="Catch Security Links Ltd" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="shield" style="width:12px; height:12px;"></i> Security System</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:#ef4444;">Perimeter Defense & CCTV</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: catchsecuritylinksltd</span>
+            </div>
+            <h3 class="project-title">Catch Security Links System</h3>
+            <p class="project-desc">
+              Commercial perimeter security, CCTV incident dispatch, client surveillance management, and remote patrol logging web portal.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Security System</span>
+              <span class="tag">#CCTV Remote View</span>
+              <span class="tag">#Incident Logging</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://catchsecuritylinksltd.co.ke', 'Catch Security Links Platform', 'https://github.com/4nyakundi/catchsecuritylinksltd.co.ke')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/catchsecuritylinksltd.co.ke" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 4: Azurite Rental System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb">
+              <img src="public/clients/art-by-oture.png" alt="Azurite Rental System" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="home" style="width:12px; height:12px;"></i> Property Management</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--purple);">Property & Tenancy ERP</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Azurite-Rental</span>
+            </div>
+            <h3 class="project-title">Azurite Real Estate & Rental System</h3>
+            <p class="project-desc">
+              Automated tenancy lease management, M-Pesa automated rent reconciliation, arrears tracking, tenant utility ledger, and landlord financial statements.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Rental Automation</span>
+              <span class="tag">#M-Pesa Reconciliation</span>
+              <span class="tag">#Lease Tracking</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://azuriterentals.co.ke', 'Azurite Real Estate Portal', 'https://github.com/4nyakundi/Azurite-Rental-System')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/Azurite-Rental-System" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 5: Star Lash Kenya -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/star-lash.jpg" alt="Star Lash Kenya" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="sparkles" style="width:12px; height:12px;"></i> Beauty & Salon</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:#ec4899;">Luxury Salon & Studio</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: starlashkenya</span>
+            </div>
+            <h3 class="project-title">Star Lash Kenya Studio & Academy</h3>
+            <p class="project-desc">
+              High-conversion beauty booking platform featuring service showcase, appointment slots, customer testimonials, and luxury lifestyle branding.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Salon Booking</span>
+              <span class="tag">#Luxury UI</span>
+              <span class="tag">#Brand Strategy</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://starlashkenya.co.ke', 'Star Lash Kenya Portal', 'https://github.com/4nyakundi/starlashkenya')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/starlashkenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 6: Ace Vet Care Kenya -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/equity-afya.jpg" alt="Ace Vet Care Kenya" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="activity" style="width:12px; height:12px;"></i> Veterinary Care</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--cyan);">Veterinary & Lab Services</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: acevetcarekenya</span>
+            </div>
+            <h3 class="project-title">Ace Vet Care Kenya Medical Portal</h3>
+            <p class="project-desc">
+              Comprehensive veterinary medicine platform including farm animal diagnostics, vaccination scheduling, domestic pet checkups, and mobile field appointments.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Veterinary Clinic</span>
+              <span class="tag">#Farm Diagnostics</span>
+              <span class="tag">#Appointments</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://acevetcare.co.ke', 'Ace Vet Care Kenya', 'https://github.com/4nyakundi/acevetcarekenya')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/acevetcarekenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 7: Car Rental System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb">
+              <img src="public/clients/art-by-oture.png" alt="Car Rental System" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="car" style="width:12px; height:12px;"></i> Fleet Management</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:#f59e0b;">Fleet Operations & Bookings</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Car-Rental-System</span>
+            </div>
+            <h3 class="project-title">Executive Car Rental & Fleet Dispatch</h3>
+            <p class="project-desc">
+              Automated vehicle fleet reservations, calendar availability engine, driver assignment, digital return inspections, and security deposit management.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Fleet Manager</span>
+              <span class="tag">#Booking Calendar</span>
+              <span class="tag">#Vehicle Inspection</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://carrentals.co.ke', 'Executive Car Rental System', 'https://github.com/4nyakundi/Car-Rental-System-')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/Car-Rental-System-" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 8: Tudor Carpet Cleaners -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/star-lash.jpg" alt="Tudor Carpet Cleaners" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="sparkles" style="width:12px; height:12px;"></i> Service Logistics</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--lime);">Commercial & Home Cleaning</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Tudorcarpetcleaners</span>
+            </div>
+            <h3 class="project-title">Tudor Carpet Cleaners Portal</h3>
+            <p class="project-desc">
+              On-demand upholstery cleaning booking engine, pickup & delivery scheduler, fabric sanitization rate calculator, and instant quotation generator.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#OnDemand Service</span>
+              <span class="tag">#Instant Quote</span>
+              <span class="tag">#Mombasa Logistics</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://tudorcarpetcleaners.com', 'Tudor Carpet Cleaners Portal', 'https://github.com/4nyakundi/Tudorcarpetcleaners')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/Tudorcarpetcleaners" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 9: Art By Oture -->
+          <div class="glass-panel project-card" data-category="creative">
+            <div class="project-preview-thumb">
+              <img src="public/clients/art-by-oture.png" alt="Art By Oture" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="palette" style="width:12px; height:12px;"></i> Fine Arts & Studio</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--purple);">Visual Arts & Gallery</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: artbyoture_ABO26</span>
+            </div>
+            <h3 class="project-title">Art By Oture Creative Portfolio</h3>
+            <p class="project-desc">
+              Immersive online contemporary art gallery, digital commission requests, exhibition archive, and high-resolution virtual showcase.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Art Gallery</span>
+              <span class="tag">#Virtual Exhibit</span>
+              <span class="tag">#Commissions</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://artbyoture.co.ke', 'Art By Oture Fine Arts', 'https://github.com/4nyakundi/artbyoture_ABO26')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/artbyoture_ABO26" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 10: Modoria Fashion -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb">
+              <img src="public/clients/star-lash.jpg" alt="Modoria Kenya" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="shopping-bag" style="width:12px; height:12px;"></i> Fashion & Retail</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--cyan);">Modern Fashion Brand</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: modoria.co.ke</span>
+            </div>
+            <h3 class="project-title">Modoria Fashion & Lifestyle</h3>
+            <p class="project-desc">
+              Boutique e-commerce storefront with curated collections, dynamic size selection, instant WhatsApp checkout, and seamless courier delivery dispatch.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Apparel</span>
+              <span class="tag">#E-Commerce</span>
+              <span class="tag">#Fast Checkout</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://modoria.co.ke', 'Modoria Lifestyle Store', 'https://github.com/4nyakundi/modoria.co.ke')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/modoria.co.ke" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 11: eDocs Appointment System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb">
+              <img src="public/clients/equity-afya.jpg" alt="eDocs System" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="calendar" style="width:12px; height:12px;"></i> Telehealth & Clinics</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--lime);">Medical Appointments</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: edocs-appointment-sys</span>
+            </div>
+            <h3 class="project-title">eDocs Appointment & Patient Portal</h3>
+            <p class="project-desc">
+              Multi-doctor clinic scheduling system with automated SMS reminders, digital triage form intake, doctor shift calendar, and consultation queue management.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#HealthTech</span>
+              <span class="tag">#SMS Alerts</span>
+              <span class="tag">#Doctor Scheduling</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://edocs.dpinc.top', 'eDocs Appointment Platform', 'https://github.com/4nyakundi/edocs-appointment-sys')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/edocs-appointment-sys" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Site 12: Smart Parking Management -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div class="project-preview-thumb">
+              <img src="public/clients/catch-security-links.png" alt="Smart Parking Access" onerror="this.src='public/dp-logo.png'">
+              <span class="project-preview-badge"><i data-lucide="shield-check" style="width:12px; height:12px;"></i> Automated Tolls</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+              <span class="project-category" style="color:var(--cyan);">Toll & Barrier Access</span>
+              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: parking</span>
+            </div>
+            <h3 class="project-title">Smart Gate & Parking Control System</h3>
+            <p class="project-desc">
+              Automated barrier gate integration, license plate optical recognition (ALPR), cashless M-Pesa parking payment, and real-time bay occupancy telemetry.
+            </p>
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#IoT Access</span>
+              <span class="tag">#ALPR Cameras</span>
+              <span class="tag">#Automated Toll</span>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://parking.dpinc.top', 'Smart Parking System', 'https://github.com/4nyakundi/parking')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              </button>
+              <a href="https://github.com/4nyakundi/parking" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project 13: Enterprise Headquarters Build-Out -->
           <div class="glass-panel project-card" data-category="infrastructure">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
               <span class="project-category">Infrastructure & Security</span>
@@ -205,129 +556,19 @@
             </div>
             <h3 class="project-title">Enterprise Headquarters Build-Out</h3>
             <p class="project-desc">
-              A complete technological fit-out for a newly constructed 3-story corporate office. Data Port engineered a fault-tolerant secure WiFi system covering 50,000 sq ft, installed 40 HD remote-view CCTV cameras, and integrated automated local-to-cloud backup servers to guarantee zero downtime.
+              Complete technological fit-out for corporate office: fault-tolerant secure WiFi covering 50,000 sq ft, 40 HD remote-view CCTV cameras, and automated cloud backup.
             </p>
-            <div class="tag-list">
+            <div class="tag-list" style="margin-bottom:1.25rem;">
               <span class="tag">#Structured Cabling</span>
               <span class="tag">#Secure WiFi</span>
               <span class="tag">#HD CCTV</span>
               <span class="tag">#Disaster Recovery</span>
             </div>
-            <a href="contact.html?project=enterprise-infra" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
+            <a href="contact.html?project=enterprise-infra" class="btn btn-secondary btn-sm" style="align-self:flex-start; margin-top:auto;">
               Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
             </a>
           </div>
 
-          <!-- Project 2 -->
-          <div class="glass-panel project-card" data-category="software">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category" style="color:var(--purple);">Software & DevOps</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--purple); border-color:var(--purple-glow); background:rgba(168,85,247,0.1);">
-                <i data-lucide="database" style="width:18px; height:18px;"></i>
-              </div>
-            </div>
-            <h3 class="project-title">Global Supply Chain Management Portal</h3>
-            <p class="project-desc">
-              Developed a bespoke logistics web application allowing a global freight carrier to automate dispatch, track international shipments in real-time, and generate automated proforma invoicing. The system is deployed via a continuous integration pipeline for 99.99% reliability.
-            </p>
-            <div class="tag-list">
-              <span class="tag">#Custom Web App</span>
-              <span class="tag">#CI/CD Pipeline</span>
-              <span class="tag">#Data Automation</span>
-              <span class="tag">#REST APIs</span>
-            </div>
-            <a href="contact.html?project=supply-chain-portal" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
-          </div>
-
-          <!-- Project 3 -->
-          <div class="glass-panel project-card" data-category="creative">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category" style="color:var(--pink);">Creative & Marketing</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--pink); border-color:var(--pink-glow); background:rgba(236,72,153,0.1);">
-                <i data-lucide="video" style="width:18px; height:18px;"></i>
-              </div>
-            </div>
-            <h3 class="project-title">Neo-Retail Brand Launch & Motion Campaign</h3>
-            <p class="project-desc">
-              Conceptualized and executed a high-energy motion graphics advertising campaign for an e-commerce startup. Deliverables included 15-second hyper-engaging video segments for digital feeds and a modern digital branding identity that drove a 300% increase in user acquisition.
-            </p>
-            <div class="tag-list">
-              <span class="tag">#Motion Graphics</span>
-              <span class="tag">#Digital Branding</span>
-              <span class="tag">#Social Ad Campaign</span>
-            </div>
-            <a href="contact.html?project=retail-launch" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
-          </div>
-
-          <!-- Project 4 -->
-          <div class="glass-panel project-card" data-category="software">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category" style="color:var(--lime);">Integrated Solutions</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--lime); border-color:rgba(163,230,53,0.3); background:rgba(163,230,53,0.1);">
-                <i data-lucide="folder-git-2" style="width:18px; height:18px;"></i>
-              </div>
-            </div>
-            <h3 class="project-title">University Learning & Analytics Portal</h3>
-            <p class="project-desc">
-              A hybrid project encompassing both on-premise server array configuration and custom web application development. Data Port delivered a dynamic, mobile-responsive portal secured with strict SSL standards, backed by local high-speed server hardware.
-            </p>
-            <div class="tag-list">
-              <span class="tag">#Web Development</span>
-              <span class="tag">#Server Array</span>
-              <span class="tag">#SSL Security</span>
-            </div>
-            <a href="contact.html?project=campus-system" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
-          </div>
-
-          <!-- Project 5 -->
-          <div class="glass-panel project-card" data-category="infrastructure">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category">Cloud Infrastructure</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
-                <i data-lucide="server" style="width:18px; height:18px;"></i>
-              </div>
-            </div>
-            <h3 class="project-title">Project Alpha Cloud Migration</h3>
-            <p class="project-desc">
-              Full-scale server migration and cloud architecture re-engineering for a high-volume financial institution, eliminating database timeouts and ensuring 100% data integrity with zero client downtime.
-            </p>
-            <div class="tag-list">
-              <span class="tag">#Cloud Migration</span>
-              <span class="tag">#Zero Downtime</span>
-              <span class="tag">#Financial Tier</span>
-            </div>
-            <a href="contact.html?project=project-alpha" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
-          </div>
-
-          <!-- Project 6 -->
-          <div class="glass-panel project-card" data-category="infrastructure">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category">Enterprise Network</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
-                <i data-lucide="shield" style="width:18px; height:18px;"></i>
-              </div>
-            </div>
-            <h3 class="project-title">Data Core Enterprise Data Center</h3>
-            <p class="project-desc">
-              Secure, high-bandwidth data center setup with redundant power feeds, active environmental cooling sensors, hardware firewall arrays, and a 99.99% uptime guarantee.
-            </p>
-            <div class="tag-list">
-              <span class="tag">#High Bandwidth</span>
-              <span class="tag">#Hardware Firewalls</span>
-              <span class="tag">#99.99% Uptime</span>
-            </div>
-            <a href="contact.html?project=data-core" class="btn btn-secondary btn-sm" style="align-self:flex-start;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
-          </div>
         </div>
       </div>
     </section>
@@ -404,6 +645,43 @@
         </div>
       </div>
     </section>
+
+    <!-- Live Site Interactive Browser Preview Modal -->
+    <div id="sitePreviewModal" class="live-preview-panel-overlay" style="display:none;" onclick="if(event.target===this) window.dpCloseSitePreview()">
+      <div class="live-preview-window">
+        <div class="live-preview-header">
+          <div class="browser-bar">
+            <div class="browser-dots">
+              <span class="browser-dot" style="background:#ef4444; cursor:pointer;" onclick="window.dpCloseSitePreview()" title="Close Preview"></span>
+              <span class="browser-dot" style="background:#f59e0b;"></span>
+              <span class="browser-dot" style="background:#10b981;"></span>
+            </div>
+            <div class="browser-url-input">
+              <i data-lucide="lock" style="width:12px; height:12px; color:#10b981; flex-shrink:0;"></i>
+              <span id="previewUrlBar">https://...</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <a id="previewRepoBtn" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.75rem; font-size:0.8rem;">
+              <i data-lucide="github" style="width:13px; height:13px;"></i> Repo
+            </a>
+            <a id="previewNewTabBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="padding:0.35rem 0.75rem; font-size:0.8rem;">
+              <i data-lucide="external-link" style="width:13px; height:13px;"></i> Open Live Site
+            </a>
+            <button class="btn btn-secondary btn-sm" onclick="window.dpCloseSitePreview()" style="padding:0.35rem 0.6rem;" aria-label="Close Preview">
+              <i data-lucide="x" style="width:15px; height:15px;"></i>
+            </button>
+          </div>
+        </div>
+        <div style="flex:1; position:relative; background:#FFFFFF; display:flex; flex-direction:column; min-height:0;">
+          <div id="previewFallbackNotice" style="padding:0.6rem 1.25rem; text-align:center; background:#FEF3C7; color:#92400E; border-bottom:1px solid #FCD34D; font-size:0.825rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            <i data-lucide="info" style="width:14px; height:14px; flex-shrink:0;"></i>
+            <span>If the external site restricts embedding, click <strong>Open Live Site</strong> to view in full tab.</span>
+          </div>
+          <iframe id="sitePreviewIframe" class="live-preview-iframe" src="" title="Site Live Preview" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Footer -->

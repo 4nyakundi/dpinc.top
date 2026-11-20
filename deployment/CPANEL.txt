@@ -1,0 +1,13 @@
+Deploy the Node.js application, not only the HTML files.
+
+1. In cPanel Setup Node.js App choose Node 22.18+ (or newer supported version), production mode, the dpinc.top domain, and server.cjs as the startup file. Keep the application source outside the public document root.
+2. Set the variables shown in cpanel.env.example privately in cPanel. Assign cwcwdmnn_dpinc to cwcwdmnn_dpinc.top. Never put the password in browser JavaScript or Git.
+3. Install dependencies with npm ci. Run npm run build.
+4. If the supplied SQL file was imported successfully, mark BOTH existing migrations applied before running further migrations:
+   npx prisma migrate resolve --applied 20261019000000_xampp_legacy_baseline
+   npx prisma migrate resolve --applied 20261020000000_mysql_baseline
+   Only do this when all 22 imported tables and foreign keys exist. For a new empty database, skip these resolve commands.
+5. Run npm run db:migrate. Run npm run db:admin with ADMIN_USERNAME and ADMIN_PASSWORD set temporarily to create the application login. Remove those temporary variables afterward. The MySQL login is not the website admin login.
+6. Restart the Node.js application. Verify /api/catalog returns JSON, login works, and saving a record on /dashboard.html is visible after reload and in phpMyAdmin.
+
+The browser sends authenticated requests to the backend; only the backend connects to MySQL. Browser storage is a recovery cache. Git push does not automatically configure or restart cPanel. Live database storage has not yet been verified.
