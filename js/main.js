@@ -33,33 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================================================== */
 let lenis = null;
 function initLenisSmoothScroll() {
-  if (typeof Lenis !== "undefined") {
-    lenis = new Lenis({
-      duration: 1.25,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      wheelMultiplier: 1.05,
-      touchMultiplier: 1.6,
-    });
-
-    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
-
-      lenis.on("scroll", ScrollTrigger.update);
-
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-
-      gsap.ticker.lagSmoothing(0);
-    } else {
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
-    }
-  }
+  // Lenis smooth scroll disabled: 100% native, instant, friction-free browser scrolling.
+  lenis = null;
 }
 
 /* ==========================================================================
@@ -69,40 +44,17 @@ function initHeroAnimations() {
   const heroWrapper = document.querySelector(".hero-parallax-wrapper");
   if (!heroWrapper || typeof gsap === "undefined") return;
 
-  // 1. Initial Page Load Entrance Timeline
+  // Initial Page Load Entrance Timeline (smooth entrance without scroll-jacking)
   const entranceTl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
   entranceTl
-    .from(".hero-layer-content .badge", { opacity: 0, y: 25, duration: 0.8, delay: 0.15 })
-    .from(".hero-title", { opacity: 0, y: 35, duration: 0.9 }, "-=0.55")
-    .from(".hero-subtitle", { opacity: 0, y: 25, duration: 0.8 }, "-=0.6")
-    .from(".hero-buttons", { opacity: 0, y: 20, duration: 0.8 }, "-=0.6")
-    .from(".hero-layer-visual .telemetry-widget", { opacity: 0, y: 40, scale: 0.94, duration: 1.1 }, "-=0.7")
-    .from(".parallax-badge-float", { opacity: 0, scale: 0.75, y: 25, stagger: 0.12, duration: 0.85 }, "-=0.8")
-    .from(".hero-scroll-indicator", { opacity: 0, y: 15, duration: 0.6 }, "-=0.4");
-
-  // 2. Multi-Layer Parallax Scrub with ScrollTrigger
-  if (typeof ScrollTrigger !== "undefined") {
-    const parallaxTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroWrapper,
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.1,
-        invalidateOnRefresh: true,
-      }
-    });
-
-    parallaxTl
-      .to(".hero-layer-bg", { yPercent: 25, scale: 1.08, ease: "none" }, 0)
-      .to(".hero-layer-content", { yPercent: -18, opacity: 0.2, ease: "none" }, 0)
-      .to(".hero-layer-visual .telemetry-widget", { yPercent: -32, scale: 0.95, rotateX: 6, ease: "none" }, 0)
-      .to(".parallax-float-1", { y: -130, x: -15, rotation: -3, ease: "none" }, 0)
-      .to(".parallax-float-2", { y: -65, x: -10, rotation: 2, ease: "none" }, 0)
-      .to(".parallax-float-3", { y: -150, x: 20, rotation: 4, ease: "none" }, 0)
-      .to(".parallax-float-4", { y: -80, x: 12, rotation: -2, ease: "none" }, 0)
-      .to(".hero-scroll-indicator", { opacity: 0, y: -25, ease: "none" }, 0);
-  }
+    .from(".hero-layer-content .badge", { opacity: 0, y: 20, duration: 0.6, delay: 0.1 })
+    .from(".hero-title", { opacity: 0, y: 25, duration: 0.7 }, "-=0.4")
+    .from(".hero-subtitle", { opacity: 0, y: 20, duration: 0.6 }, "-=0.45")
+    .from(".hero-buttons", { opacity: 0, y: 15, duration: 0.6 }, "-=0.45")
+    .from(".hero-layer-visual .telemetry-widget", { opacity: 0, y: 25, scale: 0.96, duration: 0.8 }, "-=0.5")
+    .from(".parallax-badge-float", { opacity: 0, scale: 0.85, y: 15, duration: 0.6 }, "-=0.5")
+    .from(".hero-scroll-indicator", { opacity: 0, y: 10, duration: 0.5 }, "-=0.3");
 }
 
 /* ==========================================================================
@@ -665,87 +617,13 @@ function initCountUpCounters() {
    13. MAGNETIC BUTTONS (PHYSICS SPRING)
    ========================================================================== */
 function initMagneticButtons() {
-  if (typeof gsap === "undefined" || window.innerWidth < 768) return;
-
-  const magneticBtns = document.querySelectorAll(".btn-primary, .btn-secondary, .floating-whatsapp-widget");
-
-  magneticBtns.forEach(btn => {
-    btn.addEventListener("mousemove", (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      gsap.to(btn, {
-        x: x * 0.28,
-        y: y * 0.28,
-        duration: 0.35,
-        ease: "power2.out",
-        overwrite: "auto"
-      });
-    });
-
-    btn.addEventListener("mouseleave", () => {
-      gsap.to(btn, {
-        x: 0,
-        y: 0,
-        duration: 0.65,
-        ease: "elastic.out(1, 0.4)",
-        overwrite: "auto"
-      });
-    });
-  });
+  // Magnetic button displacement disabled for clean, stable mouse interaction
 }
 
-/* ==========================================================================
-   14. 3D CARD TILT & INTERACTIVE PERSPECTIVE
-   ========================================================================== */
 function initCardTiltAndGlare() {
-  if (typeof gsap === "undefined" || window.innerWidth < 768) return;
-
-  const tiltElements = document.querySelectorAll(
-    ".package-card, .pillar-card, .project-card, .stat-card, .client-card-modern, .testimonial-card, .process-step-card, .bento-showcase-card, .telemetry-widget"
-  );
-
-  tiltElements.forEach((el) => {
-    el.style.transformStyle = "preserve-3d";
-
-    el.addEventListener("mousemove", (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      const rotateX = ((y - centerY) / centerY) * -5.5;
-      const rotateY = ((x - centerX) / centerX) * 5.5;
-
-      gsap.to(el, {
-        rotateX: rotateX,
-        rotateY: rotateY,
-        scale: 1.02,
-        duration: 0.4,
-        ease: "power2.out",
-        transformPerspective: 1000,
-        overwrite: "auto"
-      });
-    });
-
-    el.addEventListener("mouseleave", () => {
-      gsap.to(el, {
-        rotateX: 0,
-        rotateY: 0,
-        scale: 1,
-        duration: 0.65,
-        ease: "power2.out",
-        overwrite: "auto"
-      });
-    });
-  });
+  // 3D Mouse tilt disabled for smooth, natural hover interaction
 }
 
-/* ==========================================================================
-   15. MOBILE NAVIGATION DRAWER
-   ========================================================================== */
 function initMobileNav() {
   const menuBtn = document.querySelector(".mobile-menu-btn");
   const mobileNav = document.querySelector(".mobile-nav");
