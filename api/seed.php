@@ -373,11 +373,152 @@ try {
         }
     }
 
+    // Seed Job Cards
+    $jobCards = [
+        [
+            'id' => 'job-101',
+            'title' => '18-Camera IP CCTV & NVR Setup',
+            'client_name' => 'Mombasa Ocean View Suites',
+            'technician' => 'Emmanuel Nyakundi (Lead Tech)',
+            'date' => '2026-09-15',
+            'status' => 'completed',
+            'category' => 'CCTV Security',
+            'labor_cost' => 25000,
+            'total_cost' => 165000,
+            'notes' => 'All cameras focused, cloud remote view app configured on manager iPhone & tablet.',
+            'site_requirements' => '18x Cat6 drops, 1x 16-Port PoE Gigabit Switch, 1x 4TB SkyHawk HDD.',
+            'progress_notes' => 'Completed full commissioning and remote view verification on 15th Sep.',
+            'credentials' => 'NVR IP: 192.168.1.200 | User: admin | Pass: Dpinc@Cctv2026',
+            'invoice_generated' => 1,
+            'invoice_ref' => 'INV-2026-0089'
+        ],
+        [
+            'id' => 'job-102',
+            'title' => 'Drop Fiber Splicing & Dual-Band Router Install',
+            'client_name' => 'Apex Creative Studio',
+            'technician' => 'Ali Hassan (Field Tech)',
+            'date' => '2026-09-17',
+            'status' => 'completed',
+            'category' => 'Fiber Deployment',
+            'labor_cost' => 3500,
+            'total_cost' => 13800,
+            'notes' => 'Optical power reading -18.4 dBm (Optimum range). Latency to IXP 3ms.',
+            'site_requirements' => '2-Core drop cable 85m, 1x Huawei AX3 Gigabit WiFi-6 Router.',
+            'progress_notes' => 'Drop strung from FAT-04, fusion spliced at splice tray, certified 1 Gbps LAN.',
+            'credentials' => 'PPPoE User: apex_creative_media | Pass: dp@apex#2026 | WiFi: Apex_5G',
+            'invoice_generated' => 1,
+            'invoice_ref' => 'INV-2026-0091'
+        ],
+        [
+            'id' => 'job-103',
+            'title' => 'Structured LAN Cabling & Rack Dressing',
+            'client_name' => 'Crown Logistics Hub',
+            'technician' => 'Ali Hassan & Kevin O.',
+            'date' => '2026-09-18',
+            'status' => 'in_progress',
+            'category' => 'Structured Cabling',
+            'labor_cost' => 15000,
+            'total_cost' => 42500,
+            'notes' => 'Cabling running across warehouse conduit. Termination scheduled for completion.',
+            'site_requirements' => '24-Port Patch Panel, Giganet Cat6 LSZH Roll, 9U Data Cabinet, Brush panels.',
+            'progress_notes' => 'Conduits fixed, 16 cables pulled. Termination and Fluke testing pending.',
+            'credentials' => 'Switch IP: 192.168.10.2 | Console: 9600-8-N-1 | Admin: dpadmin',
+            'invoice_generated' => 0,
+            'invoice_ref' => null
+        ]
+    ];
+
+    $jStmt = $pdo->prepare("INSERT INTO job_cards
+        (id, title, client_name, technician, date, status, category, labor_cost, total_cost, notes, site_requirements, progress_notes, credentials, invoice_generated, invoice_ref)
+        VALUES (:id, :title, :client_name, :technician, :date, :status, :category, :labor_cost, :total_cost, :notes, :site_requirements, :progress_notes, :credentials, :invoice_generated, :invoice_ref)
+        ON DUPLICATE KEY UPDATE
+        title=VALUES(title), client_name=VALUES(client_name), technician=VALUES(technician), date=VALUES(date),
+        status=VALUES(status), category=VALUES(category), labor_cost=VALUES(labor_cost), total_cost=VALUES(total_cost),
+        notes=VALUES(notes), site_requirements=VALUES(site_requirements), progress_notes=VALUES(progress_notes),
+        credentials=VALUES(credentials), invoice_generated=VALUES(invoice_generated), invoice_ref=VALUES(invoice_ref)");
+
+    foreach ($jobCards as $j) {
+        $jStmt->execute($j);
+    }
+
+    // Seed Ledger Entries
+    $ledger = [
+        [
+            'id' => 'tx-101',
+            'date' => '2026-09-01',
+            'description' => 'Monthly Fiber Subscription - Mombasa Ocean View Suites',
+            'category' => 'ISP Subscription Income',
+            'type' => 'income',
+            'amount' => 12500,
+            'payment_method' => 'M-Pesa Paybill',
+            'reference' => 'QKD8923KL9',
+            'entity' => 'DATA PORT Core'
+        ],
+        [
+            'id' => 'tx-102',
+            'date' => '2026-09-01',
+            'description' => 'Monthly Fiber Subscription - Crown Logistics Hub',
+            'category' => 'ISP Subscription Income',
+            'type' => 'income',
+            'amount' => 8500,
+            'payment_method' => 'Bank Transfer',
+            'reference' => 'FT26245892',
+            'entity' => 'DATA PORT Core'
+        ],
+        [
+            'id' => 'tx-103',
+            'date' => '2026-09-03',
+            'description' => 'Upstream Wholesale IP Transit & STM Bandwidth (Liquid/IXP)',
+            'category' => 'Wholesale Bandwidth Transit',
+            'type' => 'expense',
+            'amount' => 14000,
+            'payment_method' => 'Bank Wire',
+            'reference' => 'LQD-TR-992',
+            'entity' => 'NOC Operations'
+        ],
+        [
+            'id' => 'tx-104',
+            'date' => '2026-09-15',
+            'description' => 'Project Settlement: Ocean View Suites CCTV Installation',
+            'category' => 'Projects & Installations',
+            'type' => 'income',
+            'amount' => 165000,
+            'payment_method' => 'Bank Transfer',
+            'reference' => 'FT26258901',
+            'entity' => 'DATA PORT Projects'
+        ],
+        [
+            'id' => 'tx-105',
+            'date' => '2026-09-16',
+            'description' => 'Technician Field Allowances & Transport Logistics',
+            'category' => 'Field Ops & Logistics',
+            'type' => 'expense',
+            'amount' => 6500,
+            'payment_method' => 'M-Pesa Send Money',
+            'reference' => 'QKM3321VV7',
+            'entity' => 'Operations'
+        ]
+    ];
+
+    $lStmt = $pdo->prepare("INSERT INTO ledger_entries
+        (id, date, description, category, type, amount, payment_method, reference, entity)
+        VALUES (:id, :date, :description, :category, :type, :amount, :payment_method, :reference, :entity)
+        ON DUPLICATE KEY UPDATE
+        date=VALUES(date), description=VALUES(description), category=VALUES(category),
+        type=VALUES(type), amount=VALUES(amount), payment_method=VALUES(payment_method),
+        reference=VALUES(reference), entity=VALUES(entity)");
+
+    foreach ($ledger as $l) {
+        $lStmt->execute($l);
+    }
+
     echo json_encode([
         'success'     => true,
         'subscribers' => count($subscribers),
         'invoices'    => count($invoices),
-        'message'     => 'Subscribers and Invoices successfully released & populated into MySQL database!'
+        'jobCards'    => count($jobCards),
+        'ledger'      => count($ledger),
+        'message'     => 'All subscribers, invoices, job cards & ledger released & populated into MySQL database!'
     ], JSON_PRETTY_PRINT);
 
 } catch (Exception $e) {
