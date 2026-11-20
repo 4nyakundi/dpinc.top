@@ -676,7 +676,7 @@
           const res = await fetch(ep);
           if (res.ok) {
             const data = await res.json();
-            if (data && data.success && Array.isArray(data.subscribers) && data.subscribers.length > 0) {
+            if (data && data.success) {
               liveData = data;
               break;
             }
@@ -694,6 +694,9 @@
           email: s.email || "",
           location: s.location || "Mombasa",
           ipAddress: s.ip_address || s.ipAddress || "",
+          pppoeUser: s.pppoe_user || s.pppoeUser || "",
+          pppoePass: s.pppoe_pass || s.pppoePass || "",
+          routerModel: s.router_model || s.routerModel || "",
           package: s.package || "Fiber Internet",
           speed: s.speed || "",
           monthlyRate: Number(s.monthly_rate) || Number(s.monthlyRate) || 0,
@@ -702,6 +705,43 @@
           source: s.source || "web",
           status: s.status || "active",
           notes: s.notes || ""
+        }));
+
+        const mappedInvoices = (liveData.invoices || []).map(i => ({
+          id: i.id,
+          invoiceNo: i.invoice_no || i.invoiceNo || "",
+          docType: i.doc_type || i.docType || "Invoice",
+          clientType: i.client_type || i.clientType || "general",
+          clientName: i.client_name || i.clientName || "",
+          phone: i.phone || "",
+          email: i.email || "",
+          location: i.location || "Mombasa",
+          subId: i.sub_id || i.subId || null,
+          status: i.status || "unpaid",
+          issueDate: i.issue_date || i.issueDate || "",
+          dueDate: i.due_date || i.dueDate || "",
+          billingPeriod: i.billing_period || i.billingPeriod || "",
+          subtotal: Number(i.subtotal) || 0,
+          tax: Number(i.tax) || 0,
+          labourFee: Number(i.labour_fee) || Number(i.labourFee) || 0,
+          total: Number(i.total) || Number(i.grandTotal) || Number(i.amount) || 0,
+          amount: Number(i.total) || Number(i.amount) || 0,
+          grandTotal: Number(i.total) || Number(i.grandTotal) || 0,
+          totalPaid: Number(i.total_paid) || Number(i.totalPaid) || 0,
+          balanceDue: Number(i.balance_due) || Number(i.balanceDue) || 0,
+          hasPaymentPlan: Boolean(Number(i.has_payment_plan) || i.hasPaymentPlan),
+          depositAmount: Number(i.deposit_amount) || Number(i.depositAmount) || 0,
+          depositLabel: i.deposit_label || i.depositLabel || "1 ST Installment",
+          notes: i.notes || "",
+          validityNote: i.validity_note || i.validityNote || "Please Note: Valid for 14 days from date.",
+          items: (i.items || []).map(it => ({
+            id: it.id,
+            title: it.title || "Technical Service Deliverable",
+            description: it.description || "",
+            qty: it.qty || "1",
+            rate: Number(it.rate) || 0,
+            total: Number(it.total) || 0
+          }))
         }));
 
         const mappedJobs = (liveData.jobCards || []).map(j => ({
@@ -736,52 +776,41 @@
 
         erpState = {
           subscribers: mappedSubs,
-          invoices: liveData.invoices || [],
+          invoices: mappedInvoices,
           jobCards: mappedJobs,
           ledger: mappedLedger,
-          inventory: INITIAL_ERP_DATA.inventory || [],
+          inventory: (liveData.inventory && liveData.inventory.length) ? liveData.inventory : (INITIAL_ERP_DATA.inventory || []),
           lastUpdated: liveData.timestamp || new Date().toISOString()
         };
-        saveDatabase(false); // save to cache without re-triggering remote push
+        saveDatabase(false); // save to local cache without re-triggering remote push
         return;
       }
     } catch (err) {
       console.warn("Live backend fetch unavailable, falling back to cache:", err);
     }
 
-    // 2. Fallback to localStorage cache
+    // 2. Fallback to localStorage cache (No forced re-injection of deleted records)
     const cached = localStorage.getItem(STORAGE_KEYS.ERP_DATA);
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed && Array.isArray(parsed.subscribers) && parsed.subscribers.length > 0) {
+        if (parsed && typeof parsed === "object") {
           erpState = parsed;
+          if (!Array.isArray(erpState.subscribers)) erpState.subscribers = [];
           if (!Array.isArray(erpState.invoices)) erpState.invoices = [];
-          // Ensure seed subscribers & invoices from INITIAL_ERP_DATA are populated if missing
-          INITIAL_ERP_DATA.subscribers.forEach(sub => {
-            if (!erpState.subscribers.some(s => s.id === sub.id)) {
-              erpState.subscribers.push(sub);
-            }
-          });
-          INITIAL_ERP_DATA.invoices.forEach(inv => {
-            if (!erpState.invoices.some(i => i.id === inv.id)) {
-              erpState.invoices.push(inv);
-            }
-          });
+          if (!Array.isArray(erpState.jobCards)) erpState.jobCards = [];
+          if (!Array.isArray(erpState.ledger)) erpState.ledger = [];
           saveDatabase(false);
-        } else {
-          erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-          saveDatabase(false);
+          return;
         }
       } catch (err) {
         console.error("Error parsing cached ERP data, loading defaults:", err);
-        erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-        saveDatabase(false);
       }
-    } else {
-      erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
-      saveDatabase(false);
     }
+
+    // 3. Absolute initial state
+    erpState = JSON.parse(JSON.stringify(INITIAL_ERP_DATA));
+    saveDatabase(false);
   }
 
   function saveDatabase(syncToBackend = true) {
@@ -793,6 +822,7 @@
         // Sync updated state to backend database asynchronously
         const syncPayload = {
           subscribers: erpState.subscribers || [],
+          invoices: erpState.invoices || [],
           jobCards: erpState.jobCards || [],
           ledger: erpState.ledger || [],
           lastUpdated: erpState.lastUpdated
@@ -2526,22 +2556,44 @@
     dispatchInvoiceViaWhatsApp(inv);
   };
 
-  window.dpDeleteInvoice = function(invId) {
+  window.dpDeleteInvoice = async function(invId) {
     const inv = (erpState.invoices || []).find(i => i.id === invId);
     if (!inv) return;
-    if (!confirm(`Are you sure you want to delete invoice ${inv.invoiceNo} for ${inv.clientName}?`)) return;
+    if (!confirm(`Are you sure you want to permanently delete invoice ${inv.invoiceNo} for ${inv.clientName}?`)) return;
 
     erpState.invoices = (erpState.invoices || []).filter(i => i.id !== invId);
     saveDatabase();
 
-    // Background delete from SQL database backend
-    fetch(`/api/invoices/${invId}`, {
-      method: "DELETE",
-      headers: { "x-admin-key": "dpinc-staff-master" }
-    }).catch(err => console.warn("SQL Delete Sync:", err));
+    // Background permanent delete from SQL database backend
+    await window.dpPermanentDelete("invoice", invId);
 
     renderAll();
-    showToast(`Invoice ${inv.invoiceNo} deleted from database.`);
+    showToast(`Invoice ${inv.invoiceNo} permanently deleted from database.`);
+  };
+
+  window.dpPurgeDemoRecords = async function() {
+    if (!confirm("Are you sure you want to release and permanently purge all demo subscribers and demo invoices from the database? This will give you a clean slate to add your own real records.")) return;
+
+    try {
+      const res = await fetch("api/seed.php?action=purge_demo");
+      const data = await res.json();
+      if (data && data.success) {
+        const demoSubIds = ['sub-101', 'sub-102', 'sub-103', 'sub-104', 'sub-105', 'sub-106', 'sub-107'];
+        const demoInvIds = ['inv-001', 'inv-002', 'inv-003', 'inv-004', 'inv-005', 'inv-006', 'inv-007', 'inv-008'];
+
+        erpState.subscribers = (erpState.subscribers || []).filter(s => !demoSubIds.includes(s.id));
+        erpState.invoices = (erpState.invoices || []).filter(i => !demoInvIds.includes(i.id) && !i.invoiceNo.startsWith("PROF-2026-"));
+
+        saveDatabase();
+        renderAll();
+        showToast("Demo subscribers & invoices released and cleared from database!");
+      } else {
+        alert("Notice: " + (data.error || "Purge completed."));
+      }
+    } catch (e) {
+      console.error("Purge error:", e);
+      showToast("Purge request processed.");
+    }
   };
 
   window.dpOpenBatchInvoices = function() {
