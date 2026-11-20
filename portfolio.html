@@ -193,31 +193,117 @@
         </div>
 
         <!-- Projects Grid -->
+        
+        <!-- =====================================================================
+             IN-PAGE INTERACTIVE LIVE APP SIMULATOR STAGE
+             ===================================================================== -->
+        <div class="glass-panel" id="portInPageStageContainer" style="padding:clamp(1rem, 2.5vw, 1.75rem); margin-bottom:2.5rem; border:1px solid var(--border-color); border-radius:var(--radius-lg); background:var(--bg-card); box-shadow:var(--shadow-card);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div class="browser-dots" style="display:flex; gap:6px;">
+                <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#ef4444; display:inline-block;"></span>
+                <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#f59e0b; display:inline-block;"></span>
+                <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <img id="portStageLogo" src="public/projects/mombasa-mall-logo.png" alt="Project Logo" style="width:28px; height:28px; object-fit:contain; border-radius:6px; background:rgba(0,0,0,0.04); padding:2px;" onerror="this.style.display='none'">
+                <div>
+                  <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                    <h3 id="portStageTitle" style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text-primary); line-height:1.2;">Mombasa Mall 2.0 Commercial Platform</h3>
+                    <span id="portStageBadge" class="badge" style="font-size:0.68rem; padding:2px 8px; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700;">Active Retail Portal</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+              <div class="browser-url-input" style="display:flex; align-items:center; gap:0.4rem; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:20px; padding:0.35rem 0.85rem; font-family:var(--font-mono); font-size:0.78rem; color:var(--text-secondary); max-width:280px;">
+                <i data-lucide="lock" style="width:12px; height:12px; color:#10b981; flex-shrink:0;"></i>
+                <span id="portStageUrl" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">http://localhost/mombasamall.co.ke/index.html</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.25rem; background:var(--bg-secondary); padding:2px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                <button type="button" class="btn btn-secondary btn-sm port-device-btn active" id="portBtnDesktop" onclick="window.dpSetPortDevice('desktop')" title="Desktop View (Full Width)" style="padding:0.35rem 0.55rem; border:none;">
+                  <i data-lucide="monitor" style="width:14px; height:14px;"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm port-device-btn" id="portBtnTablet" onclick="window.dpSetPortDevice('tablet')" title="Tablet View (768px)" style="padding:0.35rem 0.55rem; border:none;">
+                  <i data-lucide="tablet" style="width:14px; height:14px;"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm port-device-btn" id="portBtnMobile" onclick="window.dpSetPortDevice('mobile')" title="Mobile View (390px)" style="padding:0.35rem 0.55rem; border:none;">
+                  <i data-lucide="smartphone" style="width:14px; height:14px;"></i>
+                </button>
+              </div>
+
+              <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpReloadPortFrame()" title="Reload Frame" style="padding:0.35rem 0.55rem;">
+                <i data-lucide="rotate-cw" style="width:14px; height:14px;"></i>
+              </button>
+              <a id="portStageRepoBtn" href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.65rem; font-size:0.78rem;">
+                <i data-lucide="github" style="width:13px; height:13px;"></i> Repo
+              </a>
+              <a id="portStageExternalBtn" href="https://mombasamall.co.ke" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="padding:0.35rem 0.65rem; font-size:0.78rem;">
+                <i data-lucide="external-link" style="width:13px; height:13px;"></i> Pop Out
+              </a>
+            </div>
+          </div>
+
+          <div id="portFrameWrapper" style="width:100%; transition:max-width 0.3s ease, margin 0.3s ease; margin:0 auto; background:#FFFFFF; border-radius:var(--radius-md); border:1px solid var(--border-color); overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+            <iframe id="portLiveIframe" src="http://localhost/mombasamall.co.ke/index.html" style="width:100%; height:620px; border:none; display:block;" title="Interactive App Simulator" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+          </div>
+
+          <div style="margin-top:1.25rem; display:flex; align-items:center; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; -webkit-overflow-scrolling:touch;">
+            <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; margin-right:0.25rem; display:flex; align-items:center; gap:4px;">
+              <i data-lucide="layers" style="width:13px; height:13px; color:var(--lime);"></i> Operate Live:
+            </span>
+            <div id="portQuickSwitchPills" style="display:flex; gap:0.5rem;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
         <div class="portfolio-grid">
 
-          <!-- Live Site 1: MOMBASA MALL -->
+          <!-- Project: Mombasa Mall 2.0 Commercial Platform -->
           <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/equity-afya.jpg" alt="Mombasa Mall Online Portal" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="globe" style="width:12px; height:12px;"></i> Live Web Portal</span>
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/mombasa-mall-hero.jpg" alt="Mombasa Mall 2.0 Commercial Platform" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/mombasa-mall-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  E-Commerce & Retail
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#10b981; border:1px solid #10b98160; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Active Retail Portal
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--lime);">E-Commerce & Commercial Retail</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: MOMBASA-MALL</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">E-Commerce & Retail</span>
+              <a href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/MOMBASA-MALL
+              </a>
             </div>
-            <h3 class="project-title">Mombasa Mall 2.0 Web Platform</h3>
-            <p class="project-desc">
-              Comprehensive multi-tenant commercial mall portal featuring tenant directory, live event booking, retail promotions catalog, and interactive floor plan discovery.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Mombasa Mall 2.0 Commercial Platform</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Comprehensive coastal commercial mall portal featuring multi-store tenant directories, promotions catalog, floor plan locator, and Daraja M-Pesa automated billing.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Next.js</span>
-              <span class="tag">#MultiTenant</span>
-              <span class="tag">#Retail Portal</span>
-              <span class="tag">#Payment Gateway</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#JavaScript</span> <span class="tag">#E-Commerce</span> <span class="tag">#Multi-Tenant</span> <span class="tag">#M-Pesa API</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://mombasamall.co.ke', 'Mombasa Mall 2.0 Platform', 'https://github.com/4nyakundi/MOMBASA-MALL')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-mombasa-mall', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/mombasamall.co.ke/index.html', 'Mombasa Mall 2.0 Commercial Platform', 'https://github.com/4nyakundi/MOMBASA-MALL')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -225,57 +311,48 @@
             </div>
           </div>
 
-          <!-- Live Site 2: Paws & Hooves -->
-          <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/paws-and-hooves.jpg" alt="Paws & Hooves by Wangari" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="globe" style="width:12px; height:12px;"></i> Veterinary & Pet Care</span>
+          <!-- Project: Catch Security Links Ltd -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/catch-security-hero.jpg" alt="Catch Security Links Ltd" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/catch-security-logo.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Security & IoT
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#3b82f6; border:1px solid #3b82f660; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Enterprise SLA
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--cyan);">Animal Health & Clinics</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Paws-Hooves</span>
-            </div>
-            <h3 class="project-title">Paws & Hooves Veterinary Clinic</h3>
-            <p class="project-desc">
-              Veterinary care and emergency pet services portal with automated medical appointments booking, patient registration, and interactive healthcare guidance.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Veterinary Clinic</span>
-              <span class="tag">#Booking Engine</span>
-              <span class="tag">#Mobile Responsive</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://pawsandhooves.co.ke', 'Paws & Hooves Veterinary Platform', 'https://github.com/4nyakundi/Paws-Hooves')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/Paws-Hooves" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Security & IoT</span>
+              <a href="https://github.com/4nyakundi/catchsecuritylinksltd.co.ke" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/catchsecuritylinksltd.co.ke
               </a>
             </div>
-          </div>
 
-          <!-- Live Site 3: Catch Security Links Ltd -->
-          <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/catch-security-links.png" alt="Catch Security Links Ltd" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="shield" style="width:12px; height:12px;"></i> Security System</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#ef4444;">Perimeter Defense & CCTV</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: catchsecuritylinksltd</span>
-            </div>
-            <h3 class="project-title">Catch Security Links System</h3>
-            <p class="project-desc">
-              Commercial perimeter security, CCTV incident dispatch, client surveillance management, and remote patrol logging web portal.
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Catch Security Links Ltd</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Corporate portal for leading coastal Kenya perimeter surveillance provider. Manages IP CCTV camera installations, biometric turnstiles, and emergency patrol dispatch.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Security System</span>
-              <span class="tag">#CCTV Remote View</span>
-              <span class="tag">#Incident Logging</span>
+              <span class="tag">#PHP</span> <span class="tag">#JavaScript</span> <span class="tag">#Security IoT</span> <span class="tag">#CCTV Monitoring</span> <span class="tag">#Tailwind CSS</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://catchsecuritylinksltd.co.ke', 'Catch Security Links Platform', 'https://github.com/4nyakundi/catchsecuritylinksltd.co.ke')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-catch-sec', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/Catch%20Security%20System/index.html', 'Catch Security Links Ltd', 'https://github.com/4nyakundi/catchsecuritylinksltd.co.ke')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/catchsecuritylinksltd.co.ke" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -283,202 +360,48 @@
             </div>
           </div>
 
-          <!-- Live Site 4: Azurite Rental System -->
-          <div class="glass-panel project-card" data-category="software">
-            <div class="project-preview-thumb">
-              <img src="public/clients/art-by-oture.png" alt="Azurite Rental System" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="home" style="width:12px; height:12px;"></i> Property Management</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--purple);">Property & Tenancy ERP</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Azurite-Rental</span>
-            </div>
-            <h3 class="project-title">Azurite Real Estate & Rental System</h3>
-            <p class="project-desc">
-              Automated tenancy lease management, M-Pesa automated rent reconciliation, arrears tracking, tenant utility ledger, and landlord financial statements.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Rental Automation</span>
-              <span class="tag">#M-Pesa Reconciliation</span>
-              <span class="tag">#Lease Tracking</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://azuriterentals.co.ke', 'Azurite Real Estate Portal', 'https://github.com/4nyakundi/Azurite-Rental-System')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/Azurite-Rental-System" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
-              </a>
-            </div>
-          </div>
-
-          <!-- Live Site 5: Star Lash Kenya -->
+          <!-- Project: Modoria Media & Tech Agency -->
           <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/star-lash.jpg" alt="Star Lash Kenya" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="sparkles" style="width:12px; height:12px;"></i> Beauty & Salon</span>
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/modoria-hero.jpg" alt="Modoria Media & Tech Agency" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/modoria-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Creative & Media
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#8b5cf6; border:1px solid #8b5cf660; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Live Agency Portal
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#ec4899;">Luxury Salon & Studio</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: starlashkenya</span>
-            </div>
-            <h3 class="project-title">Star Lash Kenya Studio & Academy</h3>
-            <p class="project-desc">
-              High-conversion beauty booking platform featuring service showcase, appointment slots, customer testimonials, and luxury lifestyle branding.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Salon Booking</span>
-              <span class="tag">#Luxury UI</span>
-              <span class="tag">#Brand Strategy</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://starlashkenya.co.ke', 'Star Lash Kenya Portal', 'https://github.com/4nyakundi/starlashkenya')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/starlashkenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Creative & Media</span>
+              <a href="https://github.com/4nyakundi/modoria.co.ke" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/modoria.co.ke
               </a>
             </div>
-          </div>
 
-          <!-- Live Site 6: Ace Vet Care Kenya -->
-          <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/equity-afya.jpg" alt="Ace Vet Care Kenya" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="activity" style="width:12px; height:12px;"></i> Veterinary Care</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--cyan);">Veterinary & Lab Services</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: acevetcarekenya</span>
-            </div>
-            <h3 class="project-title">Ace Vet Care Kenya Medical Portal</h3>
-            <p class="project-desc">
-              Comprehensive veterinary medicine platform including farm animal diagnostics, vaccination scheduling, domestic pet checkups, and mobile field appointments.
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Modoria Media & Tech Agency</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              High-end digital agency website presenting enterprise software engineering, bespoke brand identity design, media production, and digital marketing strategies.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Veterinary Clinic</span>
-              <span class="tag">#Farm Diagnostics</span>
-              <span class="tag">#Appointments</span>
+              <span class="tag">#HTML5</span> <span class="tag">#CSS3</span> <span class="tag">#JavaScript</span> <span class="tag">#GSAP Animations</span> <span class="tag">#UI/UX Design</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://acevetcare.co.ke', 'Ace Vet Care Kenya', 'https://github.com/4nyakundi/acevetcarekenya')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-modoria', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
               </button>
-              <a href="https://github.com/4nyakundi/acevetcarekenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
-              </a>
-            </div>
-          </div>
-
-          <!-- Live Site 7: Car Rental System -->
-          <div class="glass-panel project-card" data-category="software">
-            <div class="project-preview-thumb">
-              <img src="public/clients/art-by-oture.png" alt="Car Rental System" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="car" style="width:12px; height:12px;"></i> Fleet Management</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#f59e0b;">Fleet Operations & Bookings</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Car-Rental-System</span>
-            </div>
-            <h3 class="project-title">Executive Car Rental & Fleet Dispatch</h3>
-            <p class="project-desc">
-              Automated vehicle fleet reservations, calendar availability engine, driver assignment, digital return inspections, and security deposit management.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Fleet Manager</span>
-              <span class="tag">#Booking Calendar</span>
-              <span class="tag">#Vehicle Inspection</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://carrentals.co.ke', 'Executive Car Rental System', 'https://github.com/4nyakundi/Car-Rental-System-')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/Car-Rental-System-" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
-              </a>
-            </div>
-          </div>
-
-          <!-- Live Site 8: Tudor Carpet Cleaners -->
-          <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/star-lash.jpg" alt="Tudor Carpet Cleaners" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="sparkles" style="width:12px; height:12px;"></i> Service Logistics</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--lime);">Commercial & Home Cleaning</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Tudorcarpetcleaners</span>
-            </div>
-            <h3 class="project-title">Tudor Carpet Cleaners Portal</h3>
-            <p class="project-desc">
-              On-demand upholstery cleaning booking engine, pickup & delivery scheduler, fabric sanitization rate calculator, and instant quotation generator.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#OnDemand Service</span>
-              <span class="tag">#Instant Quote</span>
-              <span class="tag">#Mombasa Logistics</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://tudorcarpetcleaners.com', 'Tudor Carpet Cleaners Portal', 'https://github.com/4nyakundi/Tudorcarpetcleaners')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/Tudorcarpetcleaners" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
-              </a>
-            </div>
-          </div>
-
-          <!-- Live Site 9: Art By Oture -->
-          <div class="glass-panel project-card" data-category="creative">
-            <div class="project-preview-thumb">
-              <img src="public/clients/art-by-oture.png" alt="Art By Oture" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="palette" style="width:12px; height:12px;"></i> Fine Arts & Studio</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--purple);">Visual Arts & Gallery</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: artbyoture_ABO26</span>
-            </div>
-            <h3 class="project-title">Art By Oture Creative Portfolio</h3>
-            <p class="project-desc">
-              Immersive online contemporary art gallery, digital commission requests, exhibition archive, and high-resolution virtual showcase.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Art Gallery</span>
-              <span class="tag">#Virtual Exhibit</span>
-              <span class="tag">#Commissions</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://artbyoture.co.ke', 'Art By Oture Fine Arts', 'https://github.com/4nyakundi/artbyoture_ABO26')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
-              </button>
-              <a href="https://github.com/4nyakundi/artbyoture_ABO26" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
-                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
-              </a>
-            </div>
-          </div>
-
-          <!-- Live Site 10: Modoria Fashion -->
-          <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/star-lash.jpg" alt="Modoria Kenya" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="shopping-bag" style="width:12px; height:12px;"></i> Fashion & Retail</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--cyan);">Modern Fashion Brand</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: modoria.co.ke</span>
-            </div>
-            <h3 class="project-title">Modoria Fashion & Lifestyle</h3>
-            <p class="project-desc">
-              Boutique e-commerce storefront with curated collections, dynamic size selection, instant WhatsApp checkout, and seamless courier delivery dispatch.
-            </p>
-            <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Apparel</span>
-              <span class="tag">#E-Commerce</span>
-              <span class="tag">#Fast Checkout</span>
-            </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://modoria.co.ke', 'Modoria Lifestyle Store', 'https://github.com/4nyakundi/modoria.co.ke')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/modoria/index.html', 'Modoria Media & Tech Agency', 'https://github.com/4nyakundi/modoria.co.ke')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/modoria.co.ke" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -486,57 +409,195 @@
             </div>
           </div>
 
-          <!-- Live Site 11: eDocs Appointment System -->
+          <!-- Project: Ace Vet Care Kenya -->
           <div class="glass-panel project-card" data-category="software">
-            <div class="project-preview-thumb">
-              <img src="public/clients/equity-afya.jpg" alt="eDocs System" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="calendar" style="width:12px; height:12px;"></i> Telehealth & Clinics</span>
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/ace-vet-hero.jpg" alt="Ace Vet Care Kenya" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/ace-vet-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Healthcare & Veterinary
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#06b6d4; border:1px solid #06b6d460; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Active Health System
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--lime);">Medical Appointments</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: edocs-appointment-sys</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Healthcare & Veterinary</span>
+              <a href="https://github.com/4nyakundi/acevetcarekenya" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/acevetcarekenya
+              </a>
             </div>
-            <h3 class="project-title">eDocs Appointment & Patient Portal</h3>
-            <p class="project-desc">
-              Multi-doctor clinic scheduling system with automated SMS reminders, digital triage form intake, doctor shift calendar, and consultation queue management.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Ace Vet Care Kenya</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Veterinary medical portal providing patient health records, surgical procedure appointments, domestic pet checkups, and farm animal mobile triage.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#HealthTech</span>
-              <span class="tag">#SMS Alerts</span>
-              <span class="tag">#Doctor Scheduling</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Appointment Engine</span> <span class="tag">#Medical Records</span> <span class="tag">#Bootstrap</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://edocs.dpinc.top', 'eDocs Appointment Platform', 'https://github.com/4nyakundi/edocs-appointment-sys')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-ace-vet', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
               </button>
-              <a href="https://github.com/4nyakundi/edocs-appointment-sys" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/acevetcarekenya/index.html', 'Ace Vet Care Kenya', 'https://github.com/4nyakundi/acevetcarekenya')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/acevetcarekenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
               </a>
             </div>
           </div>
 
-          <!-- Live Site 12: Smart Parking Management -->
-          <div class="glass-panel project-card" data-category="infrastructure">
-            <div class="project-preview-thumb">
-              <img src="public/clients/catch-security-links.png" alt="Smart Parking Access" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="shield-check" style="width:12px; height:12px;"></i> Automated Tolls</span>
+          <!-- Project: Star Lash Kenya Beauty Studio -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/starlash-hero.jpg" alt="Star Lash Kenya Beauty Studio" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/starlash-logo.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Beauty & Lifestyle
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#ec4899; border:1px solid #ec489960; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> E-Commerce & Booking
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:var(--cyan);">Toll & Barrier Access</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: parking</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Beauty & Lifestyle</span>
+              <a href="https://github.com/4nyakundi/starlashkenya" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/starlashkenya
+              </a>
             </div>
-            <h3 class="project-title">Smart Gate & Parking Control System</h3>
-            <p class="project-desc">
-              Automated barrier gate integration, license plate optical recognition (ALPR), cashless M-Pesa parking payment, and real-time bay occupancy telemetry.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Star Lash Kenya Beauty Studio</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Luxury beauty studio appointment booking and cosmetics storefront. Features beauty therapist slot reservation, deposit payments, and curated beauty products.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#IoT Access</span>
-              <span class="tag">#ALPR Cameras</span>
-              <span class="tag">#Automated Toll</span>
+              <span class="tag">#JavaScript</span> <span class="tag">#Tailwind CSS</span> <span class="tag">#Booking Calendar</span> <span class="tag">#Product Shop</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://parking.dpinc.top', 'Smart Parking System', 'https://github.com/4nyakundi/parking')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-starlash', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/starlash/index.html', 'Star Lash Kenya Beauty Studio', 'https://github.com/4nyakundi/starlashkenya')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/starlashkenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project: Azurite Property Rental System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/azurite-hero.jpg" alt="Azurite Property Rental System" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/azurite-living.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Real Estate & Leasing
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#10b981; border:1px solid #10b98160; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> SaaS Portal
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Real Estate & Leasing</span>
+              <a href="https://github.com/4nyakundi/Azurite-Rental-System" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/Azurite-Rental-System
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Azurite Property Rental System</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Automated real estate tenancy lease management system with automated monthly rent invoicing, utility billing, arrears tracking, and landlord financial statements.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Property ERP</span> <span class="tag">#M-Pesa Auto-Reconcile</span> <span class="tag">#PDF Invoicing</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-azurite-rental', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/Azurite-Rental-System/index.php', 'Azurite Property Rental System', 'https://github.com/4nyakundi/Azurite-Rental-System')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/Azurite-Rental-System" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project: Smart Parking & Barrier Gate System -->
+          <div class="glass-panel project-card" data-category="infrastructure">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/parking-wordmark.png" alt="Smart Parking & Barrier Gate System" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/parking-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  IoT & Access Control
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#059669; border:1px solid #05966960; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Hardware & Gate Barrier
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">IoT & Access Control</span>
+              <a href="https://github.com/4nyakundi/parking" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/parking
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Smart Parking & Barrier Gate System</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Automated boom barrier gate and smart parking ticket management system. Tracks license plates (ALPR), hourly parking tariffs, and automated cashier validation.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Barrier Gate IoT</span> <span class="tag">#Ticket Barcode</span> <span class="tag">#Hourly Billing</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-parking', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/parking/index.php', 'Smart Parking & Barrier Gate System', 'https://github.com/4nyakundi/parking')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/parking" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -544,29 +605,146 @@
             </div>
           </div>
 
-          
-          <!-- Live Site 13: 6AM Kenya Entertainment Guide -->
-          <div class="glass-panel project-card" data-category="creative">
-            <div class="project-preview-thumb">
-              <img src="public/clients/star-lash.jpg" alt="6AM Kenya" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="music" style="width:12px; height:12px;"></i> Entertainment & Media</span>
+          <!-- Project: eDocs Medical Appointment System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/edocs-bg.jpg" alt="eDocs Medical Appointment System" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/edocs-hero.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Health & Telemedicine
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#0284c7; border:1px solid #0284c760; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Medical Portal
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#f43f5e;">Coastal Nightlife & Events</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: 6amkenya</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Health & Telemedicine</span>
+              <a href="https://github.com/4nyakundi/edocs-appointment-sys" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/edocs-appointment-sys
+              </a>
             </div>
-            <h3 class="project-title">6AM Kenya Entertainment & Events Portal</h3>
-            <p class="project-desc">
-              Coastal lifestyle, concert ticketing, DJ lineup spotlights, nightlife venue directories, and event calendar for Mombasa and Diani beach scenes.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">eDocs Medical Appointment System</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Doctor appointment booking and electronic patient triage system designed for medical specialists, diagnostic clinics, and hospital outpatient departments.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Next.js</span>
-              <span class="tag">#Event Ticketing</span>
-              <span class="tag">#Nightlife Guide</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#HIPAA Compliant</span> <span class="tag">#Doctor Rostering</span> <span class="tag">#Audit Logs</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://6amkenya.co.ke', '6AM Kenya Guide', 'https://github.com/4nyakundi/6amkenya')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-edocs', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/edocs/index.php', 'eDocs Medical Appointment System', 'https://github.com/4nyakundi/edocs-appointment-sys')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/edocs-appointment-sys" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project: Tudor Carpet Cleaners -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/tudor-hero.webp" alt="Tudor Carpet Cleaners" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/tudor-hero.webp" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Commercial Services
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#f59e0b; border:1px solid #f59e0b60; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Dispatch System
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Commercial Services</span>
+              <a href="https://github.com/4nyakundi/Tudorcarpetcleaners" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/Tudorcarpetcleaners
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Tudor Carpet Cleaners</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              On-demand carpet, upholstery, and commercial sanitization booking portal. Features square-meter pricing estimator, van dispatch scheduling, and instant quotations.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Dispatch Logistics</span> <span class="tag">#Service Estimator</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-tudor-cleaners', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/tudor/index.html', 'Tudor Carpet Cleaners', 'https://github.com/4nyakundi/Tudorcarpetcleaners')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/Tudorcarpetcleaners" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project: 6AM Kenya Entertainment Guide -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/6amkenya-hero.jpg" alt="6AM Kenya Entertainment Guide" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/6amkenya-hero.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Media & Entertainment
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#f43f5e; border:1px solid #f43f5e60; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Digital Media
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Media & Entertainment</span>
+              <a href="https://github.com/4nyakundi/6amkenya" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/6amkenya
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">6AM Kenya Entertainment Guide</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Coastal nightlife, concert ticketing, DJ festival showcases, venue directories, and tourism entertainment guide for Mombasa, Nyali, and Diani Beach.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#Next.js</span> <span class="tag">#Tailwind</span> <span class="tag">#Event Ticketing</span> <span class="tag">#Media Player</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-6am-kenya', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/6amkenya/index.html', '6AM Kenya Entertainment Guide', 'https://github.com/4nyakundi/6amkenya')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/6amkenya" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -574,28 +752,48 @@
             </div>
           </div>
 
-          <!-- Live Site 14: R3 Realtors Coastal Realty -->
+          <!-- Project: R3 Realtors Coastal Realty -->
           <div class="glass-panel project-card" data-category="software">
-            <div class="project-preview-thumb">
-              <img src="public/clients/equity-afya.jpg" alt="R3 Realtors" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="home" style="width:12px; height:12px;"></i> Real Estate</span>
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/r3realtors-hero.jpg" alt="R3 Realtors Coastal Realty" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/r3realtors-hero.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Real Estate & Land
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#14b8a6; border:1px solid #14b8a660; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Listing Portal
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#14b8a6;">Luxury Coastal Properties</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: r3-realtors</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Real Estate & Land</span>
+              <a href="https://github.com/4nyakundi/r3-realtors" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/r3-realtors
+              </a>
             </div>
-            <h3 class="project-title">R3 Realtors Coastal Property Listings</h3>
-            <p class="project-desc">
-              Beachfront property sales, executive residential villas, commercial land parcel listings in Nyali and Vipingo with direct WhatsApp scheduling.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">R3 Realtors Coastal Realty</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Luxury coastal property brokerage platform featuring prime beachfront land, executive villas in Nyali & Diani, and commercial leasing listings with virtual tours.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Real Estate</span>
-              <span class="tag">#Property Search</span>
-              <span class="tag">#WhatsApp Inquiries</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Property Listings</span> <span class="tag">#Search Filters</span> <span class="tag">#Inquiry CRM</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://r3realtors.co.ke', 'R3 Realtors Portal', 'https://github.com/4nyakundi/r3-realtors')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-r3-realtors', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/r3realtors/index.html', 'R3 Realtors Coastal Realty', 'https://github.com/4nyakundi/r3-realtors')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/r3-realtors" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -603,28 +801,97 @@
             </div>
           </div>
 
-          <!-- Live Site 15: Play-On Gaming Lounge -->
-          <div class="glass-panel project-card" data-category="creative">
-            <div class="project-preview-thumb">
-              <img src="public/clients/art-by-oture.png" alt="Play-On Lounge" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="tv" style="width:12px; height:12px;"></i> Esports & Gaming</span>
+          <!-- Project: Paws & Hooves Wildlife Sanctuary -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/paws-hooves-logo.png" alt="Paws & Hooves Wildlife Sanctuary" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/paws-hooves-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Animal Sanctuary & Care
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#10b981; border:1px solid #10b98160; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Rescue & Shelter ERP
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#a855f7;">Console & Esports Arena</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: Play-On</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Animal Sanctuary & Care</span>
+              <a href="https://github.com/4nyakundi/Paws-Hooves" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/Paws-Hooves
+              </a>
             </div>
-            <h3 class="project-title">Play-On Gaming Lounge System</h3>
-            <p class="project-desc">
-              Esports lounge management controlling gaming station timers for PS5 and Xbox, tournament bracket match tracking, and snack bar billing.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Paws & Hooves Wildlife Sanctuary</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Animal rescue, veterinary surgery, and sanctuary registry. Manages pet adoption listings, emergency rescue ambulance dispatch, and donor contributions.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Gaming POS</span>
-              <span class="tag">#Timer Billing</span>
-              <span class="tag">#Tournament Bracket</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Adoption Portal</span> <span class="tag">#Donations</span> <span class="tag">#Animal Health</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://playonlounge.co.ke', 'Play-On Gaming Lounge', 'https://github.com/4nyakundi/Play-On')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-paws-hooves', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/projects-live/paws-hooves/index.html', 'Paws & Hooves Wildlife Sanctuary', 'https://github.com/4nyakundi/Paws-Hooves')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/Paws-Hooves" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
+
+          <!-- Project: Play-On Gaming Lounge -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/playon-logo.png" alt="Play-On Gaming Lounge" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/playon-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Gaming & Esports
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#a855f7; border:1px solid #a855f760; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Console & Tournament Hub
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Gaming & Esports</span>
+              <a href="https://github.com/4nyakundi/Play-On" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/Play-On
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Play-On Gaming Lounge</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Esports gaming lounge management system controlling PlayStation 5, Xbox Series X, and PC station timers, member wallet balance, and tournament brackets.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#JavaScript</span> <span class="tag">#Node.js</span> <span class="tag">#Timer System</span> <span class="tag">#POS Terminal</span> <span class="tag">#WebSocket</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-playon', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/playon', 'Play-On Gaming Lounge', 'https://github.com/4nyakundi/Play-On')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/4nyakundi/Play-On" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -632,28 +899,48 @@
             </div>
           </div>
 
-          <!-- Live Site 16: Fry Nation Fast-Casual Kitchen -->
+          <!-- Project: Fry Nation Quick Kitchen POS -->
           <div class="glass-panel project-card" data-category="live-sites">
-            <div class="project-preview-thumb">
-              <img src="public/clients/star-lash.jpg" alt="Fry Nation" onerror="this.src='public/dp-logo.png'">
-              <span class="project-preview-badge"><i data-lucide="coffee" style="width:12px; height:12px;"></i> Food & Restaurant POS</span>
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/frynation-hero.jpg" alt="Fry Nation Quick Kitchen POS" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/frynation-logo.jpg" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Food & Restaurant POS
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#ea580c; border:1px solid #ea580c60; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Fast-Food POS
+              </span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
-              <span class="project-category" style="color:#ea580c;">Fast-Food Restaurant POS</span>
-              <span class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem;">GitHub: frynation</span>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Food & Restaurant POS</span>
+              <a href="https://github.com/shimix-del/frynation" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> shimix-del/frynation
+              </a>
             </div>
-            <h3 class="project-title">Fry Nation Kitchen Display & POS</h3>
-            <p class="project-desc">
-              Digital kitchen order display, cashier till reconciliation, automated thermal receipt printing, and M-Pesa automated transaction verification.
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Fry Nation Quick Kitchen POS</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Fast-casual restaurant food ordering, kitchen display system (KDS), automated thermal receipt printing, and cashier cash drawer reconciliation.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Kitchen KDS</span>
-              <span class="tag">#Restaurant POS</span>
-              <span class="tag">#Thermal Printing</span>
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Kitchen KDS</span> <span class="tag">#M-Pesa POS</span> <span class="tag">#Receipt Printing</span>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;">
-              <button class="btn btn-primary btn-sm" onclick="window.dpOpenSitePreview('https://frynation.co.ke', 'Fry Nation Kitchen POS', 'https://github.com/shimix-del/frynation')">
-                <i data-lucide="eye" style="width:14px; height:14px;"></i> Live Preview
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-frynation', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('http://localhost/nanifrys%20git/frynation/client/public/index.html', 'Fry Nation Quick Kitchen POS', 'https://github.com/shimix-del/frynation')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
               </button>
               <a href="https://github.com/shimix-del/frynation" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
                 <i data-lucide="github" style="width:14px; height:14px;"></i> Code
@@ -661,29 +948,103 @@
             </div>
           </div>
 
-          <!-- Project 13: Enterprise Headquarters Build-Out -->
-          <div class="glass-panel project-card" data-category="infrastructure">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <span class="project-category">Infrastructure & Security</span>
-              <div class="pillar-icon-box" style="width:40px; height:40px; margin-bottom:0; color:var(--cyan); border-color:var(--cyan-glow); background:rgba(6,182,212,0.1);">
-                <i data-lucide="network" style="width:18px; height:18px;"></i>
+          <!-- Project: Art By Oture Canvas Gallery -->
+          <div class="glass-panel project-card" data-category="live-sites">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/artbyoture-hero.jpg" alt="Art By Oture Canvas Gallery" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/artbyoture-logo.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Art & Exhibition
+                </span>
               </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#d946ef; border:1px solid #d946ef60; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Fine Art Portfolio
+              </span>
             </div>
-            <h3 class="project-title">Enterprise Headquarters Build-Out</h3>
-            <p class="project-desc">
-              Complete technological fit-out for corporate office: fault-tolerant secure WiFi covering 50,000 sq ft, 40 HD remote-view CCTV cameras, and automated cloud backup.
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Art & Exhibition</span>
+              <a href="https://github.com/4nyakundi/artbyoture_ABO26" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/artbyoture_ABO26
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Art By Oture Canvas Gallery</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Original oil on canvas paintings, African contemporary portraiture, and commissioned artwork showcase with international delivery cost calculation.
             </p>
+
             <div class="tag-list" style="margin-bottom:1.25rem;">
-              <span class="tag">#Structured Cabling</span>
-              <span class="tag">#Secure WiFi</span>
-              <span class="tag">#HD CCTV</span>
-              <span class="tag">#Disaster Recovery</span>
+              <span class="tag">#JavaScript</span> <span class="tag">#CSS3</span> <span class="tag">#Art Gallery</span> <span class="tag">#Commission Form</span>
             </div>
-            <a href="contact.html?project=enterprise-infra" class="btn btn-secondary btn-sm" style="align-self:flex-start; margin-top:auto;">
-              Discuss Similar Project <i data-lucide="arrow-up-right" style="width:14px; height:14px;"></i>
-            </a>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-artbyoture', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('https://artbyoture.co.ke', 'Art By Oture Canvas Gallery', 'https://github.com/4nyakundi/artbyoture_ABO26')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/artbyoture_ABO26" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
           </div>
 
+          <!-- Project: Coastal Car Rental System -->
+          <div class="glass-panel project-card" data-category="software">
+            <div class="project-preview-thumb" style="position:relative; width:100%; height:190px; overflow:hidden; border-radius:var(--radius-md); background:#0F172A; display:flex; align-items:center; justify-content:center;">
+              <img src="public/projects/parking-wordmark.png" alt="Coastal Car Rental System" style="width:100%; height:100%; object-fit:cover; opacity:0.88;" onerror="this.src='public/dp-logo.png'">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.15) 60%);"></div>
+              
+              <div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 10px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center;">
+                  <img src="public/projects/parking-wordmark.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                </div>
+                <span class="badge" style="font-size:0.65rem; padding:1px 6px; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none; font-weight:700;">
+                  Automotive & Fleet
+                </span>
+              </div>
+
+              <span class="project-preview-badge" style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.75); color:#6366f1; border:1px solid #6366f160; backdrop-filter:blur(4px);">
+                <i data-lucide="globe" style="width:11px; height:11px;"></i> Fleet Management
+              </span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin:0.75rem 0 0.25rem 0;">
+              <span class="project-category" style="color:var(--lime);">Automotive & Fleet</span>
+              <a href="https://github.com/4nyakundi/Car-Rental-System-" target="_blank" rel="noopener" class="badge" style="font-size:0.7rem; padding:0.15rem 0.5rem; text-decoration:none;">
+                <i data-lucide="github" style="width:11px; height:11px; display:inline;"></i> 4nyakundi/Car-Rental-System-
+              </a>
+            </div>
+
+            <h3 class="project-title" style="margin-bottom:0.4rem;">Coastal Car Rental System</h3>
+            <p class="project-desc" style="font-size:0.85rem; line-height:1.45; margin-bottom:0.75rem;">
+              Vehicle fleet leasing, reservation, and driver tracking management system. Includes daily rate calculations, security deposit handling, and GPS fleet inspection.
+            </p>
+
+            <div class="tag-list" style="margin-bottom:1.25rem;">
+              <span class="tag">#PHP</span> <span class="tag">#MySQL</span> <span class="tag">#Fleet Management</span> <span class="tag">#Contract Generator</span> <span class="tag">#REST API</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; margin-top:auto; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpLoadPortStage('proj-car-rental', true)">
+                <i data-lucide="play" style="width:14px; height:14px;"></i> Operate Live
+              </button>
+              <button class="btn btn-secondary btn-sm" title="Modal Preview" onclick="window.dpOpenSitePreview('https://coastalcarrental.co.ke', 'Coastal Car Rental System', 'https://github.com/4nyakundi/Car-Rental-System-')">
+                <i data-lucide="eye" style="width:14px; height:14px;"></i>
+              </button>
+              <a href="https://github.com/4nyakundi/Car-Rental-System-" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                <i data-lucide="github" style="width:14px; height:14px;"></i> Code
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -854,5 +1215,561 @@
   </a>
 
   <script src="js/main.js"></script>
+
+  <script>
+    const PORT_PROJECTS = [
+  {
+    "id": "proj-mombasa-mall",
+    "name": "Mombasa Mall 2.0 Commercial Platform",
+    "repo": "4nyakundi/MOMBASA-MALL",
+    "repoUrl": "https://github.com/4nyakundi/MOMBASA-MALL",
+    "liveUrl": "https://mombasamall.co.ke",
+    "localUrl": "http://localhost/mombasamall.co.ke/index.html",
+    "logo": "public/projects/mombasa-mall-logo.png",
+    "hero": "public/projects/mombasa-mall-hero.jpg",
+    "category": "ecommerce",
+    "categoryLabel": "E-Commerce & Retail",
+    "badge": "Active Retail Portal",
+    "badgeColor": "#10b981",
+    "desc": "Comprehensive coastal commercial mall portal featuring multi-store tenant directories, promotions catalog, floor plan locator, and Daraja M-Pesa automated billing.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "JavaScript",
+      "E-Commerce",
+      "Multi-Tenant",
+      "M-Pesa API"
+    ],
+    "features": [
+      "Store directory & floor plan guide",
+      "Tenant management dashboard",
+      "Live event promotional alerts",
+      "Integrated Daraja M-Pesa billing"
+    ]
+  },
+  {
+    "id": "proj-catch-sec",
+    "name": "Catch Security Links Ltd",
+    "repo": "4nyakundi/catchsecuritylinksltd.co.ke",
+    "repoUrl": "https://github.com/4nyakundi/catchsecuritylinksltd.co.ke",
+    "liveUrl": "https://catchsecuritylinks.co.ke",
+    "localUrl": "http://localhost/Catch%20Security%20System/index.html",
+    "logo": "public/projects/catch-security-logo.jpg",
+    "hero": "public/projects/catch-security-hero.jpg",
+    "category": "security",
+    "categoryLabel": "Security & IoT",
+    "badge": "Enterprise SLA",
+    "badgeColor": "#3b82f6",
+    "desc": "Corporate portal for leading coastal Kenya perimeter surveillance provider. Manages IP CCTV camera installations, biometric turnstiles, and emergency patrol dispatch.",
+    "tags": [
+      "PHP",
+      "JavaScript",
+      "Security IoT",
+      "CCTV Monitoring",
+      "Tailwind CSS"
+    ],
+    "features": [
+      "Live service ticketing engine",
+      "CCTV equipment catalog",
+      "AMC contract management",
+      "NOC security monitoring"
+    ]
+  },
+  {
+    "id": "proj-modoria",
+    "name": "Modoria Media & Tech Agency",
+    "repo": "4nyakundi/modoria.co.ke",
+    "repoUrl": "https://github.com/4nyakundi/modoria.co.ke",
+    "liveUrl": "https://modoria.co.ke",
+    "localUrl": "http://localhost/projects-live/modoria/index.html",
+    "logo": "public/projects/modoria-logo.png",
+    "hero": "public/projects/modoria-hero.jpg",
+    "category": "creative",
+    "categoryLabel": "Creative & Media",
+    "badge": "Live Agency Portal",
+    "badgeColor": "#8b5cf6",
+    "desc": "High-end digital agency website presenting enterprise software engineering, bespoke brand identity design, media production, and digital marketing strategies.",
+    "tags": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "GSAP Animations",
+      "UI/UX Design"
+    ],
+    "features": [
+      "Case studies interactive showcase",
+      "Interactive client portfolio",
+      "Lead intake & proposal engine",
+      "SEO-optimized structure"
+    ]
+  },
+  {
+    "id": "proj-ace-vet",
+    "name": "Ace Vet Care Kenya",
+    "repo": "4nyakundi/acevetcarekenya",
+    "repoUrl": "https://github.com/4nyakundi/acevetcarekenya",
+    "liveUrl": "https://acevetcarekenya.co.ke",
+    "localUrl": "http://localhost/acevetcarekenya/index.html",
+    "logo": "public/projects/ace-vet-logo.png",
+    "hero": "public/projects/ace-vet-hero.jpg",
+    "category": "booking",
+    "categoryLabel": "Healthcare & Veterinary",
+    "badge": "Active Health System",
+    "badgeColor": "#06b6d4",
+    "desc": "Veterinary medical portal providing patient health records, surgical procedure appointments, domestic pet checkups, and farm animal mobile triage.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Appointment Engine",
+      "Medical Records",
+      "Bootstrap"
+    ],
+    "features": [
+      "Patient medical history logs",
+      "Automated SMS appointment reminders",
+      "Pet vaccination passport tracker",
+      "Tele-triage intake"
+    ]
+  },
+  {
+    "id": "proj-starlash",
+    "name": "Star Lash Kenya Beauty Studio",
+    "repo": "4nyakundi/starlashkenya",
+    "repoUrl": "https://github.com/4nyakundi/starlashkenya",
+    "liveUrl": "https://starlashkenya.co.ke",
+    "localUrl": "http://localhost/projects-live/starlash/index.html",
+    "logo": "public/projects/starlash-logo.jpg",
+    "hero": "public/projects/starlash-hero.jpg",
+    "category": "booking",
+    "categoryLabel": "Beauty & Lifestyle",
+    "badge": "E-Commerce & Booking",
+    "badgeColor": "#ec4899",
+    "desc": "Luxury beauty studio appointment booking and cosmetics storefront. Features beauty therapist slot reservation, deposit payments, and curated beauty products.",
+    "tags": [
+      "JavaScript",
+      "Tailwind CSS",
+      "Booking Calendar",
+      "Product Shop"
+    ],
+    "features": [
+      "Time-slot reservation engine",
+      "Deposit payment collection",
+      "Cosmetics online shopping",
+      "Client review gallery"
+    ]
+  },
+  {
+    "id": "proj-azurite-rental",
+    "name": "Azurite Property Rental System",
+    "repo": "4nyakundi/Azurite-Rental-System",
+    "repoUrl": "https://github.com/4nyakundi/Azurite-Rental-System",
+    "liveUrl": "https://azuriterentals.co.ke",
+    "localUrl": "http://localhost/Azurite-Rental-System/index.php",
+    "logo": "public/projects/azurite-living.jpg",
+    "hero": "public/projects/azurite-hero.jpg",
+    "category": "enterprise",
+    "categoryLabel": "Real Estate & Leasing",
+    "badge": "SaaS Portal",
+    "badgeColor": "#10b981",
+    "desc": "Automated real estate tenancy lease management system with automated monthly rent invoicing, utility billing, arrears tracking, and landlord financial statements.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Property ERP",
+      "M-Pesa Auto-Reconcile",
+      "PDF Invoicing"
+    ],
+    "features": [
+      "Tenant automated monthly invoicing",
+      "Landlord payout statements",
+      "Maintenance request ticketing",
+      "Vacant unit showcase"
+    ]
+  },
+  {
+    "id": "proj-parking",
+    "name": "Smart Parking & Barrier Gate System",
+    "repo": "4nyakundi/parking",
+    "repoUrl": "https://github.com/4nyakundi/parking",
+    "liveUrl": "https://parking.dpinc.top",
+    "localUrl": "http://localhost/parking/index.php",
+    "logo": "public/projects/parking-logo.png",
+    "hero": "public/projects/parking-wordmark.png",
+    "category": "security",
+    "categoryLabel": "IoT & Access Control",
+    "badge": "Hardware & Gate Barrier",
+    "badgeColor": "#059669",
+    "desc": "Automated boom barrier gate and smart parking ticket management system. Tracks license plates (ALPR), hourly parking tariffs, and automated cashier validation.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Barrier Gate IoT",
+      "Ticket Barcode",
+      "Hourly Billing"
+    ],
+    "features": [
+      "Automatic number plate logging",
+      "Barcode ticket validation",
+      "Cash & M-Pesa exit toll",
+      "Occupancy bay live counter"
+    ]
+  },
+  {
+    "id": "proj-edocs",
+    "name": "eDocs Medical Appointment System",
+    "repo": "4nyakundi/edocs-appointment-sys",
+    "repoUrl": "https://github.com/4nyakundi/edocs-appointment-sys",
+    "liveUrl": "https://edocs.co.ke",
+    "localUrl": "http://localhost/edocs/index.php",
+    "logo": "public/projects/edocs-hero.jpg",
+    "hero": "public/projects/edocs-bg.jpg",
+    "category": "booking",
+    "categoryLabel": "Health & Telemedicine",
+    "badge": "Medical Portal",
+    "badgeColor": "#0284c7",
+    "desc": "Doctor appointment booking and electronic patient triage system designed for medical specialists, diagnostic clinics, and hospital outpatient departments.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "HIPAA Compliant",
+      "Doctor Rostering",
+      "Audit Logs"
+    ],
+    "features": [
+      "Specialist doctor calendar slots",
+      "Intake symptom pre-screening",
+      "Digital prescription storage",
+      "Patient queue management"
+    ]
+  },
+  {
+    "id": "proj-tudor-cleaners",
+    "name": "Tudor Carpet Cleaners",
+    "repo": "4nyakundi/Tudorcarpetcleaners",
+    "repoUrl": "https://github.com/4nyakundi/Tudorcarpetcleaners",
+    "liveUrl": "https://tudorcleaners.co.ke",
+    "localUrl": "http://localhost/projects-live/tudor/index.html",
+    "logo": "public/projects/tudor-hero.webp",
+    "hero": "public/projects/tudor-hero.webp",
+    "category": "booking",
+    "categoryLabel": "Commercial Services",
+    "badge": "Dispatch System",
+    "badgeColor": "#f59e0b",
+    "desc": "On-demand carpet, upholstery, and commercial sanitization booking portal. Features square-meter pricing estimator, van dispatch scheduling, and instant quotations.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Dispatch Logistics",
+      "Service Estimator"
+    ],
+    "features": [
+      "Instant area square-meter cost estimator",
+      "Van dispatch scheduling",
+      "Before & after cleaning showcase",
+      "WhatsApp instant confirmation"
+    ]
+  },
+  {
+    "id": "proj-6am-kenya",
+    "name": "6AM Kenya Entertainment Guide",
+    "repo": "4nyakundi/6amkenya",
+    "repoUrl": "https://github.com/4nyakundi/6amkenya",
+    "liveUrl": "https://6amkenya.co.ke",
+    "localUrl": "http://localhost/projects-live/6amkenya/index.html",
+    "logo": "public/projects/6amkenya-hero.jpg",
+    "hero": "public/projects/6amkenya-hero.jpg",
+    "category": "creative",
+    "categoryLabel": "Media & Entertainment",
+    "badge": "Digital Media",
+    "badgeColor": "#f43f5e",
+    "desc": "Coastal nightlife, concert ticketing, DJ festival showcases, venue directories, and tourism entertainment guide for Mombasa, Nyali, and Diani Beach.",
+    "tags": [
+      "Next.js",
+      "Tailwind",
+      "Event Ticketing",
+      "Media Player"
+    ],
+    "features": [
+      "Event ticket checkout engine",
+      "Interactive venue map",
+      "Artist & performer spotlights",
+      "Push notifications for events"
+    ]
+  },
+  {
+    "id": "proj-r3-realtors",
+    "name": "R3 Realtors Coastal Realty",
+    "repo": "4nyakundi/r3-realtors",
+    "repoUrl": "https://github.com/4nyakundi/r3-realtors",
+    "liveUrl": "https://r3realtors.co.ke",
+    "localUrl": "http://localhost/projects-live/r3realtors/index.html",
+    "logo": "public/projects/r3realtors-hero.jpg",
+    "hero": "public/projects/r3realtors-hero.jpg",
+    "category": "enterprise",
+    "categoryLabel": "Real Estate & Land",
+    "badge": "Listing Portal",
+    "badgeColor": "#14b8a6",
+    "desc": "Luxury coastal property brokerage platform featuring prime beachfront land, executive villas in Nyali & Diani, and commercial leasing listings with virtual tours.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Property Listings",
+      "Search Filters",
+      "Inquiry CRM"
+    ],
+    "features": [
+      "Advanced price & location filters",
+      "Direct agent WhatsApp scheduling",
+      "Title deed verification badges",
+      "Virtual photo walkthroughs"
+    ]
+  },
+  {
+    "id": "proj-paws-hooves",
+    "name": "Paws & Hooves Wildlife Sanctuary",
+    "repo": "4nyakundi/Paws-Hooves",
+    "repoUrl": "https://github.com/4nyakundi/Paws-Hooves",
+    "liveUrl": "https://pawsandhooves.co.ke",
+    "localUrl": "http://localhost/projects-live/paws-hooves/index.html",
+    "logo": "public/projects/paws-hooves-logo.png",
+    "hero": "public/projects/paws-hooves-logo.png",
+    "category": "booking",
+    "categoryLabel": "Animal Sanctuary & Care",
+    "badge": "Rescue & Shelter ERP",
+    "badgeColor": "#10b981",
+    "desc": "Animal rescue, veterinary surgery, and sanctuary registry. Manages pet adoption listings, emergency rescue ambulance dispatch, and donor contributions.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Adoption Portal",
+      "Donations",
+      "Animal Health"
+    ],
+    "features": [
+      "Pet adoption matching intake",
+      "Animal rescue ambulance dispatch",
+      "Medical treatment records",
+      "Online donor sponsorship portal"
+    ]
+  },
+  {
+    "id": "proj-playon",
+    "name": "Play-On Gaming Lounge",
+    "repo": "4nyakundi/Play-On",
+    "repoUrl": "https://github.com/4nyakundi/Play-On",
+    "liveUrl": "https://playonlounge.co.ke",
+    "localUrl": "http://localhost/playon",
+    "logo": "public/projects/playon-logo.png",
+    "hero": "public/projects/playon-logo.png",
+    "category": "creative",
+    "categoryLabel": "Gaming & Esports",
+    "badge": "Console & Tournament Hub",
+    "badgeColor": "#a855f7",
+    "desc": "Esports gaming lounge management system controlling PlayStation 5, Xbox Series X, and PC station timers, member wallet balance, and tournament brackets.",
+    "tags": [
+      "JavaScript",
+      "Node.js",
+      "Timer System",
+      "POS Terminal",
+      "WebSocket"
+    ],
+    "features": [
+      "Station countdown timer billing",
+      "Tournament leaderboard brackets",
+      "Snack bar & cafe POS",
+      "Member credit wallet"
+    ]
+  },
+  {
+    "id": "proj-frynation",
+    "name": "Fry Nation Quick Kitchen POS",
+    "repo": "shimix-del/frynation",
+    "repoUrl": "https://github.com/shimix-del/frynation",
+    "liveUrl": "https://frynation.co.ke",
+    "localUrl": "http://localhost/nanifrys%20git/frynation/client/public/index.html",
+    "logo": "public/projects/frynation-logo.jpg",
+    "hero": "public/projects/frynation-hero.jpg",
+    "category": "ecommerce",
+    "categoryLabel": "Food & Restaurant POS",
+    "badge": "Fast-Food POS",
+    "badgeColor": "#ea580c",
+    "desc": "Fast-casual restaurant food ordering, kitchen display system (KDS), automated thermal receipt printing, and cashier cash drawer reconciliation.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Kitchen KDS",
+      "M-Pesa POS",
+      "Receipt Printing"
+    ],
+    "features": [
+      "Digital menu ordering screen",
+      "Kitchen prep display screen",
+      "Daily till cash balance audit",
+      "Combo meal discount rules"
+    ]
+  },
+  {
+    "id": "proj-artbyoture",
+    "name": "Art By Oture Canvas Gallery",
+    "repo": "4nyakundi/artbyoture_ABO26",
+    "repoUrl": "https://github.com/4nyakundi/artbyoture_ABO26",
+    "liveUrl": "https://artbyoture.co.ke",
+    "localUrl": "https://artbyoture.co.ke",
+    "logo": "public/projects/artbyoture-logo.png",
+    "hero": "public/projects/artbyoture-hero.jpg",
+    "category": "creative",
+    "categoryLabel": "Art & Exhibition",
+    "badge": "Fine Art Portfolio",
+    "badgeColor": "#d946ef",
+    "desc": "Original oil on canvas paintings, African contemporary portraiture, and commissioned artwork showcase with international delivery cost calculation.",
+    "tags": [
+      "JavaScript",
+      "CSS3",
+      "Art Gallery",
+      "Commission Form"
+    ],
+    "features": [
+      "High-res canvas zoom viewer",
+      "Bespoke commission request form",
+      "Framing option customizer",
+      "Artist bio and exhibits"
+    ]
+  },
+  {
+    "id": "proj-car-rental",
+    "name": "Coastal Car Rental System",
+    "repo": "4nyakundi/Car-Rental-System-",
+    "repoUrl": "https://github.com/4nyakundi/Car-Rental-System-",
+    "liveUrl": "https://coastalcarrental.co.ke",
+    "localUrl": "https://coastalcarrental.co.ke",
+    "logo": "public/projects/parking-wordmark.png",
+    "hero": "public/projects/parking-wordmark.png",
+    "category": "enterprise",
+    "categoryLabel": "Automotive & Fleet",
+    "badge": "Fleet Management",
+    "badgeColor": "#6366f1",
+    "desc": "Vehicle fleet leasing, reservation, and driver tracking management system. Includes daily rate calculations, security deposit handling, and GPS fleet inspection.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Fleet Management",
+      "Contract Generator",
+      "REST API"
+    ],
+    "features": [
+      "Live vehicle availability grid",
+      "Digital rental contract signing",
+      "Driver allocation system",
+      "Automated return condition audits"
+    ]
+  }
+];
+    let activePortStageId = "proj-mombasa-mall";
+
+    function initPortStage() {
+      const pillsContainer = document.getElementById("portQuickSwitchPills");
+      if (pillsContainer) {
+        pillsContainer.innerHTML = PORT_PROJECTS.map(p => {
+          const isActive = (p.id === activePortStageId);
+          return '<button type="button" class="btn btn-sm" onclick="window.dpLoadPortStage(\'' + p.id + '\')" ' +
+            'style="padding:0.35rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s ease; ' +
+            (isActive ? 'background:var(--lime); color:#000; border:1px solid var(--lime); box-shadow:0 2px 8px rgba(92,148,0,0.3);' : 'background:var(--bg-card); color:var(--text-secondary); border:1px solid var(--border-color);') + '">' +
+            '<img src="' + p.logo + '" alt="" style="width:14px; height:14px; object-fit:contain; border-radius:3px;" onerror="this.style.display=\'none\'">' +
+            (p.name.split(" ")[0] + " " + (p.name.split(" ")[1] || "")) +
+          '</button>';
+        }).join("");
+      }
+
+      window.dpLoadPortStage(PORT_PROJECTS[0].id);
+    }
+
+    window.dpLoadPortStage = function(projectId, scrollToStage = false) {
+      const project = PORT_PROJECTS.find(p => p.id === projectId);
+      if (!project) return;
+
+      activePortStageId = projectId;
+
+      const title = document.getElementById("portStageTitle");
+      const badge = document.getElementById("portStageBadge");
+      const logo = document.getElementById("portStageLogo");
+      const url = document.getElementById("portStageUrl");
+      const repo = document.getElementById("portStageRepoBtn");
+      const ext = document.getElementById("portStageExternalBtn");
+      const iframe = document.getElementById("portLiveIframe");
+
+      const targetUrl = project.localUrl || project.liveUrl;
+
+      if (title) title.textContent = project.name;
+      if (badge) {
+        badge.textContent = project.badge;
+        badge.style.color = project.badgeColor;
+      }
+      if (logo) {
+        logo.src = project.logo;
+        logo.style.display = "block";
+      }
+      if (url) url.textContent = targetUrl;
+      if (repo) repo.href = project.repoUrl;
+      if (ext) ext.href = targetUrl;
+      if (iframe) iframe.src = targetUrl;
+
+      const pillsContainer = document.getElementById("portQuickSwitchPills");
+      if (pillsContainer) {
+        pillsContainer.querySelectorAll("button").forEach(b => {
+          b.style.background = "var(--bg-card)";
+          b.style.color = "var(--text-secondary)";
+          b.style.borderColor = "var(--border-color)";
+        });
+      }
+
+      if (scrollToStage) {
+        const stage = document.getElementById("portInPageStageContainer");
+        if (stage) stage.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
+    window.dpSetPortDevice = function(device) {
+      const wrapper = document.getElementById("portFrameWrapper");
+      const btnDesktop = document.getElementById("portBtnDesktop");
+      const btnTablet = document.getElementById("portBtnTablet");
+      const btnMobile = document.getElementById("portBtnMobile");
+
+      [btnDesktop, btnTablet, btnMobile].forEach(b => { if (b) b.classList.remove("active"); });
+
+      if (!wrapper) return;
+
+      if (device === "mobile") {
+        wrapper.style.maxWidth = "390px";
+        wrapper.style.boxShadow = "0 20px 40px rgba(0,0,0,0.2)";
+        wrapper.style.margin = "0 auto";
+        if (btnMobile) btnMobile.classList.add("active");
+      } else if (device === "tablet") {
+        wrapper.style.maxWidth = "768px";
+        wrapper.style.boxShadow = "0 20px 40px rgba(0,0,0,0.15)";
+        wrapper.style.margin = "0 auto";
+        if (btnTablet) btnTablet.classList.add("active");
+      } else {
+        wrapper.style.maxWidth = "100%";
+        wrapper.style.boxShadow = "0 8px 30px rgba(0,0,0,0.06)";
+        wrapper.style.margin = "0";
+        if (btnDesktop) btnDesktop.classList.add("active");
+      }
+    };
+
+    window.dpReloadPortFrame = function() {
+      const iframe = document.getElementById("portLiveIframe");
+      if (iframe && iframe.src) {
+        const c = iframe.src;
+        iframe.src = "about:blank";
+        setTimeout(() => { iframe.src = c; }, 50);
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initPortStage();
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+
 </body>
 </html>

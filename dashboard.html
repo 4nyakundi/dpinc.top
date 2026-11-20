@@ -1159,6 +1159,76 @@
             </div>
           </div>
 
+          <!-- =====================================================================
+               IN-PAGE INTERACTIVE LIVE APP SIMULATOR STAGE
+               ===================================================================== -->
+          <div class="glass-panel" id="inPageLiveStageContainer" style="padding:clamp(1rem, 2vw, 1.5rem); margin-bottom:1.75rem; border:1px solid var(--border-color); border-radius:var(--radius-lg); background:var(--bg-card); box-shadow:var(--shadow-card);">
+            <!-- Stage Header & Controls Bar -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div class="browser-dots" style="display:flex; gap:6px;">
+                  <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#ef4444; display:inline-block;"></span>
+                  <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#f59e0b; display:inline-block;"></span>
+                  <span class="browser-dot" style="width:11px; height:11px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                  <img id="inPageStageLogo" src="public/projects/mombasa-mall-logo.png" alt="Project Logo" style="width:26px; height:26px; object-fit:contain; border-radius:6px; background:rgba(0,0,0,0.04); padding:2px;" onerror="this.style.display='none'">
+                  <div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                      <h3 id="inPageStageTitle" style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text-primary); line-height:1.2;">Mombasa Mall 2.0 Commercial Platform</h3>
+                      <span id="inPageStageBadge" class="badge" style="font-size:0.68rem; padding:2px 8px; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700;">Active Retail Portal</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Bar & Viewport Controls -->
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <div class="browser-url-input" style="display:flex; align-items:center; gap:0.4rem; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:20px; padding:0.35rem 0.85rem; font-family:var(--font-mono); font-size:0.78rem; color:var(--text-secondary); max-width:300px;">
+                  <i data-lucide="lock" style="width:12px; height:12px; color:#10b981; flex-shrink:0;"></i>
+                  <span id="inPageStageUrl" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">http://localhost/mombasamall.co.ke/index.html</span>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:0.25rem; background:var(--bg-secondary); padding:2px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                  <button type="button" class="btn btn-secondary btn-sm inpage-device-btn active" id="inpageBtnDesktop" onclick="window.dpSetInPageDevice('desktop')" title="Desktop View (Full Width)" style="padding:0.35rem 0.55rem; border:none;">
+                    <i data-lucide="monitor" style="width:14px; height:14px;"></i>
+                  </button>
+                  <button type="button" class="btn btn-secondary btn-sm inpage-device-btn" id="inpageBtnTablet" onclick="window.dpSetInPageDevice('tablet')" title="Tablet View (768px)" style="padding:0.35rem 0.55rem; border:none;">
+                    <i data-lucide="tablet" style="width:14px; height:14px;"></i>
+                  </button>
+                  <button type="button" class="btn btn-secondary btn-sm inpage-device-btn" id="inpageBtnMobile" onclick="window.dpSetInPageDevice('mobile')" title="Mobile View (390px)" style="padding:0.35rem 0.55rem; border:none;">
+                    <i data-lucide="smartphone" style="width:14px; height:14px;"></i>
+                  </button>
+                </div>
+
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpReloadInPageFrame()" title="Reload Frame" style="padding:0.35rem 0.55rem;">
+                  <i data-lucide="rotate-cw" style="width:14px; height:14px;"></i>
+                </button>
+                <a id="inPageStageRepoBtn" href="https://github.com/4nyakundi/MOMBASA-MALL" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.65rem; font-size:0.78rem;">
+                  <i data-lucide="github" style="width:13px; height:13px;"></i> Repo
+                </a>
+                <a id="inPageStageExternalBtn" href="https://mombasamall.co.ke" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="padding:0.35rem 0.65rem; font-size:0.78rem;">
+                  <i data-lucide="external-link" style="width:13px; height:13px;"></i> Open Live
+                </a>
+              </div>
+            </div>
+
+            <!-- In-Page Live Interactive Viewport -->
+            <div id="inPageFrameWrapper" style="width:100%; transition:max-width 0.3s ease, margin 0.3s ease; margin:0 auto; background:#FFFFFF; border-radius:var(--radius-md); border:1px solid var(--border-color); overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+              <iframe id="inPageLiveIframe" src="http://localhost/mombasamall.co.ke/index.html" style="width:100%; height:640px; border:none; display:block;" title="Interactive App Simulator" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+            </div>
+
+            <!-- Quick Project Switcher Bar below the frame -->
+            <div style="margin-top:1.25rem; display:flex; align-items:center; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; -webkit-overflow-scrolling:touch;">
+              <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; margin-right:0.25rem; display:flex; align-items:center; gap:4px;">
+                <i data-lucide="layers" style="width:13px; height:13px; color:var(--lime);"></i> Switch Live App:
+              </span>
+              <div id="inPageQuickSwitchPills" style="display:flex; gap:0.5rem;">
+                <!-- Generated dynamically -->
+              </div>
+            </div>
+          </div>
+
           <!-- Websites Grid Container -->
           <div id="websitesCatalogGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:1.25rem;">
             <!-- Rendered dynamically by js/dashboard.js -->

@@ -5261,8 +5261,8 @@
   };
 
   
-  /* =========================================================================
-     13B. WEBSITES & DIGITAL PROJECTS CATALOGUE & PREVIEW CONTROLLER
+    /* =========================================================================
+     13B. WEBSITES & DIGITAL PROJECTS CATALOGUE & LIVE SIMULATOR CONTROLLER
      ========================================================================= */
   const DP_PROJECTS_CATALOG = [
   {
@@ -5271,11 +5271,14 @@
     "repo": "4nyakundi/MOMBASA-MALL",
     "repoUrl": "https://github.com/4nyakundi/MOMBASA-MALL",
     "liveUrl": "https://mombasamall.co.ke",
+    "localUrl": "http://localhost/mombasamall.co.ke/index.html",
+    "logo": "public/projects/mombasa-mall-logo.png",
+    "hero": "public/projects/mombasa-mall-hero.jpg",
     "category": "ecommerce",
     "categoryLabel": "E-Commerce & Retail",
-    "badge": "Production Deployment",
+    "badge": "Active Retail Portal",
     "badgeColor": "#10b981",
-    "desc": "Multi-tenant commercial retail mall platform featuring tenant directories, interactive shop floor mapping, promotional flash sales, and customer footfall analytics.",
+    "desc": "Comprehensive coastal commercial mall portal featuring multi-store tenant directories, promotions catalog, floor plan locator, and Daraja M-Pesa automated billing.",
     "tags": [
       "PHP",
       "MySQL",
@@ -5284,9 +5287,8 @@
       "Multi-Tenant",
       "M-Pesa API"
     ],
-    "icon": "shopping-bag",
     "features": [
-      "Store directory & floor guide",
+      "Store directory & floor plan guide",
       "Tenant management dashboard",
       "Live event promotional alerts",
       "Integrated Daraja M-Pesa billing"
@@ -5298,24 +5300,26 @@
     "repo": "4nyakundi/catchsecuritylinksltd.co.ke",
     "repoUrl": "https://github.com/4nyakundi/catchsecuritylinksltd.co.ke",
     "liveUrl": "https://catchsecuritylinks.co.ke",
+    "localUrl": "http://localhost/Catch%20Security%20System/index.html",
+    "logo": "public/projects/catch-security-logo.jpg",
+    "hero": "public/projects/catch-security-hero.jpg",
     "category": "security",
     "categoryLabel": "Security & IoT",
     "badge": "Enterprise SLA",
     "badgeColor": "#3b82f6",
-    "desc": "Corporate portal for leading security and surveillance provider in Mombasa. Covers IP CCTV camera monitoring, biometric access control, and alarm response dispatch.",
+    "desc": "Corporate portal for leading coastal Kenya perimeter surveillance provider. Manages IP CCTV camera installations, biometric turnstiles, and emergency patrol dispatch.",
     "tags": [
       "PHP",
       "JavaScript",
       "Security IoT",
-      "CCTV Integration",
+      "CCTV Monitoring",
       "Tailwind CSS"
     ],
-    "icon": "shield-check",
     "features": [
-      "Live service ticketing",
+      "Live service ticketing engine",
       "CCTV equipment catalog",
       "AMC contract management",
-      "NOC status reporting"
+      "NOC security monitoring"
     ]
   },
   {
@@ -5324,11 +5328,14 @@
     "repo": "4nyakundi/modoria.co.ke",
     "repoUrl": "https://github.com/4nyakundi/modoria.co.ke",
     "liveUrl": "https://modoria.co.ke",
+    "localUrl": "http://localhost/projects-live/modoria/index.html",
+    "logo": "public/projects/modoria-logo.png",
+    "hero": "public/projects/modoria-hero.jpg",
     "category": "creative",
     "categoryLabel": "Creative & Media",
     "badge": "Live Agency Portal",
     "badgeColor": "#8b5cf6",
-    "desc": "Modern digital agency website showcasing enterprise software engineering, brand identity design, high-resolution photography, and digital marketing portfolios.",
+    "desc": "High-end digital agency website presenting enterprise software engineering, bespoke brand identity design, media production, and digital marketing strategies.",
     "tags": [
       "HTML5",
       "CSS3",
@@ -5336,9 +5343,8 @@
       "GSAP Animations",
       "UI/UX Design"
     ],
-    "icon": "sparkles",
     "features": [
-      "Case studies showcase",
+      "Case studies interactive showcase",
       "Interactive client portfolio",
       "Lead intake & proposal engine",
       "SEO-optimized structure"
@@ -5350,11 +5356,14 @@
     "repo": "4nyakundi/acevetcarekenya",
     "repoUrl": "https://github.com/4nyakundi/acevetcarekenya",
     "liveUrl": "https://acevetcarekenya.co.ke",
+    "localUrl": "http://localhost/acevetcarekenya/index.html",
+    "logo": "public/projects/ace-vet-logo.png",
+    "hero": "public/projects/ace-vet-hero.jpg",
     "category": "booking",
     "categoryLabel": "Healthcare & Veterinary",
     "badge": "Active Health System",
     "badgeColor": "#06b6d4",
-    "desc": "Full-stack veterinary healthcare portal providing animal treatment histories, surgical appointment scheduling, vaccination reminders, and pharmacy management.",
+    "desc": "Veterinary medical portal providing patient health records, surgical procedure appointments, domestic pet checkups, and farm animal mobile triage.",
     "tags": [
       "PHP",
       "MySQL",
@@ -5362,7 +5371,6 @@
       "Medical Records",
       "Bootstrap"
     ],
-    "icon": "activity",
     "features": [
       "Patient medical history logs",
       "Automated SMS appointment reminders",
@@ -5371,49 +5379,25 @@
     ]
   },
   {
-    "id": "proj-azurite-rental",
-    "name": "Azurite Property Rental System",
-    "repo": "4nyakundi/Azurite-Rental-System",
-    "repoUrl": "https://github.com/4nyakundi/Azurite-Rental-System",
-    "liveUrl": "https://azuriterentals.co.ke",
-    "category": "enterprise",
-    "categoryLabel": "Real Estate & Leasing",
-    "badge": "SaaS Portal",
-    "badgeColor": "#10b981",
-    "desc": "End-to-end residential and commercial property management system. Handles automated tenant leasing, unit vacancy tracking, rent billing, and maintenance tickets.",
-    "tags": [
-      "PHP",
-      "MySQL",
-      "Property ERP",
-      "M-Pesa Auto-Reconcile",
-      "PDF Invoicing"
-    ],
-    "icon": "home",
-    "features": [
-      "Tenant automated monthly invoicing",
-      "Landlord payout statements",
-      "Maintenance request ticketing",
-      "Vacant unit showcase"
-    ]
-  },
-  {
     "id": "proj-starlash",
-    "name": "Starlash Kenya Beauty Studio",
+    "name": "Star Lash Kenya Beauty Studio",
     "repo": "4nyakundi/starlashkenya",
     "repoUrl": "https://github.com/4nyakundi/starlashkenya",
     "liveUrl": "https://starlashkenya.co.ke",
+    "localUrl": "http://localhost/projects-live/starlash/index.html",
+    "logo": "public/projects/starlash-logo.jpg",
+    "hero": "public/projects/starlash-hero.jpg",
     "category": "booking",
     "categoryLabel": "Beauty & Lifestyle",
     "badge": "E-Commerce & Booking",
     "badgeColor": "#ec4899",
-    "desc": "Boutique beauty studio appointment booking and cosmetics retail store. Includes therapist slot calendar, deposit processing, and product catalog.",
+    "desc": "Luxury beauty studio appointment booking and cosmetics storefront. Features beauty therapist slot reservation, deposit payments, and curated beauty products.",
     "tags": [
       "JavaScript",
       "Tailwind CSS",
       "Booking Calendar",
       "Product Shop"
     ],
-    "icon": "heart",
     "features": [
       "Time-slot reservation engine",
       "Deposit payment collection",
@@ -5422,23 +5406,109 @@
     ]
   },
   {
+    "id": "proj-azurite-rental",
+    "name": "Azurite Property Rental System",
+    "repo": "4nyakundi/Azurite-Rental-System",
+    "repoUrl": "https://github.com/4nyakundi/Azurite-Rental-System",
+    "liveUrl": "https://azuriterentals.co.ke",
+    "localUrl": "http://localhost/Azurite-Rental-System/index.php",
+    "logo": "public/projects/azurite-living.jpg",
+    "hero": "public/projects/azurite-hero.jpg",
+    "category": "enterprise",
+    "categoryLabel": "Real Estate & Leasing",
+    "badge": "SaaS Portal",
+    "badgeColor": "#10b981",
+    "desc": "Automated real estate tenancy lease management system with automated monthly rent invoicing, utility billing, arrears tracking, and landlord financial statements.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Property ERP",
+      "M-Pesa Auto-Reconcile",
+      "PDF Invoicing"
+    ],
+    "features": [
+      "Tenant automated monthly invoicing",
+      "Landlord payout statements",
+      "Maintenance request ticketing",
+      "Vacant unit showcase"
+    ]
+  },
+  {
+    "id": "proj-parking",
+    "name": "Smart Parking & Barrier Gate System",
+    "repo": "4nyakundi/parking",
+    "repoUrl": "https://github.com/4nyakundi/parking",
+    "liveUrl": "https://parking.dpinc.top",
+    "localUrl": "http://localhost/parking/index.php",
+    "logo": "public/projects/parking-logo.png",
+    "hero": "public/projects/parking-wordmark.png",
+    "category": "security",
+    "categoryLabel": "IoT & Access Control",
+    "badge": "Hardware & Gate Barrier",
+    "badgeColor": "#059669",
+    "desc": "Automated boom barrier gate and smart parking ticket management system. Tracks license plates (ALPR), hourly parking tariffs, and automated cashier validation.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "Barrier Gate IoT",
+      "Ticket Barcode",
+      "Hourly Billing"
+    ],
+    "features": [
+      "Automatic number plate logging",
+      "Barcode ticket validation",
+      "Cash & M-Pesa exit toll",
+      "Occupancy bay live counter"
+    ]
+  },
+  {
+    "id": "proj-edocs",
+    "name": "eDocs Medical Appointment System",
+    "repo": "4nyakundi/edocs-appointment-sys",
+    "repoUrl": "https://github.com/4nyakundi/edocs-appointment-sys",
+    "liveUrl": "https://edocs.co.ke",
+    "localUrl": "http://localhost/edocs/index.php",
+    "logo": "public/projects/edocs-hero.jpg",
+    "hero": "public/projects/edocs-bg.jpg",
+    "category": "booking",
+    "categoryLabel": "Health & Telemedicine",
+    "badge": "Medical Portal",
+    "badgeColor": "#0284c7",
+    "desc": "Doctor appointment booking and electronic patient triage system designed for medical specialists, diagnostic clinics, and hospital outpatient departments.",
+    "tags": [
+      "PHP",
+      "MySQL",
+      "HIPAA Compliant",
+      "Doctor Rostering",
+      "Audit Logs"
+    ],
+    "features": [
+      "Specialist doctor calendar slots",
+      "Intake symptom pre-screening",
+      "Digital prescription storage",
+      "Patient queue management"
+    ]
+  },
+  {
     "id": "proj-tudor-cleaners",
     "name": "Tudor Carpet Cleaners",
     "repo": "4nyakundi/Tudorcarpetcleaners",
     "repoUrl": "https://github.com/4nyakundi/Tudorcarpetcleaners",
     "liveUrl": "https://tudorcleaners.co.ke",
+    "localUrl": "http://localhost/projects-live/tudor/index.html",
+    "logo": "public/projects/tudor-hero.webp",
+    "hero": "public/projects/tudor-hero.webp",
     "category": "booking",
     "categoryLabel": "Commercial Services",
     "badge": "Dispatch System",
     "badgeColor": "#f59e0b",
-    "desc": "Field service dispatch and on-demand carpet & upholstery cleaning booking engine for residential homes and corporate offices across Mombasa Island.",
+    "desc": "On-demand carpet, upholstery, and commercial sanitization booking portal. Features square-meter pricing estimator, van dispatch scheduling, and instant quotations.",
     "tags": [
       "PHP",
       "MySQL",
       "Dispatch Logistics",
       "Service Estimator"
     ],
-    "icon": "droplet",
     "features": [
       "Instant area square-meter cost estimator",
       "Van dispatch scheduling",
@@ -5447,49 +5517,25 @@
     ]
   },
   {
-    "id": "proj-car-rental",
-    "name": "Coastal Car Rental System",
-    "repo": "4nyakundi/Car-Rental-System-",
-    "repoUrl": "https://github.com/4nyakundi/Car-Rental-System-",
-    "liveUrl": "https://coastalcarrental.co.ke",
-    "category": "enterprise",
-    "categoryLabel": "Automotive & Fleet",
-    "badge": "Fleet Management",
-    "badgeColor": "#6366f1",
-    "desc": "Vehicle fleet leasing, reservation, and driver tracking management system. Includes daily rate calculations, security deposit handling, and GPS fleet inspection.",
-    "tags": [
-      "PHP",
-      "MySQL",
-      "Fleet Management",
-      "Contract Generator",
-      "REST API"
-    ],
-    "icon": "truck",
-    "features": [
-      "Live vehicle availability grid",
-      "Digital rental contract signing",
-      "Driver allocation system",
-      "Automated return condition audits"
-    ]
-  },
-  {
     "id": "proj-6am-kenya",
-    "name": "6AM Kenya Coastal Guide",
+    "name": "6AM Kenya Entertainment Guide",
     "repo": "4nyakundi/6amkenya",
     "repoUrl": "https://github.com/4nyakundi/6amkenya",
     "liveUrl": "https://6amkenya.co.ke",
+    "localUrl": "http://localhost/projects-live/6amkenya/index.html",
+    "logo": "public/projects/6amkenya-hero.jpg",
+    "hero": "public/projects/6amkenya-hero.jpg",
     "category": "creative",
     "categoryLabel": "Media & Entertainment",
     "badge": "Digital Media",
     "badgeColor": "#f43f5e",
-    "desc": "Lifestyle, tourism, and nightlife discovery guide for Mombasa and the Kenyan coast. Features ticket sales, venue directories, and event coverage.",
+    "desc": "Coastal nightlife, concert ticketing, DJ festival showcases, venue directories, and tourism entertainment guide for Mombasa, Nyali, and Diani Beach.",
     "tags": [
       "Next.js",
       "Tailwind",
       "Event Ticketing",
       "Media Player"
     ],
-    "icon": "music",
     "features": [
       "Event ticket checkout engine",
       "Interactive venue map",
@@ -5503,6 +5549,9 @@
     "repo": "4nyakundi/r3-realtors",
     "repoUrl": "https://github.com/4nyakundi/r3-realtors",
     "liveUrl": "https://r3realtors.co.ke",
+    "localUrl": "http://localhost/projects-live/r3realtors/index.html",
+    "logo": "public/projects/r3realtors-hero.jpg",
+    "hero": "public/projects/r3realtors-hero.jpg",
     "category": "enterprise",
     "categoryLabel": "Real Estate & Land",
     "badge": "Listing Portal",
@@ -5515,7 +5564,6 @@
       "Search Filters",
       "Inquiry CRM"
     ],
-    "icon": "map-pin",
     "features": [
       "Advanced price & location filters",
       "Direct agent WhatsApp scheduling",
@@ -5524,29 +5572,31 @@
     ]
   },
   {
-    "id": "proj-edocs",
-    "name": "eDocs Appointment System",
-    "repo": "4nyakundi/edocs-appointment-sys",
-    "repoUrl": "https://github.com/4nyakundi/edocs-appointment-sys",
-    "liveUrl": "https://edocs.co.ke",
+    "id": "proj-paws-hooves",
+    "name": "Paws & Hooves Wildlife Sanctuary",
+    "repo": "4nyakundi/Paws-Hooves",
+    "repoUrl": "https://github.com/4nyakundi/Paws-Hooves",
+    "liveUrl": "https://pawsandhooves.co.ke",
+    "localUrl": "http://localhost/projects-live/paws-hooves/index.html",
+    "logo": "public/projects/paws-hooves-logo.png",
+    "hero": "public/projects/paws-hooves-logo.png",
     "category": "booking",
-    "categoryLabel": "Health & Telemedicine",
-    "badge": "Medical Portal",
-    "badgeColor": "#0284c7",
-    "desc": "Medical specialist appointment booking and electronic medical intake system designed for clinics, private practices, and diagnostic centers.",
+    "categoryLabel": "Animal Sanctuary & Care",
+    "badge": "Rescue & Shelter ERP",
+    "badgeColor": "#10b981",
+    "desc": "Animal rescue, veterinary surgery, and sanctuary registry. Manages pet adoption listings, emergency rescue ambulance dispatch, and donor contributions.",
     "tags": [
       "PHP",
       "MySQL",
-      "HIPAA Compliant",
-      "Doctor Rostering",
-      "Audit Logs"
+      "Adoption Portal",
+      "Donations",
+      "Animal Health"
     ],
-    "icon": "file-text",
     "features": [
-      "Specialist doctor calendar slots",
-      "Intake symptom pre-screening",
-      "Digital prescription storage",
-      "Patient queue management"
+      "Pet adoption matching intake",
+      "Animal rescue ambulance dispatch",
+      "Medical treatment records",
+      "Online donor sponsorship portal"
     ]
   },
   {
@@ -5555,11 +5605,14 @@
     "repo": "4nyakundi/Play-On",
     "repoUrl": "https://github.com/4nyakundi/Play-On",
     "liveUrl": "https://playonlounge.co.ke",
+    "localUrl": "http://localhost/playon",
+    "logo": "public/projects/playon-logo.png",
+    "hero": "public/projects/playon-logo.png",
     "category": "creative",
     "categoryLabel": "Gaming & Esports",
     "badge": "Console & Tournament Hub",
     "badgeColor": "#a855f7",
-    "desc": "Esports gaming lounge management system controlling PlayStation 5, Xbox Series X, and PC gaming station timers, snack bar billing, and tournament brackets.",
+    "desc": "Esports gaming lounge management system controlling PlayStation 5, Xbox Series X, and PC station timers, member wallet balance, and tournament brackets.",
     "tags": [
       "JavaScript",
       "Node.js",
@@ -5567,7 +5620,6 @@
       "POS Terminal",
       "WebSocket"
     ],
-    "icon": "tv",
     "features": [
       "Station countdown timer billing",
       "Tournament leaderboard brackets",
@@ -5577,15 +5629,18 @@
   },
   {
     "id": "proj-frynation",
-    "name": "Fry Nation Quick Kitchen",
+    "name": "Fry Nation Quick Kitchen POS",
     "repo": "shimix-del/frynation",
     "repoUrl": "https://github.com/shimix-del/frynation",
     "liveUrl": "https://frynation.co.ke",
+    "localUrl": "http://localhost/nanifrys%20git/frynation/client/public/index.html",
+    "logo": "public/projects/frynation-logo.jpg",
+    "hero": "public/projects/frynation-hero.jpg",
     "category": "ecommerce",
     "categoryLabel": "Food & Restaurant POS",
     "badge": "Fast-Food POS",
     "badgeColor": "#ea580c",
-    "desc": "Fast-casual restaurant food ordering, kitchen display system (KDS), and cash drawer tracking engine with automated thermal receipt printing.",
+    "desc": "Fast-casual restaurant food ordering, kitchen display system (KDS), automated thermal receipt printing, and cashier cash drawer reconciliation.",
     "tags": [
       "PHP",
       "MySQL",
@@ -5593,7 +5648,6 @@
       "M-Pesa POS",
       "Receipt Printing"
     ],
-    "icon": "coffee",
     "features": [
       "Digital menu ordering screen",
       "Kitchen prep display screen",
@@ -5607,6 +5661,9 @@
     "repo": "4nyakundi/artbyoture_ABO26",
     "repoUrl": "https://github.com/4nyakundi/artbyoture_ABO26",
     "liveUrl": "https://artbyoture.co.ke",
+    "localUrl": "https://artbyoture.co.ke",
+    "logo": "public/projects/artbyoture-logo.png",
+    "hero": "public/projects/artbyoture-hero.jpg",
     "category": "creative",
     "categoryLabel": "Art & Exhibition",
     "badge": "Fine Art Portfolio",
@@ -5618,7 +5675,6 @@
       "Art Gallery",
       "Commission Form"
     ],
-    "icon": "feather",
     "features": [
       "High-res canvas zoom viewer",
       "Bespoke commission request form",
@@ -5627,61 +5683,38 @@
     ]
   },
   {
-    "id": "proj-parking",
-    "name": "Smart Parking Management System",
-    "repo": "4nyakundi/parking",
-    "repoUrl": "https://github.com/4nyakundi/parking",
-    "liveUrl": "https://parking.dpinc.top",
-    "category": "security",
-    "categoryLabel": "IoT & Access Control",
-    "badge": "Hardware & Gate Barrier",
-    "badgeColor": "#059669",
-    "desc": "Automated vehicle barrier gate and smart parking ticket management system. Tracks license plates (ANPR), hourly tariff rates, and automated exit validation.",
+    "id": "proj-car-rental",
+    "name": "Coastal Car Rental System",
+    "repo": "4nyakundi/Car-Rental-System-",
+    "repoUrl": "https://github.com/4nyakundi/Car-Rental-System-",
+    "liveUrl": "https://coastalcarrental.co.ke",
+    "localUrl": "https://coastalcarrental.co.ke",
+    "logo": "public/projects/parking-wordmark.png",
+    "hero": "public/projects/parking-wordmark.png",
+    "category": "enterprise",
+    "categoryLabel": "Automotive & Fleet",
+    "badge": "Fleet Management",
+    "badgeColor": "#6366f1",
+    "desc": "Vehicle fleet leasing, reservation, and driver tracking management system. Includes daily rate calculations, security deposit handling, and GPS fleet inspection.",
     "tags": [
       "PHP",
       "MySQL",
-      "Barrier Gate IoT",
-      "Ticket Barcode",
-      "Hourly Billing"
+      "Fleet Management",
+      "Contract Generator",
+      "REST API"
     ],
-    "icon": "compass",
     "features": [
-      "Automatic number plate logging",
-      "Barcode ticket validation",
-      "Cash & M-Pesa exit toll",
-      "Occupancy bay live counter"
-    ]
-  },
-  {
-    "id": "proj-paws-hooves",
-    "name": "Paws & Hooves Wildlife Sanctuary",
-    "repo": "4nyakundi/Paws-Hooves",
-    "repoUrl": "https://github.com/4nyakundi/Paws-Hooves",
-    "liveUrl": "https://pawsandhooves.co.ke",
-    "category": "booking",
-    "categoryLabel": "Animal Sanctuary & Care",
-    "badge": "Rescue & Shelter ERP",
-    "badgeColor": "#10b981",
-    "desc": "Animal rescue, veterinary surgery, and sanctuary registry. Manages adoption listings, rescue dispatch, donor contributions, and veterinary care charts.",
-    "tags": [
-      "PHP",
-      "MySQL",
-      "Adoption Portal",
-      "Donations",
-      "Animal Health"
-    ],
-    "icon": "shield",
-    "features": [
-      "Pet adoption matching intake",
-      "Animal rescue ambulance dispatch",
-      "Medical treatment records",
-      "Online donor sponsorship portal"
+      "Live vehicle availability grid",
+      "Digital rental contract signing",
+      "Driver allocation system",
+      "Automated return condition audits"
     ]
   }
 ];
 
   let currentWebCatFilter = "all";
   let currentWebSearchTerm = "";
+  let currentActiveStageProjectId = "proj-mombasa-mall";
 
   function initWebsitesCatalog() {
     const filterGroup = document.getElementById("websitesCategoryFilterGroup");
@@ -5703,12 +5736,33 @@
         renderWebsitesCatalog();
       });
     }
+
+    // Initialize in-page live simulator with primary project
+    if (DP_PROJECTS_CATALOG.length > 0) {
+      window.dpLoadProjectIntoInPageStage(DP_PROJECTS_CATALOG[0].id);
+    }
   }
 
   function renderWebsitesCatalog() {
     const grid = document.getElementById("websitesCatalogGrid");
+    const pillsContainer = document.getElementById("inPageQuickSwitchPills");
+
+    // 1. Render Quick Switch Pills underneath stage
+    if (pillsContainer) {
+      pillsContainer.innerHTML = DP_PROJECTS_CATALOG.map(p => {
+        const isActive = (p.id === currentActiveStageProjectId);
+        return '<button type="button" class="btn btn-sm" onclick="window.dpLoadProjectIntoInPageStage(\'' + p.id + '\')" ' +
+          'style="padding:0.35rem 0.75rem; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s ease; ' +
+          (isActive ? 'background:var(--lime); color:#000; border:1px solid var(--lime); box-shadow:0 2px 8px rgba(92,148,0,0.3);' : 'background:var(--bg-card); color:var(--text-secondary); border:1px solid var(--border-color);') + '">' +
+          '<img src="' + p.logo + '" alt="" style="width:14px; height:14px; object-fit:contain; border-radius:3px;" onerror="this.style.display=\'none\'">' +
+          escapeHtml(p.name.split(" ")[0] + " " + (p.name.split(" ")[1] || "")) +
+        '</button>';
+      }).join("");
+    }
+
     if (!grid) return;
 
+    // 2. Filter Projects for the Grid
     const filtered = DP_PROJECTS_CATALOG.filter(p => {
       if (currentWebCatFilter !== "all" && p.category !== currentWebCatFilter) return false;
       if (currentWebSearchTerm) {
@@ -5723,50 +5777,75 @@
     });
 
     if (filtered.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:3rem; color:var(--text-muted);">' +
-        '<i data-lucide="search-x" style="width:36px; height:36px; opacity:0.5; margin-bottom:0.75rem;"></i>' +
-        '<h4 style="font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">No Matching Projects</h4>' +
-        '<p style="font-size:0.875rem;">Try adjusting your search keywords or select "All Projects (16)".</p>' +
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:3.5rem 1.5rem; color:var(--text-muted);">' +
+        '<i data-lucide="search-x" style="width:38px; height:38px; opacity:0.5; margin-bottom:0.75rem;"></i>' +
+        '<h4 style="font-weight:800; color:var(--text-primary); margin-bottom:0.35rem;">No Matching Deployments</h4>' +
+        '<p style="font-size:0.875rem;">Try another keyword or select "All Projects (16)" to view all live systems.</p>' +
         '</div>';
       if (window.lucide) window.lucide.createIcons();
       return;
     }
 
     grid.innerHTML = filtered.map(p => {
+      const isCurrentStage = (p.id === currentActiveStageProjectId);
       const tagsHtml = (p.tags || []).map(t => '<span class="tag" style="font-size:0.72rem; padding:2px 7px; border-radius:6px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-secondary); font-weight:600;">' + escapeHtml(t) + '</span>').join(" ");
       const featuresHtml = (p.features || []).map(f => '<li style="font-size:0.78rem; color:var(--text-muted); margin-bottom:3px; display:flex; align-items:center; gap:6px;"><i data-lucide="check" style="width:11px; height:11px; color:var(--lime); flex-shrink:0;"></i> ' + escapeHtml(f) + '</li>').join("");
 
-      return '<div class="glass-panel project-hub-card" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-color); transition:all 0.2s ease;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; gap:0.5rem;">' +
-          '<span class="badge" style="font-size:0.7rem; font-weight:700; background:rgba(92,148,0,0.12); color:var(--lime); border:1px solid rgba(92,148,0,0.3);">' +
-            escapeHtml(p.categoryLabel) +
-          '</span>' +
-          '<span class="badge" style="font-size:0.68rem; font-weight:700; background:rgba(255,255,255,0.05); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '40;">' +
+      return '<div class="glass-panel project-hub-card" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:var(--radius-lg); border:1px solid ' + (isCurrentStage ? 'var(--lime)' : 'var(--border-color)') + '; background:var(--bg-card); box-shadow:var(--shadow-card); transition:all 0.2s ease;">' +
+        
+        // Thumbnail & Logo Banner
+        '<div style="position:relative; width:100%; height:160px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:1rem; background:#0F172A; display:flex; align-items:center; justify-content:center;">' +
+          '<img src="' + p.hero + '" alt="' + escapeHtml(p.name) + '" style="width:100%; height:100%; object-fit:cover; opacity:0.85;" onerror="this.src=\'public/projects/modoria-hero.jpg\'">' +
+          '<div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.2) 60%);"></div>' +
+          
+          // Floating Logo Badge
+          '<div style="position:absolute; bottom:12px; left:12px; display:flex; align-items:center; gap:8px;">' +
+            '<div style="width:38px; height:38px; border-radius:8px; background:#FFFFFF; padding:3px; box-shadow:0 4px 12px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; flex-shrink:0;">' +
+              '<img src="' + p.logo + '" alt="" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" onerror="this.style.display=\'none\'">' +
+            '</div>' +
+            '<div>' +
+              '<span class="badge" style="font-size:0.65rem; padding:1px 6px; font-weight:700; background:rgba(92,148,0,0.9); color:#FFFFFF; border:none;">' +
+                escapeHtml(p.categoryLabel) +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<span class="badge" style="position:absolute; top:10px; right:10px; font-size:0.68rem; font-weight:700; background:rgba(15,23,42,0.75); color:' + p.badgeColor + '; border:1px solid ' + p.badgeColor + '60; backdrop-filter:blur(4px);">' +
             escapeHtml(p.badge) +
           '</span>' +
         '</div>' +
-        '<h3 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0 0 0.35rem 0; line-height:1.3;">' + escapeHtml(p.name) + '</h3>' +
-        '<div style="display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:0.75rem; color:var(--lime); font-weight:700; margin-bottom:0.75rem;">' +
+
+        // Title & GitHub link
+        '<h3 style="font-size:1.125rem; font-weight:800; color:var(--text-primary); margin:0 0 0.3rem 0; line-height:1.3;">' + escapeHtml(p.name) + '</h3>' +
+        '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:0.75rem; color:var(--lime); font-weight:700; margin-bottom:0.75rem; text-decoration:none;">' +
           '<i data-lucide="github" style="width:13px; height:13px;"></i> ' + escapeHtml(p.repo) +
-        '</div>' +
+        '</a>' +
+
         '<p style="font-size:0.835rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.85rem; flex:1;">' +
           escapeHtml(p.desc) +
         '</p>' +
+
         '<ul style="list-style:none; padding:0; margin:0 0 1rem 0;">' +
           featuresHtml +
         '</ul>' +
+
         '<div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:1.15rem;">' +
           tagsHtml +
         '</div>' +
-        '<div style="display:flex; gap:0.5rem; margin-top:auto; pt:0.5rem; border-top:1px solid var(--border-color); padding-top:0.75rem;">' +
-          '<button type="button" class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.75rem;" onclick="window.dpOpenSitePreview(\'' + escapeHtml(p.liveUrl) + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.repoUrl) + '\')">' +
-            '<i data-lucide="monitor" style="width:14px; height:14px;"></i> Live Preview' +
+
+        // Action Buttons: Operate in Stage + Full Modal + External Link
+        '<div style="display:flex; gap:0.45rem; margin-top:auto; padding-top:0.75rem; border-top:1px solid var(--border-color); flex-wrap:wrap;">' +
+          '<button type="button" class="btn btn-primary btn-sm" style="flex:1; justify-content:center; padding:0.45rem 0.65rem; font-size:0.8rem; font-weight:700;" onclick="window.dpLoadProjectIntoInPageStage(\'' + p.id + '\', true)">' +
+            '<i data-lucide="play" style="width:13px; height:13px;"></i> Operate Live' +
           '</button>' +
-          '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="View Source Code on GitHub">' +
-            '<i data-lucide="github" style="width:14px; height:14px;"></i> Code' +
+          '<button type="button" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Full Screen Modal Preview" onclick="window.dpOpenSitePreview(\'' + escapeHtml(p.localUrl || p.liveUrl) + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.repoUrl) + '\')">' +
+            '<i data-lucide="maximize-2" style="width:13px; height:13px;"></i>' +
+          '</button>' +
+          '<a href="' + escapeHtml(p.repoUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="GitHub Source Code">' +
+            '<i data-lucide="github" style="width:13px; height:13px;"></i>' +
           '</a>' +
-          '<a href="' + escapeHtml(p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Open Live Site in New Tab">' +
-            '<i data-lucide="external-link" style="width:14px; height:14px;"></i>' +
+          '<a href="' + escapeHtml(p.localUrl || p.liveUrl) + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.45rem 0.65rem;" title="Open in New Tab">' +
+            '<i data-lucide="external-link" style="width:13px; height:13px;"></i>' +
           '</a>' +
         '</div>' +
       '</div>';
@@ -5775,7 +5854,94 @@
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // Live Site Preview Modal Controller
+  // Load a project into the In-Page Live Simulator Stage
+  window.dpLoadProjectIntoInPageStage = function(projectId, scrollToStage = false) {
+    const project = DP_PROJECTS_CATALOG.find(p => p.id === projectId);
+    if (!project) return;
+
+    currentActiveStageProjectId = projectId;
+
+    const stageTitle = document.getElementById("inPageStageTitle");
+    const stageBadge = document.getElementById("inPageStageBadge");
+    const stageLogo = document.getElementById("inPageStageLogo");
+    const stageUrl = document.getElementById("inPageStageUrl");
+    const stageRepo = document.getElementById("inPageStageRepoBtn");
+    const stageExt = document.getElementById("inPageStageExternalBtn");
+    const iframe = document.getElementById("inPageLiveIframe");
+
+    const targetUrl = project.localUrl || project.liveUrl;
+
+    if (stageTitle) stageTitle.textContent = project.name;
+    if (stageBadge) {
+      stageBadge.textContent = project.badge;
+      stageBadge.style.color = project.badgeColor;
+      stageBadge.style.borderColor = project.badgeColor + "50";
+    }
+    if (stageLogo) {
+      stageLogo.src = project.logo;
+      stageLogo.style.display = "block";
+    }
+    if (stageUrl) stageUrl.textContent = targetUrl;
+    if (stageRepo) stageRepo.href = project.repoUrl || "https://github.com/4nyakundi";
+    if (stageExt) stageExt.href = targetUrl;
+
+    if (iframe) {
+      iframe.src = targetUrl;
+    }
+
+    // Refresh quick switch pills active state
+    const pillsContainer = document.getElementById("inPageQuickSwitchPills");
+    if (pillsContainer) {
+      renderWebsitesCatalog();
+    }
+
+    if (scrollToStage) {
+      const container = document.getElementById("inPageLiveStageContainer");
+      if (container) {
+        container.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
+
+  // In-Page Viewport Switcher
+  window.dpSetInPageDevice = function(device) {
+    const wrapper = document.getElementById("inPageFrameWrapper");
+    const btnDesktop = document.getElementById("inpageBtnDesktop");
+    const btnTablet = document.getElementById("inpageBtnTablet");
+    const btnMobile = document.getElementById("inpageBtnMobile");
+
+    [btnDesktop, btnTablet, btnMobile].forEach(b => { if (b) b.classList.remove("active"); });
+
+    if (!wrapper) return;
+
+    if (device === "mobile") {
+      wrapper.style.maxWidth = "390px";
+      wrapper.style.boxShadow = "0 20px 40px rgba(0,0,0,0.2)";
+      wrapper.style.margin = "0 auto";
+      if (btnMobile) btnMobile.classList.add("active");
+    } else if (device === "tablet") {
+      wrapper.style.maxWidth = "768px";
+      wrapper.style.boxShadow = "0 20px 40px rgba(0,0,0,0.15)";
+      wrapper.style.margin = "0 auto";
+      if (btnTablet) btnTablet.classList.add("active");
+    } else {
+      wrapper.style.maxWidth = "100%";
+      wrapper.style.boxShadow = "0 8px 30px rgba(0,0,0,0.06)";
+      wrapper.style.margin = "0";
+      if (btnDesktop) btnDesktop.classList.add("active");
+    }
+  };
+
+  window.dpReloadInPageFrame = function() {
+    const iframe = document.getElementById("inPageLiveIframe");
+    if (iframe && iframe.src) {
+      const current = iframe.src;
+      iframe.src = "about:blank";
+      setTimeout(() => { iframe.src = current; }, 50);
+    }
+  };
+
+  // Full Screen Modal Preview Controller
   window.dpOpenSitePreview = function(url, title, repoUrl) {
     const modal = document.getElementById("sitePreviewModal");
     const iframe = document.getElementById("sitePreviewIframe");
@@ -5804,25 +5970,22 @@
     if (window.lucide) window.lucide.createIcons();
   };
 
-
-  window.dpSetPreviewDevice = function(mode) {
+  window.dpSetPreviewDevice = function(device) {
     const iframe = document.getElementById("sitePreviewIframe");
     const btnDesktop = document.getElementById("btnDeviceDesktop");
     const btnTablet = document.getElementById("btnDeviceTablet");
     const btnMobile = document.getElementById("btnDeviceMobile");
 
-    [btnDesktop, btnTablet, btnMobile].forEach(btn => {
-      if (btn) btn.classList.remove("active");
-    });
+    [btnDesktop, btnTablet, btnMobile].forEach(b => { if (b) b.classList.remove("active"); });
 
     if (!iframe) return;
 
-    if (mode === "mobile") {
+    if (device === "mobile") {
       iframe.style.maxWidth = "390px";
-      iframe.style.boxShadow = "0 20px 40px rgba(0,0,0,0.35)";
+      iframe.style.boxShadow = "0 20px 40px rgba(0,0,0,0.3)";
       iframe.style.margin = "0 auto";
       if (btnMobile) btnMobile.classList.add("active");
-    } else if (mode === "tablet") {
+    } else if (device === "tablet") {
       iframe.style.maxWidth = "768px";
       iframe.style.boxShadow = "0 20px 40px rgba(0,0,0,0.25)";
       iframe.style.margin = "0 auto";
@@ -5834,6 +5997,7 @@
       if (btnDesktop) btnDesktop.classList.add("active");
     }
   };
+
 
   window.dpCloseSitePreview = function() {
     const modal = document.getElementById("sitePreviewModal");
