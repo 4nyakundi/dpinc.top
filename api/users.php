@@ -28,6 +28,17 @@ try {
                 exit();
             }
 
+            // Strictly enforce the 3 sole permitted Google accounts for DATA PORT NOC
+            $solePermits = ['jerrykhaboy@gmail.com', 'emmanuelnyakundi2@gmail.com', 'dpinc.top@gmail.com'];
+            if (!in_array($checkEmail, $solePermits)) {
+                echo json_encode([
+                    'success'    => true,
+                    'authorized' => false,
+                    'message'    => "Access Denied: {$checkEmail} does not have permit to access DATA PORT NOC. Only designated administrator accounts (jerrykhaboy@gmail.com, emmanuelnyakundi2@gmail.com, dpinc.top@gmail.com) have Google verification permits."
+                ]);
+                exit();
+            }
+
             $stmt = $pdo->prepare("SELECT * FROM authorized_users WHERE LOWER(email) = ?");
             $stmt->execute([$checkEmail]);
             $user = $stmt->fetch();
