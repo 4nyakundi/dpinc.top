@@ -20,10 +20,11 @@ async function loadCatalogData() {
   if (!catalogSelect) return;
 
   try {
-    const res = await fetch("/api/catalog");
-    if (!res.ok) throw new Error("Catalog unavailable");
-    const data = await res.json();
-    catalogItems = data.items || [];
+    const res = await fetch("data/site-data.json");
+    if (res.ok) {
+      const data = await res.json();
+      catalogItems = data.catalog || [];
+    }
   } catch (err) {
     console.warn("Using fallback catalog items", err);
     catalogItems = [
@@ -315,7 +316,7 @@ function updateLiveInvoicePreview() {
   setElText("printInvoiceDate", new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "long", year: "numeric" }).format(new Date()));
 }
 
-async function saveQuoteToStorage() {
+function saveQuoteToStorage() {
   const clientName = document.getElementById("clientName")?.value.trim();
   if (!clientName || lineItems.length === 0) {
     alert("Please enter a client name and add at least one line item before saving.");
@@ -338,52 +339,23 @@ async function saveQuoteToStorage() {
     total: lineItems.reduce((acc, item) => acc + (item.qty * item.price), 0) + (parseFloat(document.getElementById("labourFee")?.value) || 0) + (parseFloat(document.getElementById("taxFee")?.value) || 0)
   };
 
-  const token = localStorage.getItem("adminToken");
-  if (!token) { alert("Sign in through the dashboard before saving a quote to the database."); return; }
-  try {
-    const response = await fetch("/api/quotes", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({
-      lead: { name: clientName, email: quoteData.clientEmail, phone: quoteData.clientPhone, company: quoteData.clientCompany, location: quoteData.clientLocation },
-      lineItems: lineItems.map(item => ({ name: item.service, quantity: item.qty, unitPrice: item.price })),
-      labourFee: quoteData.labourFee, tax: quoteData.taxFee,
-    }) });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Quote could not be saved");
-    setElText("invoiceNumberDisplay", result.quote.invoiceNo);
-    updateLiveInvoicePreview();
-    await loadSavedQuotes();
-    alert("Quote saved to the database: " + result.quote.invoiceNo);
-  } catch (error) { alert(error.message); }
+  const saved = JSON.parse(localStorage.getItem("dp_saved_quotes") || "[]");
+  saved.unshift(quoteData);
+  localStorage.setItem("dp_saved_quotes", JSON.stringify(saved));
 
+  setElText("invoiceNumberDisplay", invoiceNumber);
+  updateLiveInvoicePreview();
+  loadSavedQuotes();
+  alert(`Quote saved successfully! [${invoiceNumber}]`);
 }
 
-async function loadSavedQuotes() {
+function loadSavedQuotes() {
   const container = document.getElementById("savedQuotesList");
   if (!container) return;
 
-  const token = localStorage.getItem("adminToken");
-  if (token) {
-    try {
-      let cursor = null;
-      const records = [];
-      do {
-        const response = await fetch("/api/quotes?limit=200" + (cursor ? "&cursor=" + encodeURIComponent(cursor) : ""), { headers: { Authorization: "Bearer " + token }, cache: "no-store" });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Unable to load quotes");
-        records.push(...data.quotes);
-        cursor = data.nextCursor;
-      } while (cursor);
-      const mapped = records.map(quote => ({ id: quote.id, invoiceNumber: quote.invoiceNo, date: quote.createdAt, clientName: quote.billedTo,
-        clientPhone: quote.phone, clientEmail: quote.email, clientCompany: quote.company, clientLocation: quote.location,
-        lineItems: quote.lineItems.map(item => ({ id: item.id, service: item.name, qty: item.quantity, price: item.unitPrice })),
-        labourFee: quote.labourFee, taxFee: quote.tax, total: quote.total }));
-      const previous = localStorage.getItem("dp_saved_quotes");
-      if (previous && !localStorage.getItem("dp_saved_quotes_legacy_backup")) localStorage.setItem("dp_saved_quotes_legacy_backup", previous);
-      localStorage.setItem("dp_saved_quotes", JSON.stringify(mapped));
-    } catch (error) { container.textContent = error.message; return; }
-  }
   const saved = JSON.parse(localStorage.getItem("dp_saved_quotes") || "[]");
   if (saved.length === 0) {
-    container.innerHTML = '<p class="text-muted" style="font-size:0.875rem;">No saved database quotes yet.</p>';
+    container.innerHTML = '<p class="text-muted" style="font-size:0.875rem;">No saved quotes in local memory yet.</p>';
     return;
   }
 
@@ -432,10 +404,8 @@ window.restoreQuote = function(id) {
   alert(`Restored Quote ${quote.invoiceNumber}`);
 };
 
-window.deleteSavedQuote = async function(id, e) {
+window.deleteSavedQuote = function(id, e) {
   e.stopPropagation();
-  const response = await fetch("/api/quotes/" + encodeURIComponent(id), { method: "DELETE", headers: { Authorization: "Bearer " + (localStorage.getItem("adminToken") || "") } }).catch(() => null);
-  if (!response?.ok) { alert(response ? (await response.json()).error : "Database unavailable"); return; }
   let saved = JSON.parse(localStorage.getItem("dp_saved_quotes") || "[]");
   saved = saved.filter(q => q.id !== id);
   localStorage.setItem("dp_saved_quotes", JSON.stringify(saved));

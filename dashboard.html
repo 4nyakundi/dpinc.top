@@ -13,12 +13,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- GSAP Animation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<<<<<<< HEAD
   <!-- Firebase SDKs (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-=======
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
 </head>
 <body class="dashboard-body">
 
@@ -290,7 +287,7 @@
              ===================================================================== -->
         <section id="calendarTab" class="dash-tab-pane active">
           <div class="glass-panel calendar-wrapper">
-
+            
             <!-- Calendar Header & Month Navigation -->
             <div class="calendar-header-bar">
               <div class="calendar-title-group">
@@ -340,11 +337,7 @@
              ===================================================================== -->
         <section id="invoicesTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.25rem, 2.5vw, 2rem);">
-<<<<<<< HEAD
             
-=======
-
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
             <!-- Invoices Hub Header -->
             <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
               <div>
@@ -356,7 +349,6 @@
                 <p class="text-muted" style="font-size:0.875rem; margin:4px 0 0 0;">Create, preview, print, and track subscriber subscriptions, partial deposits & general ICT client invoices.</p>
               </div>
               <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-<<<<<<< HEAD
                 <button type="button" class="btn btn-secondary btn-sm" id="invHubBatchBtn" onclick="window.dpOpenBatchInvoices()" title="Batch generate proformas for subscribers">
                   <i data-lucide="zap" style="width:15px; height:15px; color:var(--lime);"></i> Batch Invoices
                 </button>
@@ -366,14 +358,6 @@
                 <button type="button" class="btn btn-secondary btn-sm" onclick="window.dpPurgeDemoRecords()" title="Release and clear demo records from database" style="color:#ef4444; border-color:rgba(239,68,68,0.25);">
                   <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Clear Demo Data
                 </button>
-=======
-                <button type="button" class="btn btn-secondary btn-sm" id="invHubBatchBtn" title="Batch generate proformas for subscribers">
-                  <i data-lucide="zap" style="width:15px; height:15px; color:var(--lime);"></i> Batch Invoices
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" id="invHubCreateBtn" title="Create a new client invoice">
-                  <i data-lucide="plus" style="width:15px; height:15px;"></i> Create New Invoice
-                </button>
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
               </div>
             </div>
 
@@ -523,7 +507,7 @@
              ===================================================================== -->
         <section id="ledgerTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
-
+            
             <!-- Live Account Balances Header -->
             <div class="ledger-summary-strip" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.75rem;">
               <div class="stat-card" style="padding:1.25rem; text-align:left;">
@@ -611,7 +595,6 @@
              ===================================================================== -->
                 <!-- 6. PULSE INVESTMENT FINANCIAL INTELLIGENCE & MONTHLY REPORTS TAB -->
         <section id="analyticsTab" class="dash-tab-pane">
-<<<<<<< HEAD
           <!-- Pulse Analytics Header -->
           <div class="glass-panel" style="padding:1.5rem; margin-bottom:1.5rem; border-left:4px solid var(--lime);">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
@@ -713,11 +696,6 @@
           <!-- Charts and Breakdowns -->
           <div class="analytics-grid mb-8">
             <!-- Cash Flow Trajectory Chart -->
-=======
-          <div class="analytics-grid">
-
-            <!-- Cash Flow Trend Chart -->
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
             <div class="glass-panel chart-card">
               <div class="chart-header">
                 <div>
@@ -728,14 +706,8 @@
                   <span class="badge" style="background:rgba(138,206,0,0.1); color:var(--lime);"><span class="pulse-dot"></span> Live Ledger</span>
                 </div>
               </div>
-<<<<<<< HEAD
               <div class="chart-canvas-container" style="min-height:300px;">
                 <canvas id="cashFlowCanvas" width="700" height="300"></canvas>
-=======
-
-              <div class="chart-canvas-container">
-                <canvas id="cashFlowCanvas" width="700" height="280"></canvas>
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
               </div>
             </div>
 
@@ -821,7 +793,7 @@
              TAB 6: EXECUTIVE VAULT & RULES ENGINE (PIN PROTECTED)
              ===================================================================== -->
         <section id="vaultTab" class="dash-tab-pane">
-
+          
           <!-- Locked State (PIN Pad) -->
           <div id="vaultLockedState" class="glass-panel vault-locked-box">
             <div class="badge mb-3">
@@ -912,7 +884,7 @@
              ===================================================================== -->
         <section id="tariffsTab" class="dash-tab-pane">
           <div class="glass-panel" style="padding:clamp(1.5rem, 3vw, 2.25rem);">
-
+            
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; flex-wrap:wrap; gap:1.25rem;">
               <div>
                 <div class="badge" style="margin-bottom:0.6rem;">
@@ -1154,11 +1126,7 @@
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddSetup" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Installation Setup</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddRouter" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Router ONT</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddIp" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Public IP</button>
-<<<<<<< HEAD
               
-=======
-
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
               <span style="font-size:0.72rem; color:#60a5fa; font-weight:700; margin-left:0.5rem;">ICT & Web:</span>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddDomain" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Domain Reg.</button>
               <button type="button" class="btn btn-secondary btn-sm" id="invQuickAddHosting" style="font-size:0.72rem; padding:0.25rem 0.55rem;">+ Web Hosting</button>
@@ -1257,11 +1225,7 @@
         <!-- Modal Footer Actions -->
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; flex-wrap:wrap; border-top:1px solid var(--border-color); padding-top:1.25rem;">
           <button type="button" class="btn btn-secondary" data-close="createInvoiceModal">Cancel</button>
-<<<<<<< HEAD
           
-=======
-
->>>>>>> 5aae170 (Repair MySQL persistence and prepare cPanel Node deployment)
           <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
             <button type="button" id="invSaveDraftBtn" class="btn btn-secondary" title="Save invoice to database without printing">
               <i data-lucide="save" style="width:15px; height:15px;"></i> Save Invoice
@@ -1679,7 +1643,7 @@
       </div>
 
       <div class="drawer-content" style="margin-top:1.25rem;">
-
+        
         <!-- Summary Box -->
         <div class="invoice-summary-box">
           <div class="grid-2col" style="gap:1rem;">
