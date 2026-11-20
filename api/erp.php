@@ -28,6 +28,23 @@ try {
             $itemStmt->execute([$inv['id']]);
             $items = $itemStmt->fetchAll();
             $inv['items'] = $items;
+            $inv['invoiceNo'] = $inv['invoice_no'];
+            $inv['clientName'] = $inv['client_name'];
+            $inv['docType'] = $inv['doc_type'];
+            $inv['issueDate'] = $inv['issue_date'];
+            $inv['dueDate'] = $inv['due_date'];
+            $inv['billingPeriod'] = $inv['billing_period'];
+            $inv['totalPaid'] = (float)$inv['total_paid'];
+            $inv['balanceDue'] = (float)$inv['balance_due'];
+            $inv['subtotal'] = (float)$inv['subtotal'];
+            $inv['tax'] = (float)$inv['tax'];
+            $inv['labourFee'] = (float)$inv['labour_fee'];
+            $inv['grandTotal'] = (float)$inv['total'];
+            $inv['amount'] = (float)$inv['total'];
+            $inv['depositAmount'] = (float)$inv['deposit_amount'];
+            $inv['depositLabel'] = $inv['deposit_label'];
+            $inv['hasPaymentPlan'] = (bool)$inv['has_payment_plan'];
+            $inv['validityNote'] = $inv['validity_note'];
             $invoices[] = $inv;
         }
 
@@ -138,6 +155,81 @@ try {
                     ':reference'      => $l['reference'] ?? null,
                     ':entity'         => $l['entity'] ?? 'DATA PORT Core'
                 ]);
+            }
+        }
+
+        // 4. Sync invoices
+        if (isset($input['invoices']) && is_array($input['invoices'])) {
+            $invStmt = $pdo->prepare("INSERT INTO invoices
+                (id, invoice_no, doc_type, client_name, phone, email, location, sub_id, subtotal, tax, labour_fee, total, total_paid, balance_due, status, issue_date, due_date, billing_period, notes, validity_note, has_payment_plan, deposit_amount, deposit_label, created_at, updated_at)
+                VALUES (:id, :invoice_no, :doc_type, :client_name, :phone, :email, :location, :sub_id, :subtotal, :tax, :labour_fee, :total, :total_paid, :balance_due, :status, :issue_date, :due_date, :billing_period, :notes, :validity_note, :has_payment_plan, :deposit_amount, :deposit_label, NOW(), NOW())
+                ON DUPLICATE KEY UPDATE
+                doc_type = VALUES(doc_type), client_name = VALUES(client_name), phone = VALUES(phone), email = VALUES(email),
+                location = VALUES(location), sub_id = VALUES(sub_id), subtotal = VALUES(subtotal), tax = VALUES(tax),
+                labour_fee = VALUES(labour_fee), total = VALUES(total), total_paid = VALUES(total_paid), balance_due = VALUES(balance_due),
+                status = VALUES(status), issue_date = VALUES(issue_date), due_date = VALUES(due_date), billing_period = VALUES(billing_period),
+                notes = VALUES(notes), validity_note = VALUES(validity_note), has_payment_plan = VALUES(has_payment_plan),
+                deposit_amount = VALUES(deposit_amount), deposit_label = VALUES(deposit_label), updated_at = NOW()");
+
+            $itDelStmt = $pdo->prepare("DELETE FROM invoice_items WHERE invoice_id = ?");
+            $itInsStmt = $pdo->prepare("INSERT INTO invoice_items (id, invoice_id, service_id, title, description, qty, rate, total, created_at, updated_at)
+                VALUES (:id, :invoice_id, :service_id, :title, :description, :qty, :rate, :total, NOW(), NOW())");
+
+            foreach ($input['invoices'] as $inv) {
+                $id = $inv['id'] ?? ('inv-' . bin2hex(random_bytes(4)));
+                $invoiceNo = $inv['invoiceNo'] ?? ($inv['invoice_no'] ?? ('#INV-' . date('y') . '/' . rand(100, 999)));
+                $subtotal = (float)($inv['subtotal'] ?? 0);
+                $tax = (float)($inv['tax'] ?? 0);
+                $labour = (float)($inv['labourFee'] ?? ($inv['labour_fee'] ?? 0));
+                $total = (float)($inv['total'] ?? ($inv['grandTotal'] ?? ($inv['amount'] ?? ($subtotal + $tax + $labour))));
+                $paid = (float)($inv['totalPaid'] ?? ($inv['total_paid'] ?? ($inv['status'] === 'paid' ? $total : 0)));
+                $bal = max(0, $total - $paid);
+
+                $invStmt->execute([
+                    ':id'               => $id,
+                    ':invoice_no'       => $invoiceNo,
+                    ':doc_type'         => $inv['docType'] ?? ($inv['doc_type'] ?? 'Invoice'),
+                    ':client_name'      => $inv['clientName'] ?? ($inv['client_name'] ?? 'Client'),
+                    ':phone'            => $inv['phone'] ?? null,
+                    ':email'            => $inv['email'] ?? null,
+                    ':location'         => $inv['location'] ?? 'Mombasa',
+                    ':sub_id'           => $inv['subId'] ?? ($inv['sub_id'] ?? null),
+                    ':subtotal'         => $subtotal,
+                    ':tax'              => $tax,
+                    ':labour_fee'       => $labour,
+                    ':total'            => $total,
+                    ':total_paid'       => $paid,
+                    ':balance_due'      => $bal,
+                    ':status'           => $inv['status'] ?? 'unpaid',
+                    ':issue_date'       => $inv['issueDate'] ?? ($inv['issue_date'] ?? date('Y-m-d')),
+                    ':due_date'         => $inv['dueDate'] ?? ($inv['due_date'] ?? date('Y-m-d', strtotime('+14 days'))),
+                    ':billing_period'   => $inv['billingPeriod'] ?? ($inv['billing_period'] ?? date('F Y')),
+                    ':notes'            => $inv['notes'] ?? null,
+                    ':validity_note'    => $inv['validityNote'] ?? ($inv['validity_note'] ?? 'Please Note: Valid for 14 days from date.'),
+                    ':has_payment_plan' => !empty($inv['hasPaymentPlan']) || !empty($inv['has_payment_plan']) ? 1 : 0,
+                    ':deposit_amount'   => (float)($inv['depositAmount'] ?? ($inv['deposit_amount'] ?? 0)),
+                    ':deposit_label'    => $inv['depositLabel'] ?? ($inv['deposit_label'] ?? '1 ST Installment')
+                ]);
+
+                if (isset($inv['items']) && is_array($inv['items']) && count($inv['items']) > 0) {
+                    $itDelStmt->execute([$id]);
+                    foreach ($inv['items'] as $idx => $it) {
+                        $itemId = $it['id'] ?? ('item-' . bin2hex(random_bytes(4)) . '-' . $idx);
+                        $rate = (float)($it['rate'] ?? 0);
+                        $qty = (string)($it['qty'] ?? '1');
+                        $itTotal = (float)($it['total'] ?? ($rate * (float)$qty));
+                        $itInsStmt->execute([
+                            ':id'          => $itemId,
+                            ':invoice_id'  => $id,
+                            ':service_id'  => $it['serviceId'] ?? ($it['service_id'] ?? null),
+                            ':title'       => $it['title'] ?? 'Technical Service Deliverable',
+                            ':description' => $it['description'] ?? null,
+                            ':qty'         => $qty,
+                            ':rate'        => $rate,
+                            ':total'       => $itTotal
+                        ]);
+                    }
+                }
             }
         }
 

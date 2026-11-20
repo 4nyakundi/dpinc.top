@@ -134,6 +134,7 @@ try {
             $depositLabel = $data['depositLabel'] ?? ($data['deposit_label'] ?? '1 ST Installment');
             $tax = (float)($data['tax'] ?? 0);
             $labourFee = (float)($data['labourFee'] ?? ($data['labour_fee'] ?? 0));
+            $subId = $data['subId'] ?? ($data['sub_id'] ?? null);
 
             $items = $data['items'] ?? [];
             $subtotal = 0;
@@ -143,21 +144,45 @@ try {
             if ($subtotal === 0 && isset($data['subtotal'])) {
                 $subtotal = (float)$data['subtotal'];
             }
-            $paid = $status === 'paid' ? $total : ($hasPaymentPlan ? $depositAmount : 0);
+            $total = (float)($data['total'] ?? ($data['amount'] ?? ($data['grandTotal'] ?? ($subtotal + $tax + $labourFee))));
+            $paid = $status === 'paid' ? $total : ($hasPaymentPlan ? $depositAmount : (float)($data['totalPaid'] ?? ($data['total_paid'] ?? 0)));
             $balanceDue = max(0, $total - $paid);
 
             $insertStmt = $pdo->prepare("
                 INSERT INTO `invoices` (
-                    `id`, `invoice_no`, `doc_type`, `client_name`, `phone`, `email`, `location`,
+                    `id`, `invoice_no`, `doc_type`, `client_name`, `phone`, `email`, `location`, `sub_id`,
                     `subtotal`, `tax`, `labour_fee`, `total`, `total_paid`, `balance_due`, `status`, `issue_date`,
                     `due_date`, `billing_period`, `notes`, `validity_note`, `has_payment_plan`,
                     `deposit_amount`, `deposit_label`, `created_at`, `updated_at`
                 ) VALUES (
-                    :id, :invoice_no, :doc_type, :client_name, :phone, :email, :location,
+                    :id, :invoice_no, :doc_type, :client_name, :phone, :email, :location, :sub_id,
                     :subtotal, :tax, :labour_fee, :total, :total_paid, :balance_due, :status, :issue_date,
                     :due_date, :billing_period, :notes, :validity_note, :has_payment_plan,
                     :deposit_amount, :deposit_label, NOW(), NOW()
                 )
+                ON DUPLICATE KEY UPDATE
+                    `doc_type` = VALUES(`doc_type`),
+                    `client_name` = VALUES(`client_name`),
+                    `phone` = VALUES(`phone`),
+                    `email` = VALUES(`email`),
+                    `location` = VALUES(`location`),
+                    `sub_id` = VALUES(`sub_id`),
+                    `subtotal` = VALUES(`subtotal`),
+                    `tax` = VALUES(`tax`),
+                    `labour_fee` = VALUES(`labour_fee`),
+                    `total` = VALUES(`total`),
+                    `total_paid` = VALUES(`total_paid`),
+                    `balance_due` = VALUES(`balance_due`),
+                    `status` = VALUES(`status`),
+                    `issue_date` = VALUES(`issue_date`),
+                    `due_date` = VALUES(`due_date`),
+                    `billing_period` = VALUES(`billing_period`),
+                    `notes` = VALUES(`notes`),
+                    `validity_note` = VALUES(`validity_note`),
+                    `has_payment_plan` = VALUES(`has_payment_plan`),
+                    `deposit_amount` = VALUES(`deposit_amount`),
+                    `deposit_label` = VALUES(`deposit_label`),
+                    `updated_at` = NOW()
             ");
 
             $insertStmt->execute([
@@ -168,11 +193,23 @@ try {
                 'phone'            => $phone,
                 'email'            => $email,
                 'location'         => $location,
+                'sub_id'           => $subId,
                 'subtotal'         => $subtotal,
                 'tax'              => $tax,
                 'labour_fee'       => $labourFee,
                 'total'            => $total,
                 'total_paid'       => $paid,
+                'balance_due'      => $balanceDue,
+                'status'           => $status,
+                'issue_date'       => $issueDate,
+                'due_date'         => $dueDate,
+                'billing_period'   => $billingPeriod,
+                'notes'            => $notes,
+                'validity_note'    => $validityNote,
+                'has_payment_plan' => $hasPaymentPlan,
+                'deposit_amount'   => $depositAmount,
+                'deposit_label'    => $depositLabel,
+            ]);
                 'balance_due'      => $balanceDue,
                 'status'           => $status,
                 'issue_date'       => $issueDate,
@@ -239,7 +276,11 @@ try {
                 'phone'           => 'phone',
                 'email'           => 'email',
                 'location'        => 'location',
-                'amount'          => 'amount',
+                'subId'           => 'sub_id',
+                'amount'          => 'total',
+                'grandTotal'      => 'total',
+                'totalPaid'       => 'total_paid',
+                'balanceDue'      => 'balance_due',
                 'subtotal'        => 'subtotal',
                 'tax'             => 'tax',
                 'labourFee'       => 'labour_fee',
