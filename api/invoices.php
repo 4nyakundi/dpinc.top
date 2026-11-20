@@ -210,17 +210,6 @@ try {
                 'deposit_amount'   => $depositAmount,
                 'deposit_label'    => $depositLabel,
             ]);
-                'balance_due'      => $balanceDue,
-                'status'           => $status,
-                'issue_date'       => $issueDate,
-                'due_date'         => $dueDate,
-                'billing_period'   => $billingPeriod,
-                'notes'            => $notes,
-                'validity_note'    => $validityNote,
-                'has_payment_plan' => $hasPaymentPlan,
-                'deposit_amount'   => $depositAmount,
-                'deposit_label'    => $depositLabel,
-            ]);
 
             // Insert line items
             $itemInsertStmt = $pdo->prepare("
