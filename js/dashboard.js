@@ -681,6 +681,8 @@
           renderVaultDetails();
         } else if (targetTabId === "tariffsTab") {
           renderTariffManager();
+        } else if (targetTabId === "websitesTab") {
+          if (window.lucide) window.lucide.createIcons();
         }
       });
     });
@@ -4334,6 +4336,80 @@
         console.error("Failed to remove item:", err);
       }
     }
+  };
+
+  /* =========================================================================
+     LIVE PREVIEW MODAL HANDLERS FOR DASHBOARD
+     ========================================================================= */
+  window.dpOpenSitePreview = function(url, title, repoUrl) {
+    const modal = document.getElementById("sitePreviewModal");
+    const iframe = document.getElementById("sitePreviewIframe");
+    const urlBar = document.getElementById("previewUrlBar");
+    const newTabBtn = document.getElementById("previewNewTabBtn");
+    const repoBtn = document.getElementById("previewRepoBtn");
+
+    if (!modal || !iframe) {
+      window.open(url, "_blank");
+      return;
+    }
+
+    if (urlBar) urlBar.textContent = url;
+    if (newTabBtn) newTabBtn.href = url;
+    if (repoBtn) {
+      if (repoUrl) {
+        repoBtn.href = repoUrl;
+        repoBtn.style.display = "inline-flex";
+      } else {
+        repoBtn.style.display = "none";
+      }
+    }
+
+    iframe.src = url;
+    if (typeof window.dpSetPreviewDevice === "function") {
+      window.dpSetPreviewDevice("desktop");
+    }
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.dpSetPreviewDevice = function(mode) {
+    const iframe = document.getElementById("sitePreviewIframe");
+    const btnDesktop = document.getElementById("btnDeviceDesktop");
+    const btnTablet = document.getElementById("btnDeviceTablet");
+    const btnMobile = document.getElementById("btnDeviceMobile");
+
+    [btnDesktop, btnTablet, btnMobile].forEach(btn => {
+      if (btn) btn.classList.remove("active");
+    });
+
+    if (!iframe) return;
+
+    if (mode === "mobile") {
+      iframe.style.maxWidth = "390px";
+      iframe.style.boxShadow = "0 20px 40px rgba(0,0,0,0.35)";
+      iframe.style.margin = "0 auto";
+      if (btnMobile) btnMobile.classList.add("active");
+    } else if (mode === "tablet") {
+      iframe.style.maxWidth = "768px";
+      iframe.style.boxShadow = "0 20px 40px rgba(0,0,0,0.25)";
+      iframe.style.margin = "0 auto";
+      if (btnTablet) btnTablet.classList.add("active");
+    } else {
+      iframe.style.maxWidth = "100%";
+      iframe.style.boxShadow = "none";
+      iframe.style.margin = "0";
+      if (btnDesktop) btnDesktop.classList.add("active");
+    }
+  };
+
+  window.dpCloseSitePreview = function() {
+    const modal = document.getElementById("sitePreviewModal");
+    const iframe = document.getElementById("sitePreviewIframe");
+    if (modal) modal.style.display = "none";
+    if (iframe) iframe.src = "";
+    document.body.style.overflow = "";
   };
 
   /* =========================================================================

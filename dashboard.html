@@ -1730,5 +1730,53 @@
 
   <!-- Dashboard JavaScript Controller -->
   <script src="js/dashboard.js"></script>
+
+  <!-- Live Site Interactive Browser Preview Modal for Dashboard -->
+  <div id="sitePreviewModal" class="live-preview-panel-overlay" style="display:none;" onclick="if(event.target===this) window.dpCloseSitePreview()">
+    <div class="live-preview-window">
+      <div class="live-preview-header">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <span class="browser-dot" style="background:#ef4444; cursor:pointer;" onclick="window.dpCloseSitePreview()" title="Close Preview"></span>
+            <span class="browser-dot" style="background:#f59e0b;"></span>
+            <span class="browser-dot" style="background:#10b981;"></span>
+          </div>
+          <div class="browser-url-input">
+            <i data-lucide="lock" style="width:12px; height:12px; color:#10b981; flex-shrink:0;"></i>
+            <span id="previewUrlBar">https://...</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.35rem; margin:0 0.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm preview-device-btn active" id="btnDeviceDesktop" onclick="window.dpSetPreviewDevice('desktop')" title="Desktop View (Full Width)" style="padding:0.35rem 0.55rem;">
+            <i data-lucide="monitor" style="width:14px; height:14px;"></i>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm preview-device-btn" id="btnDeviceTablet" onclick="window.dpSetPreviewDevice('tablet')" title="Tablet View (768px)" style="padding:0.35rem 0.55rem;">
+            <i data-lucide="tablet" style="width:14px; height:14px;"></i>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm preview-device-btn" id="btnDeviceMobile" onclick="window.dpSetPreviewDevice('mobile')" title="Mobile View (390px)" style="padding:0.35rem 0.55rem;">
+            <i data-lucide="smartphone" style="width:14px; height:14px;"></i>
+          </button>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <a id="previewRepoBtn" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding:0.35rem 0.75rem; font-size:0.8rem;">
+            <i data-lucide="github" style="width:13px; height:13px;"></i> Repo
+          </a>
+          <a id="previewNewTabBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="padding:0.35rem 0.75rem; font-size:0.8rem;">
+            <i data-lucide="external-link" style="width:13px; height:13px;"></i> Open Live Site
+          </a>
+          <button class="btn btn-secondary btn-sm" onclick="window.dpCloseSitePreview()" style="padding:0.35rem 0.6rem;" aria-label="Close Preview">
+            <i data-lucide="x" style="width:15px; height:15px;"></i>
+          </button>
+        </div>
+      </div>
+      <div style="flex:1; position:relative; background:#FFFFFF; display:flex; flex-direction:column; min-height:0;">
+        <div id="previewFallbackNotice" style="padding:0.6rem 1.25rem; text-align:center; background:#FEF3C7; color:#92400E; border-bottom:1px solid #FCD34D; font-size:0.825rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <i data-lucide="info" style="width:14px; height:14px; flex-shrink:0;"></i>
+          <span>If the external site restricts embedding, click <strong>Open Live Site</strong> to view in full tab.</span>
+        </div>
+        <iframe id="sitePreviewIframe" class="live-preview-iframe" src="" title="Site Live Preview" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
